@@ -1732,7 +1732,7 @@ public final class LocatorLauncher extends AbstractLauncher<String> {
         if (StringUtils.isBlank(getMemberName())
             && !isSet(System.getProperties(), DistributionConfig.GEMFIRE_PREFIX + NAME)
             && !isSet(getDistributedSystemProperties(), NAME)
-            && !isSet(loadGemFireProperties(DistributedSystem.getPropertyFileURL()), NAME))
+            && !isSet(loadGemFireProperties(DistributedSystem.getPropertyFileURL()), NAME)) // TODO: GEODE-1466
         {
           throw new IllegalStateException(LocalizedStrings.Launcher_Builder_MEMBER_NAME_VALIDATION_ERROR_MESSAGE
             .toLocalizedString("Locator"));

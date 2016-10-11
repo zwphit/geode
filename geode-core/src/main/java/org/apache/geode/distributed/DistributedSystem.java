@@ -569,7 +569,7 @@ public abstract class DistributedSystem implements StatisticsFactory {
    * @see #getPropertiesFile()
    * @since Geode 1.0
    */
-  public static final String PROPERTIES_FILE_DEFAULT = DistributionConfig.GEMFIRE_PREFIX + "properties";
+  public static final String PROPERTIES_FILE_DEFAULT = DistributionConfig.GEMFIRE_PREFIX + "properties"; // TODO: GEODE-1466
 
   /**
    * Returns the current value of {@link #PROPERTIES_FILE_PROPERTY} system 
@@ -579,7 +579,7 @@ public abstract class DistributedSystem implements StatisticsFactory {
    * @see #PROPERTIES_FILE_DEFAULT
    * @since Geode 1.0
    */
-  public static String getPropertiesFile() {
+  public static String getPropertiesFile() { // TODO: GEODE-1466
 	return System.getProperty(PROPERTIES_FILE_PROPERTY, PROPERTIES_FILE_DEFAULT);
   }
   
