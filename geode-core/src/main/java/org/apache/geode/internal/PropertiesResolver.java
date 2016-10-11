@@ -71,7 +71,7 @@ public class PropertiesResolver {
 
   private static URI getResourceOrNull(final String name) {
     try {
-      URL url = ClassPathLoader.getLatest().getResource(DistributedSystem.class, name); // resource
+      URL url = ClassPathLoader.getLatest().getResource(name); // resource
       return (url == null) ? null : url.toURI();
     } catch (URISyntaxException ignore) {
       return null;

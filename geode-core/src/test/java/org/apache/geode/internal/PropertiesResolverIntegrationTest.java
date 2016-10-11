@@ -19,10 +19,20 @@ package org.apache.geode.internal;
 import static org.apache.geode.internal.PropertiesResolver.*;
 import static org.assertj.core.api.Assertions.*;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -59,7 +69,9 @@ public class PropertiesResolverIntegrationTest {
   @After
   public void cleanup() throws Exception {
     for (File file: files) {
-      FileUtils.forceDelete(file);
+      try {
+        FileUtils.forceDelete(file);
+      } catch (Exception ignored) {}
     }
   }
 
@@ -100,6 +112,89 @@ public class PropertiesResolverIntegrationTest {
   }
 
   @Test
+  public void searchesCurrentDirFirst() throws Exception {
+    geodeDefaultFileInCurrentDir();
+    geodeDefaultFileInHomeDir();
+    geodeInJarAsClasspathResource();
+
+    assertThat(findPropertiesFileLocation()).isEqualTo(geodeDefaultFileInCurrentDir().toURI());
+  }
+
+  @Test
+  public void searchesHomeDirSecond() throws Exception {
+    geodeDefaultFileInHomeDir();
+    geodeInJarAsClasspathResource();
+
+    assertThat(findPropertiesFileLocation()).isEqualTo(geodeDefaultFileInHomeDir().toURI());
+  }
+
+  @Test
+  public void searchesJarOnClasspathThird() throws Exception {
+    System.setProperty(PropertiesResolver.GEODE_PROPERTIES_FILE_PROPERTY, "geodeInJar.properties");
+
+    URL url = propsFileInJarOnClasspath();
+
+    assertThat(findPropertiesFileLocation()).isEqualTo(url.toURI());
+  }
+
+  @Test
+  public void searchesDirOnClasspathThird() throws Exception {
+    System.setProperty(PropertiesResolver.GEODE_PROPERTIES_FILE_PROPERTY, "geodeInDir.properties");
+
+    URL url = propsFileInDirOnClasspath(); // TODO
+
+    assertThat(findPropertiesFileLocation()).isEqualTo(url.toURI());
+  }
+
+  @Test
+  public void searchReturnsNullLast() throws Exception {
+    assertThat(findPropertiesFileLocation()).isNull();
+  }
+
+  private URL propsFileInJarOnClasspath() throws IOException, URISyntaxException {
+    //Create jar containing our properties file
+    File jar = geodeInJarAsClasspathResource();
+    
+    //Create classloader pointing to our jar
+    URLClassLoader ourClassLoader = new URLClassLoader(new URL[]{new URL("file://" + jar.getCanonicalPath())});
+    assertThat(ourClassLoader.getURLs()).hasSize(1);
+
+    //Make sure we can load the properties file from our jar
+    URL stream = ourClassLoader.getResource("geodeInJar.properties");
+    assertThat(stream).isNotNull();
+
+    //Add our classloader to Geode
+    ClassPathLoader.getLatest().addOrReplaceAndSetLatest(ourClassLoader);
+    assertThat(ClassPathLoader.getLatest().getClassLoaders()).contains(ourClassLoader);
+
+    //Get URL for properties file inside jar
+    URL url = ClassPathLoader.getLatest().getResource("geodeInJar.properties");
+    assertThat(url).isNotNull();
+    return url;
+  }
+
+  private URL propsFileInDirOnClasspath() throws IOException, URISyntaxException {
+    File propsFile = temporaryFolder.newFile("geodeInDir.properties");
+
+    //Create classloader pointing to our dir
+    URLClassLoader ourClassLoader = new URLClassLoader(new URL[]{temporaryFolder.getRoot().toURL()});
+    assertThat(ourClassLoader.getURLs()).hasSize(1);
+
+    //Make sure we can load the properties file from our jar
+    URL stream = ourClassLoader.getResource("geodeInDir.properties");
+    assertThat(stream).isNotNull();
+
+    //Add our classloader to Geode
+    ClassPathLoader.getLatest().addOrReplaceAndSetLatest(ourClassLoader);
+    assertThat(ClassPathLoader.getLatest().getClassLoaders()).contains(ourClassLoader);
+
+    //Get URL for properties file inside jar
+    URL url = ClassPathLoader.getLatest().getResource("geodeInDir.properties");
+    assertThat(url).isNotNull();
+    return url;
+  }
+
+  @Test
   public void findPrefersGeodePropertiesFileFirst() throws Exception {
     System.setProperty(GEODE_PROPERTIES_FILE_PROPERTY, this.geodeCustomProperties.getCanonicalPath());
     System.setProperty(GEMFIRE_PROPERTIES_FILE_PROPERTY, this.gemfireCustomProperties.getCanonicalPath());
@@ -131,6 +226,19 @@ public class PropertiesResolverIntegrationTest {
     gemfireDefaultFileInCurrentDir();
 
     assertThat(findPropertiesFileLocation()).isEqualTo(gemfireDefaultFileInCurrentDir().getCanonicalFile().toURI());
+  }
+
+  private File geodeInJarAsClasspathResource() throws IOException {
+    File existingJar = new File(this.temporaryFolder.getRoot().getCanonicalPath(), "ourJar.jar");
+    if (existingJar.exists()){
+      return existingJar;
+    }
+
+    File tempFile = createFile(this.temporaryFolder.getRoot().getCanonicalPath(), "geodeInJar.properties");
+    File jar = createJar("ourJar.jar", tempFile);
+    FileUtils.forceDelete(tempFile);
+
+    return jar;
   }
 
   private File geodeDefaultFileInHomeDir() {
@@ -183,5 +291,43 @@ public class PropertiesResolverIntegrationTest {
       throw new AssertionError(e);
     }
     return file;
+  }
+
+  public File createJar(String jarName, File inputFile) throws IOException
+  {
+    Manifest manifest = new Manifest();
+    manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+    File jarFile = createFile(this.temporaryFolder.getRoot().getCanonicalPath(), jarName);
+    JarOutputStream target = new JarOutputStream(new FileOutputStream(jarFile), manifest);
+    add(inputFile, target);
+    target.close();
+    return jarFile;
+  }
+
+  private void add(File source, JarOutputStream target) throws IOException
+  {
+    BufferedInputStream in = null;
+    try
+    {
+      JarEntry entry = new JarEntry(source.getName().replace("\\", "/"));
+      entry.setTime(source.lastModified());
+      target.putNextEntry(entry);
+      in = new BufferedInputStream(new FileInputStream(source));
+
+      byte[] buffer = new byte[1024];
+      while (true)
+      {
+        int count = in.read(buffer);
+        if (count == -1)
+          break;
+        target.write(buffer, 0, count);
+      }
+      target.closeEntry();
+    }
+    finally
+    {
+      if (in != null)
+        in.close();
+    }
   }
 }
