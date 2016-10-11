@@ -19,6 +19,7 @@ package org.apache.geode.distributed;
 import org.apache.geode.distributed.LocatorLauncher.Builder;
 import org.apache.geode.distributed.LocatorLauncher.Command;
 import org.apache.geode.distributed.internal.DistributionConfig;
+import org.apache.geode.internal.PropertiesResolver;
 import org.apache.geode.internal.i18n.LocalizedStrings;
 import org.apache.geode.test.junit.categories.IntegrationTest;
 import org.junit.Rule;
@@ -133,6 +134,25 @@ public class LocatorLauncherIntegrationTest {
   }
 
   @Test
+  public void testBuildWithMemberNameSetInGeodePropertiesOnStart() throws Exception {
+    // given: gemfire.properties with a name
+    Properties gemfireProperties = new Properties();
+    gemfireProperties.setProperty(NAME, "locator123");
+    useGemFirePropertiesFileInTemporaryFolder(PropertiesResolver.DEFAULT_GEODE_PROPERTIES_FILE_NAME, gemfireProperties); // TODO: GEODE-1466
+
+    // when: starting with null MemberName
+    LocatorLauncher launcher = new Builder()
+      .setCommand(Command.START)
+      .setMemberName(null)
+      .build();
+
+    // then: name in gemfire.properties file should be used for MemberName
+    assertThat(launcher).isNotNull();
+    assertThat(launcher.getCommand()).isEqualTo(Command.START);
+    assertThat(launcher.getMemberName()).isNull();
+  }
+
+  @Test
   public void testBuildWithNoMemberNameOnStart() throws Exception {
     // given: gemfire.properties with no name
     useGemFirePropertiesFileInTemporaryFolder(DistributionConfig.GEMFIRE_PREFIX + "properties", new Properties());
@@ -239,7 +259,7 @@ public class LocatorLauncherIntegrationTest {
    * </ol>
    */
   private void useGemFirePropertiesFileInTemporaryFolder(final String fileName, final Properties gemfireProperties) throws Exception {
-    File propertiesFile = new File(this.temporaryFolder.getRoot().getCanonicalPath(), fileName);
+    File propertiesFile = this.temporaryFolder.newFile(fileName);
     System.setProperty(DistributedSystem.PROPERTIES_FILE_PROPERTY, propertiesFile.getCanonicalPath());
     
     gemfireProperties.store(new FileWriter(propertiesFile, false), this.testName.getMethodName());

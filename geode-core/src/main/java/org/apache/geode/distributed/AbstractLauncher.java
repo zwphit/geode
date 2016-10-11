@@ -151,7 +151,7 @@ public abstract class AbstractLauncher<T extends Comparable<T>> implements Runna
    * @return a Properties instance populated with the gemfire.properties.
    * @see java.net.URL
    */
-  protected static Properties loadGemFireProperties(final URL url) {
+  protected static Properties loadGemFireProperties(final URL url) { // TODO: GEODE-1466
     final Properties properties = new Properties();
 
     if (url != null) {

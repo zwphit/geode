@@ -28,10 +28,10 @@ import org.apache.geode.internal.util.IOUtils;
 
 public class PropertiesResolver {
 
-  static final String GEODE_PROPERTIES_FILE_PROPERTY = "geodePropertyFile";
-  static final String GEMFIRE_PROPERTIES_FILE_PROPERTY = DistributedSystem.PROPERTIES_FILE_PROPERTY;
-  static final String DEFAULT_GEODE_PROPERTIES_FILE_NAME = "geode.properties";
-  static final String DEFAULT_GEMFIRE_PROPERTIES_FILE_NAME = "gemfire.properties";
+  public static final String GEODE_PROPERTIES_FILE_PROPERTY = "geodePropertyFile";
+  public static final String GEMFIRE_PROPERTIES_FILE_PROPERTY = DistributedSystem.PROPERTIES_FILE_PROPERTY;
+  public static final String DEFAULT_GEODE_PROPERTIES_FILE_NAME = "geode.properties";
+  public static final String DEFAULT_GEMFIRE_PROPERTIES_FILE_NAME = "gemfire.properties";
 
   private static URI propertiesFileURL = findPropertiesFileLocation();
 
