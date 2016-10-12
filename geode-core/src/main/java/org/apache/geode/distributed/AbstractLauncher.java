@@ -23,6 +23,7 @@ import org.apache.geode.distributed.internal.unsafe.RegisterSignalHandlerSupport
 import org.apache.geode.internal.AvailablePort;
 import org.apache.geode.internal.GemFireVersion;
 import org.apache.geode.internal.OSProcess;
+import org.apache.geode.internal.PropertiesResolver;
 import org.apache.geode.internal.i18n.LocalizedStrings;
 import org.apache.geode.internal.lang.ClassUtils;
 import org.apache.geode.internal.lang.ObjectUtils;
@@ -144,33 +145,34 @@ public abstract class AbstractLauncher<T extends Comparable<T>> implements Runna
     return !StringUtils.isBlank(properties.getProperty(propertyName));
   }
 
-  /**
-   * Loads the GemFire properties at the specified URL.
-   * 
-   * @param url the URL to the gemfire.properties to load.
-   * @return a Properties instance populated with the gemfire.properties.
-   * @see java.net.URL
-   */
-  protected static Properties loadGemFireProperties(final URL url) { // TODO: GEODE-1466
-    final Properties properties = new Properties();
-
-    if (url != null) {
-      try {
-        properties.load(new FileReader(new File(url.toURI())));
-      }
-      catch (Exception e) {
-        try {
-          // not in the file system, try the classpath
-          properties.load(AbstractLauncher.class.getResourceAsStream(DistributedSystem.getPropertiesFile()));
-        }
-        catch (Exception ignore) {
-          // not in the file system or the classpath; gemfire.properties does not exist
-        }
-      }
-    }
-
-    return properties;
-  }
+//  /**
+//   * Loads the GemFire properties at the specified URL.
+//   *
+//   * @param url the URL to the gemfire.properties to load.
+//   * @return a Properties instance populated with the gemfire.properties.
+//   * @see java.net.URL
+//   */
+//  protected static Properties loadGemFireProperties(final URL url) { // TODO: GEODE-1466
+////    return new PropertiesResolver().loadProperties();
+//    final Properties properties = new Properties();
+//
+//    if (url != null) {
+//      try {
+//        properties.load(new FileReader(new File(url.toURI())));
+//      }
+//      catch (Exception e) {
+//        try {
+//          // not in the file system, try the classpath
+//          properties.load(AbstractLauncher.class.getResourceAsStream(DistributedSystem.getPropertiesFile()));
+//        }
+//        catch (Exception ignore) {
+//          // not in the file system or the classpath; gemfire.properties does not exist
+//        }
+//      }
+//    }
+//
+//    return properties;
+//  }
 
   void initLogger() {
     try {

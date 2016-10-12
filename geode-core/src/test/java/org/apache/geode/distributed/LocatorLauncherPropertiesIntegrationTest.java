@@ -18,6 +18,7 @@ package org.apache.geode.distributed;
 
 import static java.util.concurrent.TimeUnit.*;
 import static org.apache.geode.distributed.ConfigurationProperties.*;
+import static org.apache.geode.internal.PropertiesResolver.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.io.BufferedReader;
@@ -35,15 +36,22 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 
 import org.apache.geode.distributed.AbstractLauncher.Status;
 import org.apache.geode.distributed.LocatorLauncher.Builder;
 import org.apache.geode.distributed.internal.SharedConfiguration;
-import org.apache.geode.internal.PropertiesResolver;
 import org.apache.geode.internal.lang.StringUtils;
 import org.apache.geode.internal.util.IOUtils;
+import org.apache.geode.test.junit.categories.IntegrationTest;
 
+/**
+ * TODO: create LocatorLauncherPropertiesRemoteIntegrationTest
+ *
+ * This test is all in-process
+ */
+@Category(IntegrationTest.class)
 public class LocatorLauncherPropertiesIntegrationTest {
 
   private File propsFile;
@@ -73,13 +81,69 @@ public class LocatorLauncherPropertiesIntegrationTest {
     try {
       FileUtils.forceDelete(propsFile);
     } catch (Exception ignored) {
+      ignored.printStackTrace();
     }
   }
 
   @Test
-  public void usesNameInGemFireProperties() throws Throwable {
-    String memberName = "myLocatorName";
-    createPropertiesFile("myGemfire.properties", memberName);
+  public void prefersNameInBuilderFirst() throws Exception {
+    String nameInBuilder = "nameInBuilder";
+    String nameInSystemProperty = "nameInSystemProperty";
+    String nameInProperties = "nameInProperties";
+    System.setProperty(GEODE_PREFIX + NAME, nameInSystemProperty);
+
+    createPropertiesFile(GEODE_PROPERTIES_FILE_KEY, "myGeode.properties", nameInProperties);
+
+    this.launcher = new Builder().setMemberName(nameInBuilder).setPort(0).set(CLUSTER_CONFIGURATION_DIR, this.clusterConfigDirectory).build();
+    this.launcher.start();
+    awaitLocator(this.launcher);
+
+    System.out.println(this.launcher.status());
+    assertThat(this.launcher.status().getMemberName()).isEqualTo(nameInBuilder);
+
+    assertThat(this.launcher.stop().getStatus()).isEqualTo(Status.STOPPED);
+  }
+
+  @Test
+  public void prefersNameInGeodeSystemPropertySecond() throws Exception {
+    String nameInSystemProperty = "nameInSystemProperty";
+    String nameInProperties = "nameInProperties";
+    System.setProperty(GEODE_PREFIX + NAME, nameInSystemProperty);
+
+    createPropertiesFile(GEODE_PROPERTIES_FILE_KEY, "myGeode.properties", nameInProperties);
+
+    this.launcher = new Builder().setPort(0).set(CLUSTER_CONFIGURATION_DIR, this.clusterConfigDirectory).build();
+    this.launcher.start();
+    awaitLocator(this.launcher);
+
+    System.out.println(this.launcher.status());
+    assertThat(this.launcher.status().getMemberName()).isEqualTo(nameInSystemProperty);
+
+    assertThat(this.launcher.stop().getStatus()).isEqualTo(Status.STOPPED);
+  }
+
+  @Test
+  public void prefersNameInGemFireSystemPropertySecond() throws Exception {
+    String nameInSystemProperty = "nameInSystemProperty";
+    String nameInProperties = "nameInProperties";
+    System.setProperty(GEMFIRE_PREFIX + NAME, nameInSystemProperty);
+
+    createPropertiesFile(GEODE_PROPERTIES_FILE_KEY, "myGeode.properties", nameInProperties);
+
+    this.launcher = new Builder().setPort(0).set(CLUSTER_CONFIGURATION_DIR, this.clusterConfigDirectory).build();
+    this.launcher.start();
+    awaitLocator(this.launcher);
+
+    System.out.println(this.launcher.status());
+    assertThat(this.launcher.status().getMemberName()).isEqualTo(nameInSystemProperty);
+
+    assertThat(this.launcher.stop().getStatus()).isEqualTo(Status.STOPPED);
+  }
+
+  @Test
+  public void usesNameInGeodeProperties() throws Exception {
+    String memberName = "myLocatorNameGeode";
+    createPropertiesFile(GEODE_PROPERTIES_FILE_KEY, "myGeode.properties", memberName);
 
     this.launcher = new Builder().setPort(0).set(CLUSTER_CONFIGURATION_DIR, this.clusterConfigDirectory).build();
     this.launcher.start();
@@ -91,10 +155,25 @@ public class LocatorLauncherPropertiesIntegrationTest {
     assertThat(this.launcher.stop().getStatus()).isEqualTo(Status.STOPPED);
   }
 
-  private void createPropertiesFile(String filename, String memberName) throws IOException {
-    System.setProperty(PropertiesResolver.GEMFIRE_PROPERTIES_FILE_PROPERTY, filename);
+  @Test
+  public void usesNameInGemFireProperties() throws Exception {
+    String memberName = "myLocatorNameGemfire";
+    createPropertiesFile(GEMFIRE_PROPERTIES_FILE_KEY, "myGemfire.properties", memberName);
 
-    propsFile = new File(System.getProperty("user.home"), filename);
+    this.launcher = new Builder().setPort(0).set(CLUSTER_CONFIGURATION_DIR, this.clusterConfigDirectory).build();
+    this.launcher.start();
+    awaitLocator(this.launcher);
+
+    System.out.println(this.launcher.status());
+    assertThat(this.launcher.status().getMemberName()).isEqualTo(memberName);
+
+    assertThat(this.launcher.stop().getStatus()).isEqualTo(Status.STOPPED);
+  }
+
+  private void createPropertiesFile(String propertyName, String filename, String memberName) throws IOException {
+    System.setProperty(propertyName, filename);
+
+    propsFile = new File(System.getProperty("user.dir"), filename);
     propsFile.deleteOnExit();
 
     Properties properties = new Properties();

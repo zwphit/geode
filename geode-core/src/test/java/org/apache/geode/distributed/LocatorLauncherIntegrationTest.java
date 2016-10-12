@@ -138,7 +138,7 @@ public class LocatorLauncherIntegrationTest {
     // given: gemfire.properties with a name
     Properties gemfireProperties = new Properties();
     gemfireProperties.setProperty(NAME, "locator123");
-    useGemFirePropertiesFileInTemporaryFolder(PropertiesResolver.DEFAULT_GEODE_PROPERTIES_FILE_NAME, gemfireProperties); // TODO: GEODE-1466
+    useGemFirePropertiesFileInTemporaryFolder(PropertiesResolver.DEFAULT_GEODE_PROPERTIES_FILE_VALUE, gemfireProperties); // TODO: GEODE-1466
 
     // when: starting with null MemberName
     LocatorLauncher launcher = new Builder()

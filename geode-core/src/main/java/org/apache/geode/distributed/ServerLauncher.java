@@ -27,6 +27,7 @@ import org.apache.geode.distributed.internal.DefaultServerLauncherCacheProvider;
 import org.apache.geode.distributed.internal.DistributionConfig;
 import org.apache.geode.distributed.internal.InternalDistributedSystem;
 import org.apache.geode.internal.GemFireVersion;
+import org.apache.geode.internal.PropertiesResolver;
 import org.apache.geode.internal.net.SocketCreator;
 import org.apache.geode.internal.cache.*;
 import org.apache.geode.internal.cache.tier.sockets.CacheServerHelper;
@@ -2264,9 +2265,8 @@ public class ServerLauncher extends AbstractLauncher<String> {
     protected void validateOnStart() {
       if (Command.START.equals(getCommand())) {
         if (StringUtils.isBlank(getMemberName())
-            && !isSet(System.getProperties(), DistributionConfig.GEMFIRE_PREFIX + NAME)
             && !isSet(getDistributedSystemProperties(), NAME)
-            && !isSet(loadGemFireProperties(DistributedSystem.getPropertyFileURL()), NAME))
+            && !new PropertiesResolver().hasNonBlankPropertyValue(NAME))
         {
           throw new IllegalStateException(LocalizedStrings.Launcher_Builder_MEMBER_NAME_VALIDATION_ERROR_MESSAGE
             .toLocalizedString("Server"));

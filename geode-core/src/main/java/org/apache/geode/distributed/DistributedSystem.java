@@ -24,15 +24,14 @@ import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
-import org.apache.geode.distributed.internal.DistributionConfig;
 import org.apache.geode.distributed.internal.DistributionManager;
 import org.apache.geode.distributed.internal.InternalDistributedSystem;
 import org.apache.geode.internal.Assert;
 import org.apache.geode.internal.ClassPathLoader;
+import org.apache.geode.internal.PropertiesResolver;
 import org.apache.geode.internal.i18n.LocalizedStrings;
 import org.apache.geode.internal.tcp.ConnectionTable;
 import org.apache.geode.internal.util.IOUtils;
-import org.apache.geode.security.GemFireSecurityException;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -558,7 +557,7 @@ public abstract class DistributedSystem implements StatisticsFactory {
    * @see #getPropertiesFile()
    * @since Geode 1.0
    */
-  public static final String PROPERTIES_FILE_PROPERTY = "gemfirePropertyFile";
+  public static final String PROPERTIES_FILE_PROPERTY = PropertiesResolver.GEODE_PROPERTIES_FILE_KEY;
   
   /** 
    * The default value of <code>PROPERTIES_FILE_PROPERTY</code> is
@@ -569,7 +568,7 @@ public abstract class DistributedSystem implements StatisticsFactory {
    * @see #getPropertiesFile()
    * @since Geode 1.0
    */
-  public static final String PROPERTIES_FILE_DEFAULT = DistributionConfig.GEMFIRE_PREFIX + "properties"; // TODO: GEODE-1466
+  public static final String PROPERTIES_FILE_DEFAULT = PropertiesResolver.DEFAULT_PROPERTIES_FILE_VALUE;
 
   /**
    * Returns the current value of {@link #PROPERTIES_FILE_PROPERTY} system 
@@ -579,8 +578,8 @@ public abstract class DistributedSystem implements StatisticsFactory {
    * @see #PROPERTIES_FILE_DEFAULT
    * @since Geode 1.0
    */
-  public static String getPropertiesFile() { // TODO: GEODE-1466
-	return System.getProperty(PROPERTIES_FILE_PROPERTY, PROPERTIES_FILE_DEFAULT);
+  public static String getPropertiesFile() {
+	  return new PropertiesResolver().getSpecifiedPropertiesFileName();
   }
   
   /**
@@ -633,7 +632,7 @@ public abstract class DistributedSystem implements StatisticsFactory {
    * @see #getSecurityPropertiesFile()
    * @since Geode 1.0
    */
-  public static final String SECURITY_PROPERTIES_FILE_PROPERTY = "gemfireSecurityPropertyFile";
+  public static final String SECURITY_PROPERTIES_FILE_PROPERTY = "gemfireSecurityPropertyFile"; // TODO: GEODE-1466
   
   /** 
    * The default value of <code>SECURITY_PROPERTIES_FILE_PROPERTY</code> is
@@ -699,7 +698,7 @@ public abstract class DistributedSystem implements StatisticsFactory {
    * @since Geode 1.0
    */
   public static URL getPropertiesFileURL() {
-    return getFileURL(getPropertiesFile());
+    return PropertiesResolver.findPropertiesFile();
   }
 
   /**

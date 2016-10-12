@@ -91,20 +91,6 @@ public class AbstractLauncherTest {
   }
 
   @Test
-  public void testLoadGemFirePropertiesWithNullURL() {
-    final Properties properties = AbstractLauncher.loadGemFireProperties(null);
-    assertNotNull(properties);
-    assertTrue(properties.isEmpty());
-  }
-
-  @Test
-  public void testLoadGemFirePropertiesWithNonExistingURL() throws MalformedURLException {
-    final Properties properties = AbstractLauncher.loadGemFireProperties(new URL("file:///path/to/non_existing/gemfire.properties"));
-    assertNotNull(properties);
-    assertTrue(properties.isEmpty());
-  }
-
-  @Test
   public void testGetDistributedSystemProperties() {
     AbstractLauncher<?> launcher = createAbstractLauncher("memberOne", "1");
 

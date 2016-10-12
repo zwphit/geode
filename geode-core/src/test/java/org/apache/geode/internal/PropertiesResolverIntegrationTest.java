@@ -16,19 +16,24 @@
  */
 package org.apache.geode.internal;
 
+import static org.apache.geode.distributed.ConfigurationProperties.*;
 import static org.apache.geode.internal.PropertiesResolver.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.Assert.*;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -37,12 +42,16 @@ import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
+import org.junit.rules.TestName;
 
+import org.apache.geode.distributed.AbstractLauncher;
+import org.apache.geode.distributed.internal.DistributionConfig;
 import org.apache.geode.test.junit.categories.IntegrationTest;
 
 @Category(IntegrationTest.class)
@@ -59,6 +68,9 @@ public class PropertiesResolverIntegrationTest {
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+  @Rule
+  public TestName testName = new TestName();
 
   @Before
   public void createFiles() throws Exception {
@@ -77,38 +89,38 @@ public class PropertiesResolverIntegrationTest {
 
   @Test
   public void canSpecifyGeodePropertiesFileAbsolutePath() throws Exception {
-    System.setProperty(GEODE_PROPERTIES_FILE_PROPERTY, this.geodeCustomProperties.getCanonicalPath());
-    assertThat(findPropertiesFileLocation()).isEqualTo(this.geodeCustomProperties.getCanonicalFile().toURI());
+    System.setProperty(GEODE_PROPERTIES_FILE_KEY, this.geodeCustomProperties.getCanonicalPath());
+    assertThat(findPropertiesFile()).isEqualTo(this.geodeCustomProperties.getCanonicalFile().toURL());
   }
 
   @Test
   public void canSpecifyGeodePropertiesFileInCurrentDir() throws Exception {
-    System.setProperty(GEODE_PROPERTIES_FILE_PROPERTY, geodeCustomFileInCurrentDir().getName());
-    assertThat(findPropertiesFileLocation()).isEqualTo(geodeCustomFileInCurrentDir().getCanonicalFile().toURI());
+    System.setProperty(GEODE_PROPERTIES_FILE_KEY, geodeCustomFileInCurrentDir().getName());
+    assertThat(findPropertiesFile()).isEqualTo(geodeCustomFileInCurrentDir().getCanonicalFile().toURL());
   }
 
  @Test
   public void canSpecifyGeodePropertiesFileInUserHomeDir() throws Exception {
-    System.setProperty(GEODE_PROPERTIES_FILE_PROPERTY, geodeCustomFileInHomeDir().getName());
-    assertThat(findPropertiesFileLocation()).isEqualTo(geodeCustomFileInHomeDir().getCanonicalFile().toURI());
+    System.setProperty(GEODE_PROPERTIES_FILE_KEY, geodeCustomFileInHomeDir().getName());
+    assertThat(findPropertiesFile()).isEqualTo(geodeCustomFileInHomeDir().getCanonicalFile().toURL());
   }
 
   @Test
   public void canSpecifyGemFirePropertiesFileAbsolutePath() throws Exception {
-    System.setProperty(GEMFIRE_PROPERTIES_FILE_PROPERTY, this.gemfireCustomProperties.getCanonicalPath());
-    assertThat(findPropertiesFileLocation()).isEqualTo(this.gemfireCustomProperties.getCanonicalFile().toURI());
+    System.setProperty(GEMFIRE_PROPERTIES_FILE_KEY, this.gemfireCustomProperties.getCanonicalPath());
+    assertThat(findPropertiesFile()).isEqualTo(this.gemfireCustomProperties.getCanonicalFile().toURL());
   }
 
   @Test
   public void canSpecifyGemFirePropertiesFileInCurrentDir() throws Exception {
-    System.setProperty(GEMFIRE_PROPERTIES_FILE_PROPERTY, gemfireCustomFileInCurrentDir().getName());
-    assertThat(findPropertiesFileLocation()).isEqualTo(gemfireCustomFileInCurrentDir().getCanonicalFile().toURI());
+    System.setProperty(GEMFIRE_PROPERTIES_FILE_KEY, gemfireCustomFileInCurrentDir().getName());
+    assertThat(findPropertiesFile()).isEqualTo(gemfireCustomFileInCurrentDir().getCanonicalFile().toURL());
   }
 
   @Test
   public void canSpecifyGemFirePropertiesFileInUserHomeDir() throws Exception {
-    System.setProperty(GEMFIRE_PROPERTIES_FILE_PROPERTY, gemfireCustomFileInHomeDir().getName());
-    assertThat(findPropertiesFileLocation()).isEqualTo(gemfireCustomFileInHomeDir().getCanonicalFile().toURI());
+    System.setProperty(GEMFIRE_PROPERTIES_FILE_KEY, gemfireCustomFileInHomeDir().getName());
+    assertThat(findPropertiesFile()).isEqualTo(gemfireCustomFileInHomeDir().getCanonicalFile().toURL());
   }
 
   @Test
@@ -117,7 +129,7 @@ public class PropertiesResolverIntegrationTest {
     geodeDefaultFileInHomeDir();
     geodeInJarAsClasspathResource();
 
-    assertThat(findPropertiesFileLocation()).isEqualTo(geodeDefaultFileInCurrentDir().toURI());
+    assertThat(findPropertiesFile()).isEqualTo(geodeDefaultFileInCurrentDir().toURL());
   }
 
   @Test
@@ -125,30 +137,30 @@ public class PropertiesResolverIntegrationTest {
     geodeDefaultFileInHomeDir();
     geodeInJarAsClasspathResource();
 
-    assertThat(findPropertiesFileLocation()).isEqualTo(geodeDefaultFileInHomeDir().toURI());
+    assertThat(findPropertiesFile()).isEqualTo(geodeDefaultFileInHomeDir().toURL());
   }
 
   @Test
   public void searchesJarOnClasspathThird() throws Exception {
-    System.setProperty(PropertiesResolver.GEODE_PROPERTIES_FILE_PROPERTY, "geodeInJar.properties");
+    System.setProperty(PropertiesResolver.GEODE_PROPERTIES_FILE_KEY, "geodeInJar.properties");
 
     URL url = propsFileInJarOnClasspath();
 
-    assertThat(findPropertiesFileLocation()).isEqualTo(url.toURI());
+    assertThat(findPropertiesFile()).isEqualTo(url);
   }
 
   @Test
   public void searchesDirOnClasspathThird() throws Exception {
-    System.setProperty(PropertiesResolver.GEODE_PROPERTIES_FILE_PROPERTY, "geodeInDir.properties");
+    System.setProperty(PropertiesResolver.GEODE_PROPERTIES_FILE_KEY, "geodeInDir.properties");
 
     URL url = propsFileInDirOnClasspath(); // TODO
 
-    assertThat(findPropertiesFileLocation()).isEqualTo(url.toURI());
+    assertThat(findPropertiesFile()).isEqualTo(url);
   }
 
   @Test
   public void searchReturnsNullLast() throws Exception {
-    assertThat(findPropertiesFileLocation()).isNull();
+    assertThat(findPropertiesFile()).isNull();
   }
 
   private URL propsFileInJarOnClasspath() throws IOException, URISyntaxException {
@@ -196,21 +208,21 @@ public class PropertiesResolverIntegrationTest {
 
   @Test
   public void findPrefersGeodePropertiesFileFirst() throws Exception {
-    System.setProperty(GEODE_PROPERTIES_FILE_PROPERTY, this.geodeCustomProperties.getCanonicalPath());
-    System.setProperty(GEMFIRE_PROPERTIES_FILE_PROPERTY, this.gemfireCustomProperties.getCanonicalPath());
+    System.setProperty(GEODE_PROPERTIES_FILE_KEY, this.geodeCustomProperties.getCanonicalPath());
+    System.setProperty(GEMFIRE_PROPERTIES_FILE_KEY, this.gemfireCustomProperties.getCanonicalPath());
     geodeDefaultFileInCurrentDir();
     gemfireDefaultFileInCurrentDir();
 
-    assertThat(findPropertiesFileLocation()).isEqualTo(this.geodeCustomProperties.getCanonicalFile().toURI());
+    assertThat(findPropertiesFile()).isEqualTo(this.geodeCustomProperties.getCanonicalFile().toURL());
   }
 
   @Test
   public void findPrefersGemFirePropertiesFileSecond() throws Exception {
-    System.setProperty(GEMFIRE_PROPERTIES_FILE_PROPERTY, this.gemfireCustomProperties.getCanonicalPath());
+    System.setProperty(GEMFIRE_PROPERTIES_FILE_KEY, this.gemfireCustomProperties.getCanonicalPath());
     geodeDefaultFileInCurrentDir();
     gemfireDefaultFileInCurrentDir();
 
-    assertThat(findPropertiesFileLocation()).isEqualTo(this.gemfireCustomProperties.getCanonicalFile().toURI());
+    assertThat(findPropertiesFile()).isEqualTo(this.gemfireCustomProperties.getCanonicalFile().toURL());
   }
 
   @Test
@@ -218,14 +230,82 @@ public class PropertiesResolverIntegrationTest {
     geodeDefaultFileInCurrentDir();
     gemfireDefaultFileInCurrentDir();
 
-    assertThat(findPropertiesFileLocation()).isEqualTo(geodeDefaultFileInCurrentDir().getCanonicalFile().toURI());
+    assertThat(findPropertiesFile()).isEqualTo(geodeDefaultFileInCurrentDir().getCanonicalFile().toURL());
   }
 
   @Test
   public void findPrefersGemFireDefaultFourth() throws Exception {
     gemfireDefaultFileInCurrentDir();
 
-    assertThat(findPropertiesFileLocation()).isEqualTo(gemfireDefaultFileInCurrentDir().getCanonicalFile().toURI());
+    assertThat(findPropertiesFile()).isEqualTo(gemfireDefaultFileInCurrentDir().getCanonicalFile().toURL());
+  }
+
+  @Test
+  public void getPropertyPrefersGeodeSystemPropertyFirst() throws Exception {
+    System.setProperty(GEODE_PREFIX + NAME, "nameFromGeodeSystemProperty");
+    System.setProperty(GEMFIRE_PREFIX + NAME, "nameFromGemFireSystemProperty");
+
+    File gemfirePropertiesFile = this.temporaryFolder.newFile(GEODE_PREFIX + "properties");
+    Properties expectedGemfireProperties = new Properties();
+    expectedGemfireProperties.setProperty(NAME, "nameFromPropertiesFile");
+    expectedGemfireProperties.store(new FileWriter(gemfirePropertiesFile, false), this.testName.getMethodName());
+    assertThat(gemfirePropertiesFile).isNotNull().exists().isFile();
+
+    PropertiesResolver propertiesResolver = new PropertiesResolver(gemfirePropertiesFile.toURL());
+
+    assertThat(propertiesResolver.getProperty(NAME)).isEqualTo("nameFromGeodeSystemProperty");
+  }
+
+  @Test
+  public void getPropertyPrefersGemfireSystemPropertySecond() throws Exception {
+    System.clearProperty(GEODE_PREFIX + NAME);
+    System.setProperty(GEMFIRE_PREFIX + NAME, "nameFromGemFireSystemProperty");
+
+    File gemfirePropertiesFile = this.temporaryFolder.newFile(GEODE_PREFIX + "properties"); // TODO: gemfire.properties and geode.properties
+    Properties expectedGemfireProperties = new Properties();
+    expectedGemfireProperties.setProperty(NAME, "nameFromPropertiesFile");
+    expectedGemfireProperties.store(new FileWriter(gemfirePropertiesFile, false), this.testName.getMethodName());
+    assertThat(gemfirePropertiesFile).isNotNull().exists().isFile();
+
+    PropertiesResolver propertiesResolver = new PropertiesResolver(gemfirePropertiesFile.toURL());
+
+    assertThat(propertiesResolver.getProperty(NAME)).isEqualTo("nameFromGemFireSystemProperty");
+  }
+
+  @Test
+  public void getPropertyUsesPropertiesFileLast() throws Exception {
+    System.clearProperty(GEODE_PREFIX + NAME);
+    System.clearProperty(GEMFIRE_PREFIX + NAME);
+
+    File gemfirePropertiesFile = this.temporaryFolder.newFile(GEODE_PREFIX + "properties"); // TODO: gemfire.properties and geode.properties
+    Properties expectedGemfireProperties = new Properties();
+    expectedGemfireProperties.setProperty(NAME, "nameFromPropertiesFile");
+    expectedGemfireProperties.store(new FileWriter(gemfirePropertiesFile, false), this.testName.getMethodName());
+    assertThat(gemfirePropertiesFile).isNotNull().exists().isFile();
+
+    PropertiesResolver propertiesResolver = new PropertiesResolver(gemfirePropertiesFile.toURL());
+
+    assertThat(propertiesResolver.getProperty(NAME)).isEqualTo("nameFromPropertiesFile");
+  }
+
+  /**
+   * Extracted from AbstractLauncherTest
+   */
+  @Ignore
+  @Test
+  public void testLoadGemFirePropertiesWithNullURL() {
+    PropertiesResolver propertiesResolver = new PropertiesResolver(null);
+    //assertThat(properties).isEmpty(); TODO
+  }
+
+  /**
+   * Extracted from AbstractLauncherTest
+   */
+  @Ignore
+  @Test
+  public void testLoadGemFirePropertiesWithNonExistingURL() throws MalformedURLException {
+    PropertiesResolver propertiesResolver = new PropertiesResolver(new URL("file:///path/to/non_existing/gemfire.properties"));
+    //assertThat(properties).isEmpty(); TODO
   }
 
   private File geodeInJarAsClasspathResource() throws IOException {
@@ -293,7 +373,7 @@ public class PropertiesResolverIntegrationTest {
     return file;
   }
 
-  public File createJar(String jarName, File inputFile) throws IOException
+  private File createJar(String jarName, File inputFile) throws IOException
   {
     Manifest manifest = new Manifest();
     manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");

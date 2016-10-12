@@ -29,6 +29,7 @@ import org.apache.geode.distributed.internal.DistributionConfigImpl;
 import org.apache.geode.distributed.internal.InternalDistributedSystem;
 import org.apache.geode.i18n.LogWriterI18n;
 import org.apache.geode.internal.OSProcess;
+import org.apache.geode.internal.PropertiesResolver;
 import org.apache.geode.internal.PureJavaMode;
 import org.apache.geode.internal.net.SocketCreator;
 import org.apache.geode.internal.cache.tier.sockets.CacheServerHelper;
@@ -1208,25 +1209,7 @@ public class CacheServerLauncher  {
    * @return true if the logging would go to stdout
    */
   private static boolean isLoggingToStdOut() {
-    Properties gfprops = new Properties();
-    URL url = DistributedSystem.getPropertyFileURL();
-    if (url != null) {
-      try {
-        gfprops.load(url.openStream());
-      } catch (IOException io) {
-        //throw new GemFireIOException("Failed reading " + url, io);
-        System.out.println("Failed reading " + url);
-        System.exit( 1 );
-      }
-      final String logFile = gfprops.getProperty(LOG_FILE);
-      if ( logFile == null || logFile.length() == 0 ) {
-        return true;
-      }
-    } else {
-      //Didnt find a property file, assuming the default is to log to stdout
-      return true;
-    }
-    return false;
+      return !(new PropertiesResolver().hasNonBlankPropertyValue(LOG_FILE));
   }
 
   /**

@@ -26,6 +26,7 @@ import org.apache.geode.distributed.internal.membership.InternalDistributedMembe
 import org.apache.geode.internal.FileUtil;
 import org.apache.geode.internal.JarClassLoader;
 import org.apache.geode.internal.JarDeployer;
+import org.apache.geode.internal.PropertiesResolver;
 import org.apache.geode.internal.cache.DiskStoreImpl;
 import org.apache.geode.internal.cache.GemFireCacheImpl;
 import org.apache.geode.internal.i18n.LocalizedStrings;
@@ -236,7 +237,7 @@ public class BackupManager implements MembershipListener {
       FileUtil.copy(url, cacheXMLBackup);
     }
     
-    URL propertyURL = DistributedSystem.getPropertyFileURL();
+    URL propertyURL = PropertiesResolver.findPropertiesFile();
     if(propertyURL != null) {
       File propertyBackup = new File(configBackupDir, DistributionConfig.GEMFIRE_PREFIX + "properties");
       FileUtil.copy(propertyURL, propertyBackup);
