@@ -17,7 +17,6 @@
 package org.apache.geode.internal;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -34,6 +33,15 @@ import org.apache.geode.internal.i18n.LocalizedStrings;
 import org.apache.geode.internal.lang.StringUtils;
 import org.apache.geode.internal.util.IOUtils;
 
+/**
+ * Order of preference:
+ * <ul>
+ * <li>system property specified value
+ * <li>builder specified value (note: this becomes a system property)
+ * <li>overridden default value
+ * <li>default value
+ * </ul>
+ */
 public class PropertiesResolver {
 
   public static final String GEODE_PREFIX = "geode.";

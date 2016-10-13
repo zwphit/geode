@@ -851,7 +851,7 @@ public class DistributionConfigImpl extends AbstractDistributionConfig implement
   public DistributionConfigImpl(Properties nonDefault, boolean ignoreGemFirePropsFile, boolean isConnected) {
     HashMap props = new HashMap();
     if (!ignoreGemFirePropsFile) {//For admin bug #40434
-      props.putAll(loadPropertiesFromURL(DistributedSystem.getPropertyFileURL(), false));
+      props.putAll(loadPropertiesFromURL(DistributedSystem.getPropertyFileURL(), false)); // GEODE-1466
     }
     props.putAll(loadPropertiesFromURL(DistributedSystem.getSecurityPropertiesFileURL(), true));
 

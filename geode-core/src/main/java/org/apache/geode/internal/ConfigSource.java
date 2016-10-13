@@ -32,13 +32,12 @@ public class ConfigSource implements Serializable {
   private ConfigSource(Type t) {
     this.type = t;
     switch (t) {
-      case API: this.description = "api"; break; // Properties instance passed in to DistributedSystem.connect
+      case API: this.description = "api"; break;                         // Properties instance passed in to DistributedSystem.connect
       case SYSTEM_PROPERTY: this.description = "system property"; break; // System.getProperties
-      case FILE: this.description = "file"; break; // gemfire.properties file
-      case SECURE_FILE: this.description = "secure file"; break; // gfsecurity.properties file
-      case XML: this.description = "cache.xml"; break; // cache.xml file
-      case RUNTIME: this.description = "runtime modification"; break; // RuntimeDistributionConfigImpl setter
-      case LAUNCHER: this.description = "launcher"; break; // Launcher setter
+      case FILE: this.description = "file"; break;                       // gemfire.properties file
+      case SECURE_FILE: this.description = "secure file"; break;         // gfsecurity.properties file
+      case XML: this.description = "cache.xml"; break;                   // cache.xml file
+      case RUNTIME: this.description = "runtime modification"; break;    // RuntimeDistributionConfigImpl setter
       default:
         this.description = "";
     }
