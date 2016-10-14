@@ -49,9 +49,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Category(IntegrationTest.class)
 public class CustomConfigWithCacheIntegrationTest {
 
-  private String beforeConfigFileProp;
-  private Level beforeLevel;
-
   private File customConfigFile;
   private Cache cache;
 
