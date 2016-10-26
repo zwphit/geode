@@ -27,7 +27,7 @@ import org.apache.geode.InternalGemFireError;
 import org.apache.geode.InternalGemFireException;
 import org.apache.geode.LogWriter;
 import org.apache.geode.SystemFailure;
-import org.apache.geode.admin.internal.SystemMemberCacheEventProcessor;
+import org.apache.geode.internal.admin.api.impl.SystemMemberCacheEventProcessor;
 import org.apache.geode.cache.AttributesMutator;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheClosedException;

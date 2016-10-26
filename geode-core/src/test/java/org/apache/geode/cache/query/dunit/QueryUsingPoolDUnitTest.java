@@ -198,7 +198,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
       }
 
       queryString =
-          "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject; select distinct * from "
+          "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject; select distinct * from "
               + regionName;
 
       try {
@@ -212,7 +212,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
       assertTrue(!results.getCollectionType().allowsDuplicates());
 
       queryString =
-          "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject; select distinct * from "
+          "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject; select distinct * from "
               + regionName + " where ticker = 'ibm'";
       try {
         Query query = qService.newQuery(queryString);
@@ -224,7 +224,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
       assertTrue(!results.getCollectionType().allowsDuplicates());
 
       queryString =
-          "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject; select distinct * from "
+          "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject; select distinct * from "
               + regionName + " where ticker = 'IBM'";
       try {
         Query query = qService.newQuery(queryString);
@@ -236,7 +236,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
       assertTrue(!results.getCollectionType().allowsDuplicates());
 
       queryString =
-          "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject; select distinct * from "
+          "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject; select distinct * from "
               + regionName + " where price > 49";
       try {
         Query query = qService.newQuery(queryString);
@@ -248,7 +248,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
       assertTrue(!results.getCollectionType().allowsDuplicates());
 
       queryString =
-          "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject; select distinct * from "
+          "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject; select distinct * from "
               + regionName + " where price = 50";
       try {
         Query query = qService.newQuery(queryString);
@@ -260,7 +260,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
       assertTrue(!results.getCollectionType().allowsDuplicates());
 
       queryString =
-          "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject; select distinct * from "
+          "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject; select distinct * from "
               + regionName + " where ticker = 'ibm' and price = 50";
       try {
         Query query = qService.newQuery(queryString);
@@ -318,7 +318,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
       }
 
       queryString =
-          "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from "
+          "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from "
               + regionName;
       try {
         Query query = qService.newQuery(queryString);
@@ -331,7 +331,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
           && results.getCollectionType().getElementType().isStructType());
 
       queryString =
-          "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from "
+          "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from "
               + regionName + " where ticker = 'ibm'";
       try {
         Query query = qService.newQuery(queryString);
@@ -344,7 +344,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
           && results.getCollectionType().getElementType().isStructType());
 
       queryString =
-          "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from "
+          "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from "
               + regionName + " where ticker = 'IBM'";
       try {
         Query query = qService.newQuery(queryString);
@@ -357,7 +357,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
           && results.getCollectionType().getElementType().isStructType());
 
       queryString =
-          "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from "
+          "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from "
               + regionName + " where price > 49";
       try {
         Query query = qService.newQuery(queryString);
@@ -370,7 +370,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
           && results.getCollectionType().getElementType().isStructType());
 
       queryString =
-          "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from "
+          "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from "
               + regionName + " where price = 50";
       try {
         Query query = qService.newQuery(queryString);
@@ -383,7 +383,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
           && results.getCollectionType().getElementType().isStructType());
 
       queryString =
-          "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from "
+          "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject; select distinct ticker, price from "
               + regionName + " where ticker = 'ibm' and price = 50";
       try {
         Query query = qService.newQuery(queryString);
@@ -1654,7 +1654,8 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
       }
 
       try {
-        String importString = "import org.apache.geode.admin.QueryUsingPoolDUnitTest.TestObject;";
+        String importString =
+            "import org.apache.geode.query.dunit.QueryUsingPoolDUnitTest.TestObject;";
         qService.createIndex("test", IndexType.FUNCTIONAL, "ticker", regionName1, importString);
       } catch (UnsupportedOperationException e) {
         // Expected behavior.
