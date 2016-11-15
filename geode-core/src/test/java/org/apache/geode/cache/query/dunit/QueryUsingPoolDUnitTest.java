@@ -122,7 +122,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
   }
 
   public void createPool(final String poolName, final String[] servers, final int[] ports,
-                         final boolean subscriptionEnabled) {
+      final boolean subscriptionEnabled) {
     // Create Cache.
     getCache(true);
 
@@ -685,7 +685,7 @@ public class QueryUsingPoolDUnitTest extends JUnit4CacheTestCase {
   }
 
   private void executeQueriesForClientServerQueriesWithParams(SelectResults results,
-                                                              QueryService qService, Object[][] params, int[] expectedResults) {
+      QueryService qService, Object[][] params, int[] expectedResults) {
     for (int i = 0; i < queryString.length; i++) {
       try {
         logger.info("### Executing Query :" + queryString[i]);
