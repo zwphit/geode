@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -14,9 +15,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-geodeVersion = 1.0.0-incubating
-junitVersion = 4.12
-mockitocoreVersion = 1.10.19
-commonsExecVersion = 1.3
-awaitilityVersion = 1.7.0
-slf4jVersion = 1.7.22
+
+set -e
+
+current=`pwd`
+
+cd `dirname $0`
+
+. ./setEnv.sh
+
+cd $current
+
+#export GEODE_LOCATOR_PORT="${GEODE_LOCATOR_PORT:-10334}"
+# start a locator
+gfsh start locator --name=locator1 --mcast-port=0 --port=${GEODE_LOCATOR_PORT}
+
+# start 2 servers on a random available port
+for N in {1..2}
+do
+ gfsh start server --locators=localhost[${GEODE_LOCATOR_PORT}] --name=server$N  --server-port=0 --mcast-port=0
+done
+
+# create a region using GFSH
+gfsh -e "connect --locator=localhost[${GEODE_LOCATOR_PORT}]" -e "create region --name=myRegion --type=PARTITION"
+
+gfsh -e "connect --locator=localhost[${GEODE_LOCATOR_PORT}]" -e "list members"
+
+exit 0
+

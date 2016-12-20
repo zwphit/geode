@@ -14,9 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-rootProject.name = 'geode-examples'
+package org.apache.geode.examples.partitioned;
 
-include 'replicated'
-include 'partitioned'
-include 'utils'
+import org.apache.geode.cache.client.ClientCache;
 
+public class Consumer extends BaseClient {
+
+  public static void main(String[] args) {
+    new Consumer().countEntriesOnServer();
+  }
+
+  public Consumer() {
+  }
+
+  public Consumer(ClientCache clientCache) {
+    this.clientCache = clientCache;
+  }
+
+  public int countEntriesOnServer() {
+    int size = getRegion().keySetOnServer().size();
+    logger.info(String.format("Done. %d entries available on the server(s).", size));
+    return size;
+  }
+
+}

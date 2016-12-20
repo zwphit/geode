@@ -14,9 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-rootProject.name = 'geode-examples'
+package org.apache.geode.examples.partitioned;
 
-include 'replicated'
-include 'partitioned'
-include 'utils'
+import org.apache.geode.cache.client.ClientCache;
 
+public class Producer extends BaseClient {
+
+  public static void main(String[] args) {
+    new Producer().populateRegion();
+  }
+
+  public Producer() {
+  }
+
+  public Producer(ClientCache clientCache) {
+    this.clientCache = clientCache;
+  }
+
+  public void populateRegion() {
+    for (int i=0; i < NUM_ENTRIES; i++) {
+      getRegion().put(i, "value" + i);
+    }
+    logger.info("Done. Inserted " + NUM_ENTRIES + " entries.");
+  }
+}

@@ -38,7 +38,7 @@ The producer puts 50 entries into the replicated region. The consumer prints the
         ...
         INFO: Done. 50 entries available on the server(s).
 
-6. Shutdown the system:
+6. Shut down the system:
 
         $ scripts/stopAll.sh
 

@@ -34,6 +34,7 @@ subprojects {
         testCompile "org.mockito:mockito-core:$mockitocoreVersion"
         compile "org.apache.commons:commons-exec:$commonsExecVersion"
         compile "com.jayway.awaitility:awaitility:$awaitilityVersion"
+        runtime "org.slf4j:slf4j-log4j12:$slf4jVersion"
     }
 
     task run(type: JavaExec) {
