@@ -725,16 +725,14 @@ public class MiscellaneousCommands implements CommandMarker {
       ExportLogsCacheWriter cacheWriter =
           (ExportLogsCacheWriter) region.getAttributes().getCacheWriter();
 
-      // TODO: Make this work for locators as well
-      Set<DistributedMember> targetServers = CliUtil.findMembers(groups, memberIds);
+      Set<DistributedMember> targetMembers = CliUtil.findMembersIncludingLocators(groups, memberIds);
       Logger logger = LogService.getLogger();
 
       Map<String, Path> zipFilesFromMembers = new HashMap<>();
-      for (DistributedMember server : targetServers) {
+      for (DistributedMember server : targetMembers) {
         cacheWriter.startFile(server.getName());
 
-        CliUtil
-            .executeFunction(new ExportLogsFunction(),
+        CliUtil.executeFunction(new ExportLogsFunction(),
                 new ExportLogsFunction.Args(start, end, logLevel, onlyLogLevel), server)
             .getResult();
         Path zipFile = cacheWriter.endFile();
