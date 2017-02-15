@@ -46,7 +46,9 @@ public class ExportLogsFunctionTest {
   @Rule
   public RestoreSystemProperties restoreSystemProperties = new RestoreSystemProperties();
 
-  private ServerStarterRule serverStarterRule;
+  @Rule
+  public ServerStarterRule serverStarterRule = new ServerStarterRule();
+
   private File serverWorkingDir;
 
   @Before
@@ -54,7 +56,6 @@ public class ExportLogsFunctionTest {
     serverWorkingDir = temporaryFolder.newFolder("serverWorkingDir");
     System.setProperty("user.dir", serverWorkingDir.getCanonicalPath());
 
-    serverStarterRule = new ServerStarterRule(new Properties());
     serverStarterRule.startServer();
   }
 
@@ -91,6 +92,16 @@ public class ExportLogsFunctionTest {
 
     Cache cache = GemFireCacheImpl.getInstance();
     assertThat(cache.getRegion(ExportLogsFunction.EXPORT_LOGS_REGION)).isNotNull();
+  }
+
+
+  @Test
+  public void argsCorrectlyBuildsLogLevelFilter() {
+    ExportLogsFunction.Args args = new ExportLogsFunction.Args(null, null, "info", false);
+
+    assertThat(args.getPermittedLogLevels()).contains("info");
+    assertThat(args.getPermittedLogLevels()).contains("error");
+    assertThat(args.getPermittedLogLevels()).doesNotContain("fine");
   }
 
   private static class CapturingResultSender implements ResultSender {

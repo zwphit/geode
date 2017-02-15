@@ -16,16 +16,19 @@
 
 package org.apache.geode.management.internal.cli.commands;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.geode.cache.AttributesFactory;
 import org.apache.geode.cache.DataPolicy;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.RegionShortcut;
 import org.apache.geode.cache.Scope;
+import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.internal.cache.GemFireCacheImpl;
 import org.apache.geode.internal.cache.InternalRegionArguments;
 import org.apache.geode.internal.logging.LogService;
@@ -34,25 +37,39 @@ import org.apache.geode.management.internal.cli.result.CommandResult;
 import org.apache.geode.management.internal.configuration.EventTestCacheWriter;
 import org.apache.geode.management.internal.configuration.domain.Configuration;
 import org.apache.geode.management.internal.configuration.utils.ZipUtils;
+import org.apache.geode.test.dunit.IgnoredException;
 import org.apache.geode.test.dunit.rules.GfshShellConnectionRule;
 import org.apache.geode.test.dunit.rules.Locator;
 import org.apache.geode.test.dunit.rules.LocatorServerStartupRule;
+import org.apache.geode.test.dunit.rules.Member;
 import org.apache.geode.test.dunit.rules.Server;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 
 public class ExportLogsDUnit {
+
+  private static final String ERROR_LOG_PREFIX = "[IGNORE]";
+
   @Rule
   public LocatorServerStartupRule lsRule = new LocatorServerStartupRule();
 
@@ -60,51 +77,77 @@ public class ExportLogsDUnit {
   public GfshShellConnectionRule gfshConnector = new GfshShellConnectionRule();
 
   private Locator locator;
+  private Server server1;
+  private Server server2;
 
-  @Test
-  public void testExport() throws Exception {
-    locator = lsRule.startLocatorVM(0);
+  Map<Member, List<LogLine>> expectedMessages;
 
-    Server server = lsRule.startServerVM(1, locator.getPort());
-    Server server2 = lsRule.startServerVM(2, locator.getPort());
+  @Before
+  public void setup() throws Exception {
+    Properties properties = new Properties();
+    properties.setProperty(ConfigurationProperties.LOG_LEVEL, "debug");
 
-    gfshConnector.connectAndVerify(locator);
+    locator = lsRule.startLocatorVM(0, properties);
+    server1 = lsRule.startServerVM(1, properties, locator.getPort());
+    server2 = lsRule.startServerVM(2, properties, locator.getPort());
 
-    CommandResult result = gfshConnector.executeAndVerifyCommand(
-        "export logs  --dir=" + lsRule.getTempFolder().getRoot().getCanonicalPath());
+    IgnoredException.addIgnoredException(ERROR_LOG_PREFIX);
 
-    File locatorWorkingDir = locator.getWorkingDir();
-    List<File> zipFilesInDir = Stream.of(locatorWorkingDir.listFiles())
-        .filter(f -> f.getName().endsWith(".zip")).collect(toList());
+    expectedMessages = new HashMap<>();
+    expectedMessages.put(locator, listOfLogLines(locator.getName(), "info", "error", "debug"));
+    expectedMessages.put(server1, listOfLogLines(server1.getName(), "info", "error", "debug"));
+    expectedMessages.put(server2, listOfLogLines(server2.getName(), "info", "error", "debug"));
 
-    assertThat(zipFilesInDir).hasSize(1);
+    // log the messages in each of the members
+    for (Member member : expectedMessages.keySet()) {
+      List<LogLine> logLines = expectedMessages.get(member);
 
-    File unzippedLogFileDir = lsRule.getTempFolder().newFolder("unzippedLogs");
-    ZipUtils.unzip(zipFilesInDir.get(0).getCanonicalPath(), unzippedLogFileDir.getCanonicalPath());
-
-    Set<File> actualDirs =
-        Stream.of(unzippedLogFileDir.listFiles()).filter(File::isDirectory).collect(toSet());
-
-    assertThat(actualDirs).hasSize(2);
-
-    Set<String> expectedDirNames = Stream.of(server.getName(), server2.getName()).collect(toSet());
-    Set<String> actualDirNames = actualDirs.stream().map(File::getName).collect(toSet());
-
-    assertThat(actualDirNames).isEqualTo(expectedDirNames);
-
-    System.out.println("Unzipped artifacts:");
-    for (File dir : actualDirs) {
-      Set<String> fileNamesInDir = Stream.of(dir.listFiles()).map(File::getName).collect(toSet());
-
-      System.out.println(dir.getCanonicalPath() + " : " + fileNamesInDir);
-      assertThat(fileNamesInDir).contains(dir.getName() + ".log");
-      assertThat(fileNamesInDir).hasSize(1);
-      // TODO: Verify contents of files. (Write tests for logs containing multiple log levels,
-      // where some lines get through a filter and some do not
+      member.invoke(() -> {
+        Logger logger = LogService.getLogger();
+        logLines.forEach((LogLine logLine) -> logLine.writeLog(logger));
+      });
     }
 
+    gfshConnector.connectAndVerify(locator);
+  }
+
+  @Test
+  public void testExportWithThresholdLogLevelFilter() throws Exception {
+
+    CommandResult result = gfshConnector.executeAndVerifyCommand(
+        "export logs --log-level=info --only-log-level=false --dir=" + lsRule.getTempFolder()
+            .getRoot().getCanonicalPath());
+
+    File unzippedLogFileDir = unzipExportedLogs();
+    Set<String> acceptedLogLevels = Stream.of("info", "error").collect(toSet());
+    verifyZipFileContents(unzippedLogFileDir, acceptedLogLevels);
+
+  }
+
+
+  @Test
+  public void testExportWithExactLogLevelFilter() throws Exception {
+    CommandResult result = gfshConnector.executeAndVerifyCommand(
+        "export logs --log-level=info --only-log-level=true --dir=" + lsRule.getTempFolder()
+            .getRoot().getCanonicalPath());
+
+    File unzippedLogFileDir = unzipExportedLogs();
+
+    Set<String> acceptedLogLevels = Stream.of("info").collect(toSet());
+    verifyZipFileContents(unzippedLogFileDir, acceptedLogLevels);
+  }
+
+  @Test
+  public void testExportWithNoFilters() throws Exception {
+    CommandResult result = gfshConnector.executeAndVerifyCommand(
+        "export logs  --dir=" + "someDir" /*  lsRule.getTempFolder().getRoot().getCanonicalPath() */);
+
+    File unzippedLogFileDir = unzipExportedLogs();
+    Set<String> acceptedLogLevels = Stream.of("info", "error", "debug").collect(toSet());
+    verifyZipFileContents(unzippedLogFileDir, acceptedLogLevels);
+
     // Ensure export logs region does not accumulate data
-    server.invoke(() -> {
+    server1.invoke(() -> {
       Region exportLogsRegion = ExportLogsFunction.createOrGetExistingExportLogsRegion(false);
       assertThat(exportLogsRegion.size()).isEqualTo(0);
     });
@@ -118,5 +161,114 @@ public class ExportLogsDUnit {
     });
   }
 
+  public void verifyZipFileContents(File unzippedLogFileDir, Set<String> acceptedLogLevels)
+      throws IOException {
+    Set<File> dirsFromZipFile =
+        Stream.of(unzippedLogFileDir.listFiles()).filter(File::isDirectory).collect(toSet());
+    assertThat(dirsFromZipFile).hasSize(expectedMessages.keySet().size());
 
+    Set<String> expectedDirNames =
+        expectedMessages.keySet().stream().map(Member::getName).collect(toSet());
+    Set<String> actualDirNames = dirsFromZipFile.stream().map(File::getName).collect(toSet());
+    assertThat(actualDirNames).isEqualTo(expectedDirNames);
+
+    System.out.println("Unzipped artifacts:");
+    for (File dir : dirsFromZipFile) {
+      verifyLogFileContents(acceptedLogLevels, dir);
+    }
+  }
+
+  public void verifyLogFileContents(Set<String> acceptedLogLevels, File dirForMember)
+      throws IOException {
+
+    String memberName = dirForMember.getName();
+    Member member = expectedMessages.keySet().stream()
+        .filter((Member aMember) -> aMember.getName().equals(memberName))
+        .findFirst()
+        .get();
+
+    assertThat(member).isNotNull();
+
+    Set<String> fileNamesInDir =
+        Stream.of(dirForMember.listFiles()).map(File::getName).collect(toSet());
+
+    System.out.println(dirForMember.getCanonicalPath() + " : " + fileNamesInDir);
+
+    File logFileForMember = new File(dirForMember, memberName + ".log");
+    assertThat(logFileForMember).exists();
+    assertThat(fileNamesInDir).hasSize(1);
+
+    String logFileContents =
+        FileUtils.readLines(logFileForMember, Charset.defaultCharset()).stream()
+            .collect(joining("\n"));
+
+    for (LogLine logLine : expectedMessages.get(member)) {
+      boolean shouldExpectLogLine = acceptedLogLevels.contains(logLine.level);
+
+      if (shouldExpectLogLine) {
+        assertThat(logFileContents).contains(logLine.getMessage());
+      } else {
+        assertThat(logFileContents).doesNotContain(logLine.getMessage());
+      }
+    }
+
+  }
+
+  private File unzipExportedLogs() throws IOException {
+    File locatorWorkingDir = locator.getWorkingDir();
+    List<File> filesInDir = Stream.of(locatorWorkingDir.listFiles()).collect(toList());
+    assertThat(filesInDir).isNotEmpty();
+
+
+    List<File> zipFilesInDir = Stream.of(locatorWorkingDir.listFiles())
+        .filter(f -> f.getName().endsWith(".zip")).collect(toList());
+    assertThat(zipFilesInDir).describedAs(filesInDir.stream().map(File::getAbsolutePath).collect(joining(","))).hasSize(1);
+
+    File unzippedLogFileDir = lsRule.getTempFolder().newFolder("unzippedLogs");
+    ZipUtils.unzip(zipFilesInDir.get(0).getCanonicalPath(), unzippedLogFileDir.getCanonicalPath());
+    return unzippedLogFileDir;
+  }
+
+  private List<LogLine> listOfLogLines(String memberName, String... levels) {
+    return Stream.of(levels).map(level -> new LogLine(level, memberName)).collect(toList());
+  }
+
+
+  public static class LogLine implements Serializable {
+    String level;
+    String message;
+
+    public LogLine(String level, String memberName) {
+      this.level = level;
+      this.message = buildMessage(memberName);
+    }
+
+    public String getMessage() {
+      return message;
+    }
+
+    private String buildMessage(String memberName) {
+      StringBuilder stringBuilder = new StringBuilder();
+      if (Objects.equals(level, "error")) {
+        stringBuilder.append(ERROR_LOG_PREFIX);
+      }
+      stringBuilder.append(level);
+
+      return stringBuilder.append(memberName).toString();
+    }
+
+
+    public void writeLog(Logger logger) {
+      switch (this.level) {
+        case "info":
+          logger.info(getMessage());
+          break;
+        case "error":
+          logger.error(getMessage());
+          break;
+        case "debug":
+          logger.debug(getMessage());
+      }
+    }
+  }
 }

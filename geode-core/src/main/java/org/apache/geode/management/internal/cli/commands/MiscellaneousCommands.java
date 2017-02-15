@@ -719,6 +719,8 @@ public class MiscellaneousCommands implements CommandMarker {
           unspecifiedDefaultValue = CliMetaData.ANNOTATION_NULL_VALUE,
           help = CliStrings.EXPORT_LOGS__ENDTIME__HELP) String end) {
     Result result = null;
+    Logger logger = LogService.getLogger();
+
     try {
       GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
       Region region = ExportLogsFunction.createOrGetExistingExportLogsRegion(true);
@@ -726,7 +728,6 @@ public class MiscellaneousCommands implements CommandMarker {
           (ExportLogsCacheWriter) region.getAttributes().getCacheWriter();
 
       Set<DistributedMember> targetMembers = CliUtil.findMembersIncludingLocators(groups, memberIds);
-      Logger logger = LogService.getLogger();
 
       Map<String, Path> zipFilesFromMembers = new HashMap<>();
       for (DistributedMember server : targetMembers) {
@@ -750,14 +751,15 @@ public class MiscellaneousCommands implements CommandMarker {
         FileUtils.deleteQuietly(zipFile.toFile());
       }
 
-      Path exportedLogsZipFile = Paths.get("exportedLogs[" + System.currentTimeMillis() + "].zip");
+      Path workingDir = Paths.get(System.getProperty("user.dir"));
+      Path exportedLogsZipFile = workingDir.resolve("exportedLogs[" + System.currentTimeMillis() + "].zip").toAbsolutePath();
 
       logger.info("Zipping into: " + exportedLogsZipFile.toString());
       ZipUtils.zipDirectory(exportedLogsDir, exportedLogsZipFile);
       FileUtils.deleteDirectory(tempDir.toFile());
-
+      result = ResultBuilder.createInfoResult("File exported to: " + exportedLogsZipFile.toString());
     } catch (Exception ex) {
-      LogWrapper.getInstance().fine(ex.getMessage());
+      logger.error(ex, ex);
       result = ResultBuilder.createUserErrorResult(ex.getMessage());
     }
 
@@ -765,58 +767,7 @@ public class MiscellaneousCommands implements CommandMarker {
     return result;
   }
 
-  Result mergeLogs(List<String> logsToMerge) {
-    // create a new process for merging
-    LogWrapper.getInstance().fine("Exporting logs merging logs" + logsToMerge.size());
-    if (logsToMerge.size() > 1) {
-      List<String> commandList = new ArrayList<String>();
-      commandList.add(System.getProperty("java.home") + File.separatorChar + "bin"
-          + File.separatorChar + "java");
-      commandList.add("-classpath");
-      commandList.add(System.getProperty("java.class.path", "."));
-      commandList.add(MergeLogs.class.getName());
 
-      commandList
-          .add(logsToMerge.get(0).substring(0, logsToMerge.get(0).lastIndexOf(File.separator) + 1));
-
-      ProcessBuilder procBuilder = new ProcessBuilder(commandList);
-      StringBuilder output = new StringBuilder();
-      String errorString = new String();
-      try {
-        LogWrapper.getInstance().fine("Exporting logs now merging logs");
-        Process mergeProcess = procBuilder.redirectErrorStream(true).start();
-
-        mergeProcess.waitFor();
-
-        InputStream inputStream = mergeProcess.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-        String line = null;
-
-        while ((line = br.readLine()) != null) {
-          output.append(line).append(GfshParser.LINE_SEPARATOR);
-        }
-        mergeProcess.destroy();
-      } catch (Exception e) {
-        LogWrapper.getInstance().fine(e.getMessage());
-        return ResultBuilder.createUserErrorResult(
-            CliStrings.EXPORT_LOGS__MSG__FUNCTION_EXCEPTION + "Could not merge");
-      } finally {
-        if (errorString != null) {
-          output.append(errorString).append(GfshParser.LINE_SEPARATOR);
-          LogWrapper.getInstance().fine("Exporting logs after merging logs " + output);
-        }
-      }
-      if (output.toString().contains("Sucessfully merged logs")) {
-        LogWrapper.getInstance().fine("Exporting logs Sucessfully merged logs");
-        return ResultBuilder.createInfoResult("Successfully merged");
-      } else {
-        LogWrapper.getInstance().fine("Could not merge");
-        return ResultBuilder.createUserErrorResult(
-            CliStrings.EXPORT_LOGS__MSG__FUNCTION_EXCEPTION + "Could not merge");
-      }
-    }
-    return ResultBuilder.createInfoResult("Only one log file, nothing to merge");
-  }
 
   /****
    * Current implementation supports writing it to a file and returning the location of the file

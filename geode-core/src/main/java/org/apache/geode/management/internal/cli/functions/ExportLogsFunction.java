@@ -160,7 +160,7 @@ public class ExportLogsFunction implements Function, InternalEntity {
         int logLevelCode = LogWriterImpl.levelNameToCode(level);
         int logLevelCodeThreshold = LogWriterImpl.levelNameToCode(logLevel);
 
-        return logLevelCode <= logLevelCodeThreshold;
+        return logLevelCode >= logLevelCodeThreshold;
       }).collect(toSet());
     }
 

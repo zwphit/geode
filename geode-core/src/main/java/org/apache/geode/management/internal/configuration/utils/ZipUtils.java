@@ -41,6 +41,11 @@ import org.apache.commons.io.IOUtils;
 public class ZipUtils {
 
   public static void zipDirectory(Path sourceDirectory, Path targetFile) throws IOException {
+    Path parentDir = targetFile.getParent();
+    if (parentDir != null && !parentDir.toFile().exists()) {
+      parentDir.toFile().mkdirs();
+    }
+
     try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(targetFile))) {
       Files.walk(sourceDirectory).filter(path -> !Files.isDirectory(path)).forEach(path -> {
         ZipEntry zipEntry = new ZipEntry(sourceDirectory.relativize(path).toString());
