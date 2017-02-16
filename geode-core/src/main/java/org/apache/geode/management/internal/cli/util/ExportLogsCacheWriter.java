@@ -39,7 +39,8 @@ public class ExportLogsCacheWriter extends CacheWriterAdapter implements Seriali
   @Override
   public void beforeCreate(EntryEvent event) throws CacheWriterException {
     if (currentOutputStream == null) {
-      throw new IllegalStateException("No file is open for writing.");
+      //If no OutputStream is open, then this file chunk is intended for a different locator
+      return;
     }
 
     try {
