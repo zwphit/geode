@@ -21,21 +21,12 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.io.FileUtils;
-import org.apache.geode.cache.AttributesFactory;
-import org.apache.geode.cache.DataPolicy;
 import org.apache.geode.cache.Region;
-import org.apache.geode.cache.RegionShortcut;
-import org.apache.geode.cache.Scope;
 import org.apache.geode.distributed.ConfigurationProperties;
-import org.apache.geode.internal.cache.GemFireCacheImpl;
-import org.apache.geode.internal.cache.InternalRegionArguments;
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.management.internal.cli.functions.ExportLogsFunction;
 import org.apache.geode.management.internal.cli.result.CommandResult;
-import org.apache.geode.management.internal.configuration.EventTestCacheWriter;
-import org.apache.geode.management.internal.configuration.domain.Configuration;
 import org.apache.geode.management.internal.configuration.utils.ZipUtils;
 import org.apache.geode.test.dunit.IgnoredException;
 import org.apache.geode.test.dunit.rules.GfshShellConnectionRule;
@@ -44,7 +35,6 @@ import org.apache.geode.test.dunit.rules.LocatorServerStartupRule;
 import org.apache.geode.test.dunit.rules.Member;
 import org.apache.geode.test.dunit.rules.Server;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.Appender;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,16 +43,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 
@@ -148,18 +134,19 @@ public class ExportLogsDUnit {
 
     // Ensure export logs region does not accumulate data
     server1.invoke(() -> {
-      Region exportLogsRegion = ExportLogsFunction.createOrGetExistingExportLogsRegion(false);
+      Region exportLogsRegion = ExportLogsFunction.createOrGetExistingExportLogsRegion();
       assertThat(exportLogsRegion.size()).isEqualTo(0);
     });
     server2.invoke(() -> {
-      Region exportLogsRegion = ExportLogsFunction.createOrGetExistingExportLogsRegion(false);
+      Region exportLogsRegion = ExportLogsFunction.createOrGetExistingExportLogsRegion();
       assertThat(exportLogsRegion.size()).isEqualTo(0);
     });
     locator.invoke(() -> {
-      Region exportLogsRegion = ExportLogsFunction.createOrGetExistingExportLogsRegion(true);
+      Region exportLogsRegion = ExportLogsFunction.createOrGetExistingExportLogsRegion();
       assertThat(exportLogsRegion.size()).isEqualTo(0);
     });
   }
+
 
   public void verifyZipFileContents(File unzippedLogFileDir, Set<String> acceptedLogLevels)
       throws IOException {

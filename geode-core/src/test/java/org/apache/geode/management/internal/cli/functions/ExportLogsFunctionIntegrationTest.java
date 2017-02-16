@@ -18,8 +18,6 @@ package org.apache.geode.management.internal.cli.functions;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.geode.cache.Cache;
@@ -28,17 +26,19 @@ import org.apache.geode.cache.execute.ResultSender;
 import org.apache.geode.internal.cache.GemFireCacheImpl;
 import org.apache.geode.internal.cache.execute.FunctionContextImpl;
 import org.apache.geode.test.dunit.rules.ServerStarterRule;
+import org.apache.geode.test.junit.categories.IntegrationTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
-import java.util.Properties;
 
-public class ExportLogsFunctionTest {
+@Category(IntegrationTest.class)
+public class ExportLogsFunctionIntegrationTest {
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -65,7 +65,7 @@ public class ExportLogsFunctionTest {
   }
 
   @Test
-  public void execute() throws Throwable {
+  public void exportLogsFunctionDoesNotBlowUp() throws Throwable {
     File logFile1 = new File(serverWorkingDir, "server1.log");
     FileUtils.writeStringToFile(logFile1, "some log for server1 \n some other log line");
     File logFile2 = new File(serverWorkingDir, "server2.log");
@@ -88,15 +88,22 @@ public class ExportLogsFunctionTest {
 
   @Test
   public void createOrGetExistingExportLogsRegionDoesNotBlowUp() throws Exception {
-    ExportLogsFunction.createOrGetExistingExportLogsRegion(false);
+    ExportLogsFunction.createOrGetExistingExportLogsRegion();
 
     Cache cache = GemFireCacheImpl.getInstance();
     assertThat(cache.getRegion(ExportLogsFunction.EXPORT_LOGS_REGION)).isNotNull();
   }
 
+  @Test
+  public void isLocatorReturnsFalseForServer() {
+    GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
+
+    assertThat(ExportLogsFunction.isLocator(cache)).isFalse();
+  }
+
 
   @Test
-  public void argsCorrectlyBuildsLogLevelFilter() {
+  public void argsCorrectlyBuildALogLevelFilter() {
     ExportLogsFunction.Args args = new ExportLogsFunction.Args(null, null, "info", false);
 
     assertThat(args.getPermittedLogLevels()).contains("info");

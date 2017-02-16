@@ -723,7 +723,8 @@ public class MiscellaneousCommands implements CommandMarker {
 
     try {
       GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
-      Region region = ExportLogsFunction.createOrGetExistingExportLogsRegion(true);
+      Region region = ExportLogsFunction.createOrGetExistingExportLogsRegion();
+
       ExportLogsCacheWriter cacheWriter =
           (ExportLogsCacheWriter) region.getAttributes().getCacheWriter();
 

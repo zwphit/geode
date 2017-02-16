@@ -17,6 +17,7 @@
 package org.apache.geode.management.internal.cli.functions;
 
 import static java.util.stream.Collectors.toSet;
+import static org.apache.geode.distributed.internal.DistributionManager.LOCATOR_DM_TYPE;
 
 import org.apache.geode.cache.AttributesFactory;
 import org.apache.geode.cache.DataPolicy;
@@ -32,9 +33,9 @@ import org.apache.geode.internal.logging.InternalLogWriter;
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.internal.logging.LogWriterImpl;
 import org.apache.geode.management.internal.cli.commands.MiscellaneousCommands;
+import org.apache.geode.management.internal.cli.util.ExportLogsCacheWriter;
 import org.apache.geode.management.internal.cli.util.LogExporter;
 import org.apache.geode.management.internal.cli.util.LogFilter;
-import org.apache.geode.management.internal.cli.util.ExportLogsCacheWriter;
 import org.apache.geode.management.internal.configuration.domain.Configuration;
 import org.apache.logging.log4j.Logger;
 
@@ -66,7 +67,8 @@ public class ExportLogsFunction implements Function, InternalEntity {
 
       String memberId = cache.getDistributedSystem().getMemberId();
       LOGGER.info("ExportLogsFunction started for member {}", memberId);
-      Region exportLogsRegion = createOrGetExistingExportLogsRegion(false);
+
+      Region exportLogsRegion = createOrGetExistingExportLogsRegion();
 
       Args args = (Args) context.getArguments();
       LogFilter logFilter =
@@ -97,7 +99,11 @@ public class ExportLogsFunction implements Function, InternalEntity {
     }
   }
 
-  public static Region createOrGetExistingExportLogsRegion(boolean isLocator)
+  protected static boolean isLocator(GemFireCacheImpl cache) {
+    return cache.getMyId().getVmKind() == LOCATOR_DM_TYPE;
+  }
+
+  public static Region createOrGetExistingExportLogsRegion()
       throws IOException, ClassNotFoundException {
     GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
 
@@ -108,7 +114,7 @@ public class ExportLogsFunction implements Function, InternalEntity {
       regionAttrsFactory.setDataPolicy(DataPolicy.EMPTY);
       regionAttrsFactory.setScope(Scope.DISTRIBUTED_ACK);
 
-      if (isLocator) {
+      if (isLocator(cache)) {
         regionAttrsFactory.setCacheWriter(new ExportLogsCacheWriter());
       }
       InternalRegionArguments internalArgs = new InternalRegionArguments();
