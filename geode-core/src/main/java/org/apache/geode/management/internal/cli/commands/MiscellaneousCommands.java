@@ -723,21 +723,24 @@ public class MiscellaneousCommands implements CommandMarker {
 
     try {
       GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
-      Region region = ExportLogsFunction.createOrGetExistingExportLogsRegion();
-
-      ExportLogsCacheWriter cacheWriter =
-          (ExportLogsCacheWriter) region.getAttributes().getCacheWriter();
 
       Set<DistributedMember> targetMembers = CliUtil.findMembersIncludingLocators(groups, memberIds);
 
+
       Map<String, Path> zipFilesFromMembers = new HashMap<>();
       for (DistributedMember server : targetMembers) {
+        Region region = ExportLogsFunction.createOrGetExistingExportLogsRegion(true);
+
+        ExportLogsCacheWriter cacheWriter =
+            (ExportLogsCacheWriter) region.getAttributes().getCacheWriter();
+
         cacheWriter.startFile(server.getName());
 
         CliUtil.executeFunction(new ExportLogsFunction(),
                 new ExportLogsFunction.Args(start, end, logLevel, onlyLogLevel), server)
             .getResult();
         Path zipFile = cacheWriter.endFile();
+        ExportLogsFunction.destroyExportLogsRegion();
         logger.info("Recieved zip file from member " + server.getId() + ": " + zipFile.toString());
         zipFilesFromMembers.put(server.getId(), zipFile);
       }
@@ -760,8 +763,11 @@ public class MiscellaneousCommands implements CommandMarker {
       FileUtils.deleteDirectory(tempDir.toFile());
       result = ResultBuilder.createInfoResult("File exported to: " + exportedLogsZipFile.toString());
     } catch (Exception ex) {
+      ex.printStackTrace();
       logger.error(ex, ex);
       result = ResultBuilder.createUserErrorResult(ex.getMessage());
+    } finally {
+      ExportLogsFunction.destroyExportLogsRegion();
     }
 
     LogWrapper.getInstance().fine("Exporting logs returning =" + result);

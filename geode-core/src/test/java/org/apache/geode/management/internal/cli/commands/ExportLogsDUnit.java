@@ -19,14 +19,19 @@ package org.apache.geode.management.internal.cli.commands;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.geode.management.internal.cli.commands.MiscellaneousCommands.FORMAT;
+import static org.apache.geode.management.internal.cli.commands.MiscellaneousCommands.ONLY_DATE_FORMAT;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.Region;
 import org.apache.geode.distributed.ConfigurationProperties;
+import org.apache.geode.internal.cache.GemFireCacheImpl;
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.management.internal.cli.functions.ExportLogsFunction;
 import org.apache.geode.management.internal.cli.result.CommandResult;
+import org.apache.geode.management.internal.cli.util.CommandStringBuilder;
 import org.apache.geode.management.internal.configuration.utils.ZipUtils;
 import org.apache.geode.test.dunit.IgnoredException;
 import org.apache.geode.test.dunit.rules.GfshShellConnectionRule;
@@ -43,17 +48,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 
 public class ExportLogsDUnit {
-
   private static final String ERROR_LOG_PREFIX = "[IGNORE]";
 
   @Rule
@@ -66,7 +75,7 @@ public class ExportLogsDUnit {
   private Server server1;
   private Server server2;
 
-  Map<Member, List<LogLine>> expectedMessages;
+  private Map<Member, List<LogLine>> defaultExpectedMessages;
 
   @Before
   public void setup() throws Exception {
@@ -79,14 +88,14 @@ public class ExportLogsDUnit {
 
     IgnoredException.addIgnoredException(ERROR_LOG_PREFIX);
 
-    expectedMessages = new HashMap<>();
-    expectedMessages.put(locator, listOfLogLines(locator.getName(), "info", "error", "debug"));
-    expectedMessages.put(server1, listOfLogLines(server1.getName(), "info", "error", "debug"));
-    expectedMessages.put(server2, listOfLogLines(server2.getName(), "info", "error", "debug"));
+    defaultExpectedMessages = new HashMap<>();
+    defaultExpectedMessages.put(locator, listOfLogLines(locator, "info", "error", "debug"));
+    defaultExpectedMessages.put(server1, listOfLogLines(server1, "info", "error", "debug"));
+    defaultExpectedMessages.put(server2, listOfLogLines(server2, "info", "error", "debug"));
 
     // log the messages in each of the members
-    for (Member member : expectedMessages.keySet()) {
-      List<LogLine> logLines = expectedMessages.get(member);
+    for (Member member : defaultExpectedMessages.keySet()) {
+      List<LogLine> logLines = defaultExpectedMessages.get(member);
 
       member.invoke(() -> {
         Logger logger = LogService.getLogger();
@@ -98,18 +107,42 @@ public class ExportLogsDUnit {
   }
 
   @Test
+  public void testExportWithStartDateFiltering() throws Exception {
+    ZonedDateTime cutoffTime = LocalDateTime.now().atZone(ZoneId.systemDefault());
+
+    String messageAfterCutoffTime = "[this message should not show up since it is after cutoffTime]";
+    LogLine logLineAfterCutoffTime = new LogLine(messageAfterCutoffTime, "info",  true);
+    server1.invoke(() -> {
+      Logger logger = LogService.getLogger();
+      logLineAfterCutoffTime.writeLog(logger);
+    });
+
+    DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern(FORMAT);
+    String cutoffTimeString = dateTimeFormatter.format(cutoffTime);
+
+    CommandStringBuilder commandStringBuilder = new CommandStringBuilder("export logs");
+    commandStringBuilder.addOption("end-time", cutoffTimeString);
+    commandStringBuilder.addOption("log-level", "debug");
+    commandStringBuilder.addOption("dir", "someDir");
+
+    gfshConnector.executeAndVerifyCommand(commandStringBuilder.toString());
+
+    defaultExpectedMessages.get(server1).add(logLineAfterCutoffTime);
+    Set<String> acceptedLogLevels = Stream.of("info", "error", "debug").collect(toSet());
+    verifyZipFileContents(acceptedLogLevels);
+  }
+
+  @Test
   public void testExportWithThresholdLogLevelFilter() throws Exception {
 
     CommandResult result = gfshConnector.executeAndVerifyCommand(
         "export logs --log-level=info --only-log-level=false --dir=" + lsRule.getTempFolder()
             .getRoot().getCanonicalPath());
 
-    File unzippedLogFileDir = unzipExportedLogs();
     Set<String> acceptedLogLevels = Stream.of("info", "error").collect(toSet());
-    verifyZipFileContents(unzippedLogFileDir, acceptedLogLevels);
+    verifyZipFileContents(acceptedLogLevels);
 
   }
-
 
   @Test
   public void testExportWithExactLogLevelFilter() throws Exception {
@@ -117,10 +150,9 @@ public class ExportLogsDUnit {
         "export logs --log-level=info --only-log-level=true --dir=" + lsRule.getTempFolder()
             .getRoot().getCanonicalPath());
 
-    File unzippedLogFileDir = unzipExportedLogs();
 
     Set<String> acceptedLogLevels = Stream.of("info").collect(toSet());
-    verifyZipFileContents(unzippedLogFileDir, acceptedLogLevels);
+    verifyZipFileContents(acceptedLogLevels);
   }
 
   @Test
@@ -128,34 +160,53 @@ public class ExportLogsDUnit {
     CommandResult result = gfshConnector.executeAndVerifyCommand(
         "export logs  --dir=" + "someDir" /*  lsRule.getTempFolder().getRoot().getCanonicalPath() */);
 
-    File unzippedLogFileDir = unzipExportedLogs();
     Set<String> acceptedLogLevels = Stream.of("info", "error", "debug").collect(toSet());
-    verifyZipFileContents(unzippedLogFileDir, acceptedLogLevels);
+    verifyZipFileContents(acceptedLogLevels);
 
-    // Ensure export logs region does not accumulate data
-    server1.invoke(() -> {
-      Region exportLogsRegion = ExportLogsFunction.createOrGetExistingExportLogsRegion();
-      assertThat(exportLogsRegion.size()).isEqualTo(0);
-    });
-    server2.invoke(() -> {
-      Region exportLogsRegion = ExportLogsFunction.createOrGetExistingExportLogsRegion();
-      assertThat(exportLogsRegion.size()).isEqualTo(0);
-    });
-    locator.invoke(() -> {
-      Region exportLogsRegion = ExportLogsFunction.createOrGetExistingExportLogsRegion();
-      assertThat(exportLogsRegion.size()).isEqualTo(0);
-    });
+    // Ensure export logs region gets cleaned up
+    server1.invoke(ExportLogsDUnit::verifyExportLogsRegionWasDestroyed);
+    server2.invoke(ExportLogsDUnit::verifyExportLogsRegionWasDestroyed);
+    locator.invoke(ExportLogsDUnit::verifyExportLogsRegionWasDestroyed);
   }
 
+@Test
+public void regionBehavesProperly() throws IOException, ClassNotFoundException {
+    locator.invoke(() -> {
+      ExportLogsFunction.createOrGetExistingExportLogsRegion(true);
+      Cache cache = GemFireCacheImpl.getInstance();
+      assertThat(cache.getRegion(ExportLogsFunction.EXPORT_LOGS_REGION)).isNotNull();
+    });
 
-  public void verifyZipFileContents(File unzippedLogFileDir, Set<String> acceptedLogLevels)
+    server1.invoke(() -> {
+      ExportLogsFunction.createOrGetExistingExportLogsRegion(false);
+      Cache cache = GemFireCacheImpl.getInstance();
+      assertThat(cache.getRegion(ExportLogsFunction.EXPORT_LOGS_REGION)).isNotNull();
+    });
+
+    locator.invoke(() -> {
+      ExportLogsFunction.destroyExportLogsRegion();
+
+      Cache cache = GemFireCacheImpl.getInstance();
+      assertThat(cache.getRegion(ExportLogsFunction.EXPORT_LOGS_REGION)).isNull();
+    });
+
+    server1.invoke(() -> {
+      Cache cache = GemFireCacheImpl.getInstance();
+      assertThat(cache.getRegion(ExportLogsFunction.EXPORT_LOGS_REGION)).isNull();
+    });
+}
+
+
+  public void verifyZipFileContents(Set<String> acceptedLogLevels)
       throws IOException {
+    File unzippedLogFileDir = unzipExportedLogs();
+
     Set<File> dirsFromZipFile =
         Stream.of(unzippedLogFileDir.listFiles()).filter(File::isDirectory).collect(toSet());
-    assertThat(dirsFromZipFile).hasSize(expectedMessages.keySet().size());
+    assertThat(dirsFromZipFile).hasSize(defaultExpectedMessages.keySet().size());
 
     Set<String> expectedDirNames =
-        expectedMessages.keySet().stream().map(Member::getName).collect(toSet());
+        defaultExpectedMessages.keySet().stream().map(Member::getName).collect(toSet());
     Set<String> actualDirNames = dirsFromZipFile.stream().map(File::getName).collect(toSet());
     assertThat(actualDirNames).isEqualTo(expectedDirNames);
 
@@ -169,7 +220,7 @@ public class ExportLogsDUnit {
       throws IOException {
 
     String memberName = dirForMember.getName();
-    Member member = expectedMessages.keySet().stream()
+    Member member = defaultExpectedMessages.keySet().stream()
         .filter((Member aMember) -> aMember.getName().equals(memberName))
         .findFirst()
         .get();
@@ -189,8 +240,8 @@ public class ExportLogsDUnit {
         FileUtils.readLines(logFileForMember, Charset.defaultCharset()).stream()
             .collect(joining("\n"));
 
-    for (LogLine logLine : expectedMessages.get(member)) {
-      boolean shouldExpectLogLine = acceptedLogLevels.contains(logLine.level);
+    for (LogLine logLine : defaultExpectedMessages.get(member)) {
+      boolean shouldExpectLogLine = acceptedLogLevels.contains(logLine.level) && !logLine.shouldBeIgnoredDueToTimestamp;
 
       if (shouldExpectLogLine) {
         assertThat(logFileContents).contains(logLine.getMessage());
@@ -216,18 +267,29 @@ public class ExportLogsDUnit {
     return unzippedLogFileDir;
   }
 
-  private List<LogLine> listOfLogLines(String memberName, String... levels) {
-    return Stream.of(levels).map(level -> new LogLine(level, memberName)).collect(toList());
+  private List<LogLine> listOfLogLines(Member member, String... levels) {
+    return Stream.of(levels).map(level -> new LogLine(member, level)).collect(toList());
   }
 
+  private static void verifyExportLogsRegionWasDestroyed() {
+    Cache cache = GemFireCacheImpl.getInstance();
+    assertThat(cache.getRegion(ExportLogsFunction.EXPORT_LOGS_REGION)).isNull();
+  }
 
   public static class LogLine implements Serializable {
     String level;
     String message;
+    boolean shouldBeIgnoredDueToTimestamp;
 
-    public LogLine(String level, String memberName) {
+    public LogLine(String message, String level, boolean shouldBeIgnoredDueToTimestamp) {
+      this.message = message;
       this.level = level;
-      this.message = buildMessage(memberName);
+      this.shouldBeIgnoredDueToTimestamp = shouldBeIgnoredDueToTimestamp;
+    }
+
+    public LogLine(Member member, String level) {
+      this.level = level;
+      this.message = buildMessage(member.getName());
     }
 
     public String getMessage() {

@@ -38,9 +38,11 @@ public class ExportLogsCacheWriter extends CacheWriterAdapter implements Seriali
 
   @Override
   public void beforeCreate(EntryEvent event) throws CacheWriterException {
+    if (currentFile.getFileName().endsWith("server-2.zip")) {
+      System.out.println("We got data from server 2");
+    }
     if (currentOutputStream == null) {
-      //If no OutputStream is open, then this file chunk is intended for a different locator
-      return;
+      throw new IllegalStateException("No outputStream is open.  You must call startFile before sending data.");
     }
 
     try {

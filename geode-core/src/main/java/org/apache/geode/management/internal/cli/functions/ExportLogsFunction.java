@@ -68,7 +68,7 @@ public class ExportLogsFunction implements Function, InternalEntity {
       String memberId = cache.getDistributedSystem().getMemberId();
       LOGGER.info("ExportLogsFunction started for member {}", memberId);
 
-      Region exportLogsRegion = createOrGetExistingExportLogsRegion();
+      Region exportLogsRegion = createOrGetExistingExportLogsRegion(false);
 
       Args args = (Args) context.getArguments();
       LogFilter logFilter =
@@ -103,7 +103,7 @@ public class ExportLogsFunction implements Function, InternalEntity {
     return cache.getMyId().getVmKind() == LOCATOR_DM_TYPE;
   }
 
-  public static Region createOrGetExistingExportLogsRegion()
+  public static Region createOrGetExistingExportLogsRegion(boolean isInitiatingMember)
       throws IOException, ClassNotFoundException {
     GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
 
@@ -114,7 +114,7 @@ public class ExportLogsFunction implements Function, InternalEntity {
       regionAttrsFactory.setDataPolicy(DataPolicy.EMPTY);
       regionAttrsFactory.setScope(Scope.DISTRIBUTED_ACK);
 
-      if (isLocator(cache)) {
+      if (isInitiatingMember) {
         regionAttrsFactory.setCacheWriter(new ExportLogsCacheWriter());
       }
       InternalRegionArguments internalArgs = new InternalRegionArguments();
@@ -124,6 +124,18 @@ public class ExportLogsFunction implements Function, InternalEntity {
     }
 
     return exportLogsRegion;
+  }
+
+  public static void destroyExportLogsRegion() {
+    GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
+
+    Region exportLogsRegion = cache.getRegion(EXPORT_LOGS_REGION);
+    if (exportLogsRegion == null) {
+      return;
+    }
+
+      exportLogsRegion.destroyRegion();
+
   }
 
   @Override

@@ -36,6 +36,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.IOException;
 
 @Category(IntegrationTest.class)
 public class ExportLogsFunctionIntegrationTest {
@@ -84,21 +85,27 @@ public class ExportLogsFunctionIntegrationTest {
     if (resultSender.getThrowable() != null) {
       throw resultSender.getThrowable();
     }
+
+    Cache cache = GemFireCacheImpl.getInstance();
+    assertThat(cache.getRegion(ExportLogsFunction.EXPORT_LOGS_REGION)).isNull();
   }
 
   @Test
   public void createOrGetExistingExportLogsRegionDoesNotBlowUp() throws Exception {
-    ExportLogsFunction.createOrGetExistingExportLogsRegion();
+    ExportLogsFunction.createOrGetExistingExportLogsRegion(false);
 
     Cache cache = GemFireCacheImpl.getInstance();
     assertThat(cache.getRegion(ExportLogsFunction.EXPORT_LOGS_REGION)).isNotNull();
   }
 
   @Test
-  public void isLocatorReturnsFalseForServer() {
-    GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
+  public void destroyExportLogsRegionWorksAsExpectedForInitiatingMember() throws IOException, ClassNotFoundException {
+    ExportLogsFunction.createOrGetExistingExportLogsRegion(true);
+    Cache cache = GemFireCacheImpl.getInstance();
+    assertThat(cache.getRegion(ExportLogsFunction.EXPORT_LOGS_REGION)).isNotNull();
 
-    assertThat(ExportLogsFunction.isLocator(cache)).isFalse();
+    ExportLogsFunction.destroyExportLogsRegion();
+    assertThat(cache.getRegion(ExportLogsFunction.EXPORT_LOGS_REGION)).isNull();
   }
 
 
