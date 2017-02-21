@@ -16,6 +16,7 @@ package org.apache.geode.test.dunit.rules;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.apache.geode.internal.lang.StringUtils;
 import org.apache.geode.management.cli.Result;
 import org.apache.geode.management.internal.cli.CliUtil;
 import org.apache.geode.management.internal.cli.HeadlessGfsh;
@@ -23,6 +24,7 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
 import org.apache.geode.management.internal.cli.result.CommandResult;
 import org.apache.geode.management.internal.cli.util.CommandStringBuilder;
 import org.apache.geode.test.junit.rules.DescribedExternalResource;
+import org.json.JSONArray;
 import org.junit.runner.Description;
 
 /**
@@ -86,6 +88,11 @@ public class GfshShellConnectionRule extends DescribedExternalResource {
 
   public void connectAndVerify(Locator locator, String... options) throws Exception {
     connect(locator.getPort(), PortType.locator, options);
+    assertThat(this.connected).isTrue();
+  }
+
+  public void connectAndVerify(int port, PortType type, String... options) throws Exception {
+    connect(port, type, options);
     assertThat(this.connected).isTrue();
   }
 
@@ -157,19 +164,24 @@ public class GfshShellConnectionRule extends DescribedExternalResource {
   public CommandResult executeCommand(String command) throws Exception {
     gfsh.executeCommand(command);
     CommandResult result = (CommandResult) gfsh.getResult();
-    System.out.println("Command Result: \n" + gfsh.outputString);
+    if(StringUtils.isBlank(gfsh.outputString)){
+       JSONArray messages = ((JSONArray)result.getContent().get("message"));
+       for(int i=0; i< messages.length(); i++){
+         gfsh.outputString += messages.getString(i)+"\n";
+       }
+    }
+    System.out.println("Command result: \n" + gfsh.outputString);
     return result;
+  }
+
+  public String getGfshOutput(){
+    return gfsh.outputString;
   }
 
 
   public CommandResult executeAndVerifyCommand(String command) throws Exception {
     CommandResult result = executeCommand(command);
-
-    if (result.getStatus() != Result.Status.OK) {
-      System.out.println("broken");
-    }
-    assertThat(result.getStatus()).describedAs(result.getContent().toString())
-        .isEqualTo(Result.Status.OK);
+    assertThat(result.getStatus()).isEqualTo(Result.Status.OK);
     return result;
   }
 
