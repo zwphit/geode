@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.Region;
 import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.internal.cache.GemFireCacheImpl;
 import org.apache.geode.internal.logging.LogService;
@@ -53,12 +52,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 
@@ -75,7 +74,7 @@ public class ExportLogsDUnit {
   private Server server1;
   private Server server2;
 
-  private Map<Member, List<LogLine>> defaultExpectedMessages;
+  private Map<Member, List<LogLine>> expectedMessages;
 
   @Before
   public void setup() throws Exception {
@@ -88,14 +87,14 @@ public class ExportLogsDUnit {
 
     IgnoredException.addIgnoredException(ERROR_LOG_PREFIX);
 
-    defaultExpectedMessages = new HashMap<>();
-    defaultExpectedMessages.put(locator, listOfLogLines(locator, "info", "error", "debug"));
-    defaultExpectedMessages.put(server1, listOfLogLines(server1, "info", "error", "debug"));
-    defaultExpectedMessages.put(server2, listOfLogLines(server2, "info", "error", "debug"));
+    expectedMessages = new HashMap<>();
+    expectedMessages.put(locator, listOfLogLines(locator, "info", "error", "debug"));
+    expectedMessages.put(server1, listOfLogLines(server1, "info", "error", "debug"));
+    expectedMessages.put(server2, listOfLogLines(server2, "info", "error", "debug"));
 
     // log the messages in each of the members
-    for (Member member : defaultExpectedMessages.keySet()) {
-      List<LogLine> logLines = defaultExpectedMessages.get(member);
+    for (Member member : expectedMessages.keySet()) {
+      List<LogLine> logLines = expectedMessages.get(member);
 
       member.invoke(() -> {
         Logger logger = LogService.getLogger();
@@ -107,7 +106,47 @@ public class ExportLogsDUnit {
   }
 
   @Test
-  public void testExportWithStartDateFiltering() throws Exception {
+  public void startAndEndDateCanExcludeLogs() throws Exception {
+    ZonedDateTime now = LocalDateTime.now().atZone(ZoneId.systemDefault());
+    ZonedDateTime yesterday = now.minusDays(1);
+    ZonedDateTime twoDaysAgo = now.minusDays(2);
+
+    DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern(ONLY_DATE_FORMAT);
+
+    CommandStringBuilder commandStringBuilder = new CommandStringBuilder("export logs");
+    commandStringBuilder.addOption("start-time", dateTimeFormatter.format(twoDaysAgo));
+    commandStringBuilder.addOption("end-time", dateTimeFormatter.format(yesterday));
+    commandStringBuilder.addOption("log-level", "debug");
+    commandStringBuilder.addOption("dir", "someDir");
+
+    gfshConnector.executeAndVerifyCommand(commandStringBuilder.toString());
+
+    Set<String> acceptedLogLevels = new HashSet<>();
+    verifyZipFileContents(acceptedLogLevels);
+  }
+
+  @Test
+  public void startAndEndDateCanIncludeLogs() throws Exception {
+    ZonedDateTime now = LocalDateTime.now().atZone(ZoneId.systemDefault());
+    ZonedDateTime yesterday = now.minusDays(1);
+    ZonedDateTime tomorrow = now.plusDays(1);
+
+    DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern(ONLY_DATE_FORMAT);
+
+    CommandStringBuilder commandStringBuilder = new CommandStringBuilder("export logs");
+    commandStringBuilder.addOption("start-time", dateTimeFormatter.format(yesterday));
+    commandStringBuilder.addOption("end-time", dateTimeFormatter.format(tomorrow));
+    commandStringBuilder.addOption("log-level", "debug");
+    commandStringBuilder.addOption("dir", "someDir");
+
+    gfshConnector.executeAndVerifyCommand(commandStringBuilder.toString());
+
+    Set<String> acceptedLogLevels = Stream.of("info", "error", "debug").collect(toSet());
+    verifyZipFileContents(acceptedLogLevels);
+  }
+
+  @Test
+  public void testExportWithStartAndEndDateTimeFiltering() throws Exception {
     ZonedDateTime cutoffTime = LocalDateTime.now().atZone(ZoneId.systemDefault());
 
     String messageAfterCutoffTime = "[this message should not show up since it is after cutoffTime]";
@@ -121,13 +160,14 @@ public class ExportLogsDUnit {
     String cutoffTimeString = dateTimeFormatter.format(cutoffTime);
 
     CommandStringBuilder commandStringBuilder = new CommandStringBuilder("export logs");
+    commandStringBuilder.addOption("start-time", dateTimeFormatter.format(cutoffTime.minusHours(1)));
     commandStringBuilder.addOption("end-time", cutoffTimeString);
     commandStringBuilder.addOption("log-level", "debug");
     commandStringBuilder.addOption("dir", "someDir");
 
     gfshConnector.executeAndVerifyCommand(commandStringBuilder.toString());
 
-    defaultExpectedMessages.get(server1).add(logLineAfterCutoffTime);
+    expectedMessages.get(server1).add(logLineAfterCutoffTime);
     Set<String> acceptedLogLevels = Stream.of("info", "error", "debug").collect(toSet());
     verifyZipFileContents(acceptedLogLevels);
   }
@@ -170,7 +210,7 @@ public class ExportLogsDUnit {
   }
 
 @Test
-public void regionBehavesProperly() throws IOException, ClassNotFoundException {
+public void exportLogsRegionIsCleanedUpProperly() throws IOException, ClassNotFoundException {
     locator.invoke(() -> {
       ExportLogsFunction.createOrGetExistingExportLogsRegion(true);
       Cache cache = GemFireCacheImpl.getInstance();
@@ -203,10 +243,10 @@ public void regionBehavesProperly() throws IOException, ClassNotFoundException {
 
     Set<File> dirsFromZipFile =
         Stream.of(unzippedLogFileDir.listFiles()).filter(File::isDirectory).collect(toSet());
-    assertThat(dirsFromZipFile).hasSize(defaultExpectedMessages.keySet().size());
+    assertThat(dirsFromZipFile).hasSize(expectedMessages.keySet().size());
 
     Set<String> expectedDirNames =
-        defaultExpectedMessages.keySet().stream().map(Member::getName).collect(toSet());
+        expectedMessages.keySet().stream().map(Member::getName).collect(toSet());
     Set<String> actualDirNames = dirsFromZipFile.stream().map(File::getName).collect(toSet());
     assertThat(actualDirNames).isEqualTo(expectedDirNames);
 
@@ -220,7 +260,7 @@ public void regionBehavesProperly() throws IOException, ClassNotFoundException {
       throws IOException {
 
     String memberName = dirForMember.getName();
-    Member member = defaultExpectedMessages.keySet().stream()
+    Member member = expectedMessages.keySet().stream()
         .filter((Member aMember) -> aMember.getName().equals(memberName))
         .findFirst()
         .get();
@@ -240,7 +280,7 @@ public void regionBehavesProperly() throws IOException, ClassNotFoundException {
         FileUtils.readLines(logFileForMember, Charset.defaultCharset()).stream()
             .collect(joining("\n"));
 
-    for (LogLine logLine : defaultExpectedMessages.get(member)) {
+    for (LogLine logLine : expectedMessages.get(member)) {
       boolean shouldExpectLogLine = acceptedLogLevels.contains(logLine.level) && !logLine.shouldBeIgnoredDueToTimestamp;
 
       if (shouldExpectLogLine) {
