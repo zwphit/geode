@@ -317,8 +317,8 @@ public class RestHttpOperationInvokerJUnitTest extends AbstractWebTestCase {
 
       @Override
       @SuppressWarnings("unchecked")
-      protected <T> T send(final ClientHttpRequest request,
-          final Class<T> responseType, final Map<String, ?> uriVariables) {
+      protected <T> T send(final ClientHttpRequest request, final Class<T> responseType,
+          final Map<String, ?> uriVariables) {
         return (T) expectedResult;
       }
     };
@@ -373,8 +373,8 @@ public class RestHttpOperationInvokerJUnitTest extends AbstractWebTestCase {
       protected void printWarning(final String message, final Object... args) {}
 
       @Override
-      protected <T> T send(final ClientHttpRequest request,
-          final Class<T> responseType, final Map<String, ?> uriVariables) {
+      protected <T> T send(final ClientHttpRequest request, final Class<T> responseType,
+          final Map<String, ?> uriVariables) {
         throw new ResourceAccessException("test");
       }
 

@@ -239,10 +239,9 @@ public class GfshExecutionStrategy implements ExecutionStrategy {
     } catch (NotAuthorizedException e) {
       return ResultBuilder
           .createGemFireUnAuthorizedErrorResult("Unauthorized. Reason : " + e.getMessage());
-    } catch (Exception e){
+    } catch (Exception e) {
       e.printStackTrace();
-    }
-    finally {
+    } finally {
       env.clear();
     }
 
@@ -256,7 +255,7 @@ public class GfshExecutionStrategy implements ExecutionStrategy {
 
     // the response could be a string which is a json respresentation of the CommandResult object
     // it can also be a Path to a temp file downloaded from the rest http request
-    if(response instanceof String) {
+    if (response instanceof String) {
       CommandResponse commandResponse =
           CommandResponseBuilder.prepareCommandResponseFromJson((String) response);
 
@@ -280,8 +279,8 @@ public class GfshExecutionStrategy implements ExecutionStrategy {
     }
 
     Path tempFile = null;
-    if(response instanceof Path){
-      tempFile = (Path)response;
+    if (response instanceof Path) {
+      tempFile = (Path) response;
     }
 
     // 3. Post Remote Execution

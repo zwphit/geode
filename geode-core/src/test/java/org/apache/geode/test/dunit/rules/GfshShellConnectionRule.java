@@ -164,17 +164,17 @@ public class GfshShellConnectionRule extends DescribedExternalResource {
   public CommandResult executeCommand(String command) throws Exception {
     gfsh.executeCommand(command);
     CommandResult result = (CommandResult) gfsh.getResult();
-    if(StringUtils.isBlank(gfsh.outputString)){
-       JSONArray messages = ((JSONArray)result.getContent().get("message"));
-       for(int i=0; i< messages.length(); i++){
-         gfsh.outputString += messages.getString(i)+"\n";
-       }
+    if (StringUtils.isBlank(gfsh.outputString)) {
+      JSONArray messages = ((JSONArray) result.getContent().get("message"));
+      for (int i = 0; i < messages.length(); i++) {
+        gfsh.outputString += messages.getString(i) + "\n";
+      }
     }
     System.out.println("Command result: \n" + gfsh.outputString);
     return result;
   }
 
-  public String getGfshOutput(){
+  public String getGfshOutput() {
     return gfsh.outputString;
   }
 

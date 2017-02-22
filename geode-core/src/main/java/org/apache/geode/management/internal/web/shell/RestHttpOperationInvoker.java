@@ -375,7 +375,7 @@ public class RestHttpOperationInvoker extends AbstractHttpOperationInvoker imple
    * 
    * @param command the command requested/entered by the user to be processed.
    * @return either a json string of the CommandResult or a Path to a temp file if the response is a
-   *        InputStream
+   *         InputStream
    * @see #createHttpRequest(org.apache.geode.management.internal.cli.CommandRequest)
    * @see #handleResourceAccessException(org.springframework.web.client.ResourceAccessException)
    * @see #isConnected()
@@ -393,10 +393,9 @@ public class RestHttpOperationInvoker extends AbstractHttpOperationInvoker imple
 
     Object result = null;
     try {
-      if(command.isDownloadFile()){
+      if (command.isDownloadFile()) {
         result = downloadResponseToTempFile(createHttpRequest(command), command.getParameters());
-      }
-      else{
+      } else {
         result = send(createHttpRequest(command), String.class, command.getParameters());
       }
       return result;

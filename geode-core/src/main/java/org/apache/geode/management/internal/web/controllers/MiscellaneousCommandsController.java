@@ -53,19 +53,21 @@ import java.io.FileInputStream;
 public class MiscellaneousCommandsController extends AbstractCommandsController {
 
   @RequestMapping(method = RequestMethod.GET, value = "/logs")
-  public ResponseEntity<InputStreamResource> exportLogs(@RequestParam(value = CliStrings.EXPORT_LOGS__DIR, required = false) final String directory,
-                                                        @RequestParam(value = CliStrings.EXPORT_LOGS__GROUP, required = false) final String[] groups,
-                                                        @RequestParam(value = CliStrings.EXPORT_LOGS__MEMBER,
+  public ResponseEntity<InputStreamResource> exportLogs(
+      @RequestParam(value = CliStrings.EXPORT_LOGS__DIR, required = false) final String directory,
+      @RequestParam(value = CliStrings.EXPORT_LOGS__GROUP, required = false) final String[] groups,
+      @RequestParam(value = CliStrings.EXPORT_LOGS__MEMBER,
           required = false) final String memberNameId,
-                                                        @RequestParam(value = CliStrings.EXPORT_LOGS__LOGLEVEL,
+      @RequestParam(value = CliStrings.EXPORT_LOGS__LOGLEVEL,
           required = false) final String logLevel,
-                                                        @RequestParam(value = CliStrings.EXPORT_LOGS__UPTO_LOGLEVEL,
+      @RequestParam(value = CliStrings.EXPORT_LOGS__UPTO_LOGLEVEL,
           defaultValue = "false") final Boolean onlyLogLevel,
-                                                        @RequestParam(value = CliStrings.EXPORT_LOGS__MERGELOG,
+      @RequestParam(value = CliStrings.EXPORT_LOGS__MERGELOG,
           defaultValue = "false") final Boolean mergeLog,
-                                                        @RequestParam(value = CliStrings.EXPORT_LOGS__STARTTIME,
+      @RequestParam(value = CliStrings.EXPORT_LOGS__STARTTIME,
           required = false) final String startTime,
-                                                        @RequestParam(value = CliStrings.EXPORT_LOGS__ENDTIME, required = false) final String endTime) {
+      @RequestParam(value = CliStrings.EXPORT_LOGS__ENDTIME,
+          required = false) final String endTime) {
     final CommandStringBuilder command = new CommandStringBuilder(CliStrings.EXPORT_LOGS);
 
     command.addOption(CliStrings.EXPORT_LOGS__DIR, decode(directory));
@@ -97,7 +99,7 @@ public class MiscellaneousCommandsController extends AbstractCommandsController 
     }
 
     // the result is json string from CommandResult
-    String result =  processCommand(command.toString());
+    String result = processCommand(command.toString());
 
     // parse the result to get the file path
     String filePath = ResultBuilder.fromJson(result).nextLine().trim();

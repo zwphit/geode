@@ -685,8 +685,7 @@ public class MiscellaneousCommands implements CommandMarker {
   }
 
   @CliCommand(value = CliStrings.EXPORT_LOGS, help = CliStrings.EXPORT_LOGS__HELP)
-  @CliMetaData(shellOnly = false,
-      isFileDownloadOverHttp = true,
+  @CliMetaData(shellOnly = false, isFileDownloadOverHttp = true,
       interceptor = "org.apache.geode.management.internal.cli.commands.MiscellaneousCommands$ExportLogsInterceptor",
       relatedTopic = {CliStrings.TOPIC_GEODE_SERVER, CliStrings.TOPIC_GEODE_DEBUG_UTIL})
   @ResourceOperation(resource = Resource.CLUSTER, operation = Operation.READ)
@@ -773,35 +772,35 @@ public class MiscellaneousCommands implements CommandMarker {
   }
 
   /**
-   * after the export logs, will need to copy the tempFile to the desired location
-   * and delete the temp file.
+   * after the export logs, will need to copy the tempFile to the desired location and delete the
+   * temp file.
    */
   public static class ExportLogsInterceptor extends AbstractCliAroundInterceptor {
     @Override
     public Result postExecution(GfshParseResult parseResult, Result commandResult, Path tempFile) {
       // in the command over http case, the command result is in the downloaded temp file
-      if(tempFile!=null){
+      if (tempFile != null) {
         Path dirPath;
         String dirName = parseResult.getParamValueStrings().get("dir");
-        if(StringUtils.isBlank(dirName)){
+        if (StringUtils.isBlank(dirName)) {
           dirPath = Paths.get(System.getProperty("user.dir"));
-        }
-        else{
+        } else {
           dirPath = Paths.get(dirName);
         }
-        String fileName = "exportedLogs_"+System.currentTimeMillis()+".zip";
+        String fileName = "exportedLogs_" + System.currentTimeMillis() + ".zip";
         File exportedLogFile = dirPath.resolve(fileName).toFile();
         try {
           FileUtils.copyFile(tempFile.toFile(), exportedLogFile);
           FileUtils.deleteQuietly(tempFile.toFile());
-          commandResult = ResultBuilder.createInfoResult("Logs exported to: "+exportedLogFile.getAbsolutePath());
+          commandResult = ResultBuilder
+              .createInfoResult("Logs exported to: " + exportedLogFile.getAbsolutePath());
         } catch (IOException e) {
           logger.error(e.getMessage(), e);
           commandResult = ResultBuilder.createGemFireErrorResult(e.getMessage());
         }
-      }
-      else{
-        commandResult = ResultBuilder.createInfoResult("Logs exported to the connected locator's file system: " + commandResult.nextLine());
+      } else {
+        commandResult = ResultBuilder.createInfoResult(
+            "Logs exported to the connected locator's file system: " + commandResult.nextLine());
       }
       return commandResult;
     }

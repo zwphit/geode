@@ -99,7 +99,8 @@ public class ExportLogsFunctionIntegrationTest {
   }
 
   @Test
-  public void destroyExportLogsRegionWorksAsExpectedForInitiatingMember() throws IOException, ClassNotFoundException {
+  public void destroyExportLogsRegionWorksAsExpectedForInitiatingMember()
+      throws IOException, ClassNotFoundException {
     ExportLogsFunction.createOrGetExistingExportLogsRegion(true);
     Cache cache = GemFireCacheImpl.getInstance();
     assertThat(cache.getRegion(ExportLogsFunction.EXPORT_LOGS_REGION)).isNotNull();

@@ -588,8 +588,7 @@ public abstract class AbstractHttpOperationInvoker implements HttpOperationInvok
    * @see org.apache.geode.management.internal.web.http.ClientHttpRequest
    * @see org.springframework.http.ResponseEntity
    */
-  protected <T> T send(final ClientHttpRequest request,
-      final Class<T> responseType) {
+  protected <T> T send(final ClientHttpRequest request, final Class<T> responseType) {
     return send(request, responseType, Collections.<String, Object>emptyMap());
   }
 
@@ -633,21 +632,24 @@ public abstract class AbstractHttpOperationInvoker implements HttpOperationInvok
     return response.getBody();
   }
 
-  protected Path downloadResponseToTempFile(ClientHttpRequest request, Map<String, ?> uriVariables){
+  protected Path downloadResponseToTempFile(ClientHttpRequest request,
+      Map<String, ?> uriVariables) {
     final URI url = request.getURL(uriVariables);
     // Optional Accept header
-    RequestCallback requestCallback = r -> r.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
+    RequestCallback requestCallback =
+        r -> r.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
 
     // Streams the response instead of loading it all in memory
     ResponseExtractor<Path> responseExtractor = resp -> {
       Path tempFile = Files.createTempFile("fileDownload", "");
-      if(tempFile.toFile().exists()){
+      if (tempFile.toFile().exists()) {
         FileUtils.deleteQuietly(tempFile.toFile());
       }
       Files.copy(resp.getBody(), tempFile);
       return tempFile;
     };
-    return getRestTemplate().execute(url, org.springframework.http.HttpMethod.GET, requestCallback, responseExtractor);
+    return getRestTemplate().execute(url, org.springframework.http.HttpMethod.GET, requestCallback,
+        responseExtractor);
   }
 
   /**

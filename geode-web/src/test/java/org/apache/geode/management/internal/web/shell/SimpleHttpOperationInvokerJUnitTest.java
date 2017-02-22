@@ -128,8 +128,7 @@ public class SimpleHttpOperationInvokerJUnitTest extends AbstractWebTestCase {
 
       @Override
       @SuppressWarnings("unchecked")
-      protected <T> T send(final ClientHttpRequest request,
-          final Class<T> responseType) {
+      protected <T> T send(final ClientHttpRequest request, final Class<T> responseType) {
         return (T) expectedResult;
       }
     };
@@ -151,8 +150,7 @@ public class SimpleHttpOperationInvokerJUnitTest extends AbstractWebTestCase {
       }
 
       @Override
-      protected <T> T send(final ClientHttpRequest request,
-          final Class<T> responseType) {
+      protected <T> T send(final ClientHttpRequest request, final Class<T> responseType) {
         throw new ResourceAccessException("test");
       }
 

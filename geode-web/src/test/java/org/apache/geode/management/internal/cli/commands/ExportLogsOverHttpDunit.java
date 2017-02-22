@@ -93,7 +93,7 @@ public class ExportLogsOverHttpDunit {
   public void testExportWithDir() throws Exception {
     File dir = temporaryFolder.newFolder();
     // export the logs
-    gfshConnector.executeCommand("export logs --dir="+dir.getAbsolutePath());
+    gfshConnector.executeCommand("export logs --dir=" + dir.getAbsolutePath());
     // verify that the message contains a path to the user.dir
     String message = gfshConnector.getGfshOutput();
     assertThat(message).contains("Logs exported to: ");
@@ -103,7 +103,7 @@ public class ExportLogsOverHttpDunit {
     verifyZipContent(zipPath);
   }
 
-  private void verifyZipContent(String zipPath) throws Exception{
+  private void verifyZipContent(String zipPath) throws Exception {
     Set<String> actualZipEnries =
         new ZipFile(zipPath).stream().map(ZipEntry::getName).collect(Collectors.toSet());
 

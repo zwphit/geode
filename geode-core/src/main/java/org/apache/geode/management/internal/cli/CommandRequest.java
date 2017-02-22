@@ -69,7 +69,7 @@ public class CommandRequest {
     this.parseResult = parseResult;
 
     CliMetaData metaData = parseResult.getMethod().getDeclaredAnnotation(CliMetaData.class);
-    if(metaData.isFileDownloadOverHttp()){
+    if (metaData.isFileDownloadOverHttp()) {
       downloadFile = true;
     }
   }
@@ -95,7 +95,7 @@ public class CommandRequest {
     return customInput;
   }
 
-  public boolean isDownloadFile(){
+  public boolean isDownloadFile() {
     return downloadFile;
   }
 
