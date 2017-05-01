@@ -14,22 +14,15 @@
  */
 package org.apache.geode.management.internal.cli.commands;
 
-import static org.apache.geode.distributed.ConfigurationProperties.CLUSTER_CONFIGURATION_DIR;
-import static org.apache.geode.distributed.ConfigurationProperties.ENABLE_CLUSTER_CONFIGURATION;
 import static org.apache.geode.distributed.ConfigurationProperties.GROUPS;
 import static org.apache.geode.distributed.ConfigurationProperties.LOCATORS;
-import static org.apache.geode.distributed.ConfigurationProperties.NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.DiskStoreFactory;
-import org.apache.geode.cache.Region;
 import org.apache.geode.cache.RegionShortcut;
-import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.distributed.ServerLauncher;
-import org.apache.geode.internal.cache.DiskStoreAttributes;
+import org.apache.geode.internal.AvailablePortHelper;
 import org.apache.geode.internal.cache.DiskStoreFactoryImpl;
-import org.apache.geode.management.cli.CliMetaData;
+import org.apache.geode.management.cli.Result;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 import org.apache.geode.management.internal.cli.result.CommandResult;
 import org.apache.geode.management.internal.cli.util.CommandStringBuilder;
@@ -45,15 +38,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestName;
-import org.springframework.shell.support.util.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -62,6 +48,8 @@ public class ShowMissingDiskStoresDUnitTest {
 
   // private static final String DISK_STORE = "diskStore";
   private static final String DISK_STORE_DIR = "myDiskStores";
+  private final String testRegionName = "regionA";
+
   private MemberVM locator;
   private MemberVM server1;
   private MemberVM server2;
@@ -78,23 +66,38 @@ public class ShowMissingDiskStoresDUnitTest {
   @Before
   public void before() throws Exception {
     locator = lsRule.startLocatorVM(0);
+    System.out.println("Locator is on port " + locator.getPort());
     gfshConnector.connect(locator);
     assertThat(gfshConnector.isConnected()).isTrue();
 
-    // start a server so that we can execute data commands that requires at least a server running
-    server1 = lsRule.startServerVM(1, locator.getPort());
-    server2 = lsRule.startServerVM(2, locator.getPort());
+    // start servers so that we can execute data commands that requires at least a server running
+    Properties localProps;
+    localProps = new Properties();
+    localProps.setProperty(GROUPS, "Group1");
+    server1 = lsRule.startServerVM(1, localProps, locator.getPort());
+    localProps = new Properties();
+    localProps.setProperty(GROUPS, "Group2");
+    server2 = lsRule.startServerVM(2, localProps, locator.getPort());
+
+    server1.invoke(() -> DiskStoreFactoryImpl.testhookResetWorkingDir = true);
+    server2.invoke(() -> DiskStoreFactoryImpl.testhookResetWorkingDir = true);
   }
 
   @Ignore("WIP: new test for GEODE-2681 fix")
   @Test
   public void missingDiskStores_gfshDoesntHang() throws Exception {
-    final String testRegionName = "regionA";
     CommandStringBuilder csb;
     // TODO: Need to ensure that the diskstores are created in "user.dir" as set by the
     // *StarterRules, see DiskStoreFactoryImpl.setDiskDirsAndSizes
     csb = new CommandStringBuilder(CliStrings.CREATE_DISK_STORE)
         .addOption(CliStrings.CREATE_DISK_STORE__NAME, "diskStore")
+        .addOption(CliStrings.CREATE_DISK_STORE__GROUP, "Group1")
+        .addOption(CliStrings.CREATE_DISK_STORE__DIRECTORY_AND_SIZE, "diskStoreDir");
+    gfshConnector.executeAndVerifyCommand(csb.getCommandString());
+
+    csb = new CommandStringBuilder(CliStrings.CREATE_DISK_STORE)
+        .addOption(CliStrings.CREATE_DISK_STORE__NAME, "diskStore")
+        .addOption(CliStrings.CREATE_DISK_STORE__GROUP, "Group2")
         .addOption(CliStrings.CREATE_DISK_STORE__DIRECTORY_AND_SIZE, "diskStoreDir");
     gfshConnector.executeAndVerifyCommand(csb.getCommandString());
 
@@ -102,13 +105,21 @@ public class ShowMissingDiskStoresDUnitTest {
       return new File(server1.getWorkingDir(), "diskStoreDir").exists()
           && new File(server2.getWorkingDir(), "diskStoreDir").exists();
     });
+    Thread.sleep(2000);
+    gfshConnector.executeCommand("list disk-stores" );
+//    Awaitility.await().atMost(10,TimeUnit.SECONDS).until(() ->
+//        gfshConnector.executeCommand("list disk-stores" + testRegionName).getStatus().equals(
+//            Result.Status.OK));
 
     csb = new CommandStringBuilder(CliStrings.CREATE_REGION)
         .addOption(CliStrings.CREATE_REGION__REGION, testRegionName)
         .addOption(CliStrings.CREATE_REGION__DISKSTORE, "diskStore")
         .addOption(CliStrings.CREATE_REGION__REGIONSHORTCUT,
-            RegionShortcut.REPLICATE_PERSISTENT.toString());
+            RegionShortcut.PARTITION_PERSISTENT.toString());
     gfshConnector.executeAndVerifyCommand(csb.getCommandString());
+    Awaitility.await().atMost(10,TimeUnit.SECONDS).until(() ->
+        gfshConnector.executeCommand("describe region --name=" + testRegionName).getStatus().equals(
+            Result.Status.OK));
 
     // Add data to the region
     putUsingGfsh(gfshConnector, testRegionName, 1, "A");
@@ -118,36 +129,72 @@ public class ShowMissingDiskStoresDUnitTest {
     lsRule.stopMember(1);
     lsRule.stopMember(2);
 
-    AsyncInvocation restart1 = restartServerAsync(server1);
-    checkAsyncResults(restart1, gfshConnector, 5);
+    CommandResult result = gfshConnector.executeCommand("list members");
+    System.out.println(result.getContent());
+    result = gfshConnector.executeCommand("show missing-disk-stores");
 
-    AsyncInvocation restart2 = restartServerAsync(server2);
-    checkAsyncResults(restart2, gfshConnector, 5);
+//    AsyncInvocation restart1 = restartServer(server1, true);
+//    checkAsyncResults(restart1, gfshConnector, 5);
+//
+//    AsyncInvocation restart2 = restartServer(server2, true);
+//    checkAsyncResults(restart2, gfshConnector, 5);
 
-    for (AsyncInvocation ai : new AsyncInvocation[] {restart1, restart2}) {
+    int locatorPort = locator.getPort();
+    String memberWorkingDir1 = server1.getWorkingDir().getAbsolutePath();
+    String memberName1 = server1.getName();
+    int server1Port = server1.getPort();
+    AsyncInvocation restart = server1.getVM().invokeAsync("Restart server 1", () -> {
+      ServerLauncher serverLauncher =
+          new ServerLauncher.Builder().setWorkingDirectory(memberWorkingDir1)
+              .setMemberName(memberName1).set(LOCATORS, "localhost[" + locatorPort + "]")
+              .setServerPort(server1Port).build();
+      serverLauncher.start();
+    });
+
+    String memberWorkingDir2 = server2.getWorkingDir().getAbsolutePath();
+    String memberName2 = server2.getName();
+    int server2Port = server2.getPort();
+    server2.getVM().invoke("Restart server 2", () -> {
+      ServerLauncher serverLauncher =
+          new ServerLauncher.Builder().setWorkingDirectory(memberWorkingDir2)
+              .setMemberName(memberName2).set(LOCATORS, "localhost[" + locatorPort + "]")
+              .setServerPort(server2Port).build();
+      serverLauncher.start();
+    });
+
+    Awaitility.await().atMost(10,TimeUnit.SECONDS).until(() ->
+      gfshConnector.executeCommand("describe region --name=" + testRegionName).getStatus().equals(
+          Result.Status.OK));
+//    System.out.println(result);
+
+    for (AsyncInvocation ai : new AsyncInvocation[] {restart/*, restart2*/}) {
       if (ai.isAlive()) {
-        restart1.cancel(true);
+        ai.cancel(true);
       }
     }
   }
 
-  private AsyncInvocation restartServerAsync(MemberVM member) throws Exception {
+  private AsyncInvocation restartServer(MemberVM member, boolean async) throws Exception {
     String memberWorkingDir = member.getWorkingDir().getAbsolutePath();
+    String memberName = member.getName();
     int locatorPort = locator.getPort();
     AsyncInvocation restart = member.invokeAsync(() -> {
       ServerLauncher serverLauncher =
           new ServerLauncher.Builder().setWorkingDirectory(memberWorkingDir)
-              .setMemberName("server-1").set(LOCATORS, "localhost[" + locatorPort + "]").build();
+              .setMemberName(memberName).set(LOCATORS, "localhost[" + locatorPort + "]").build();
       serverLauncher.start();
     });
 
+    if (!async) {
+      Awaitility.await().until(() -> restart.isDone());
+    }
     return restart;
   }
 
   private void checkAsyncResults(AsyncInvocation ai, GfshShellConnectionRule gfsh, int secsToWait)
       throws Exception {
     try {
-      Awaitility.await().atLeast(secsToWait, TimeUnit.SECONDS).until(() -> ai.isDone());
+      Awaitility.await().atMost(secsToWait, TimeUnit.SECONDS).until(() -> ai.isDone());
     } catch (Exception e) {
       // e.printStackTrace();
     }
@@ -155,9 +202,9 @@ public class ShowMissingDiskStoresDUnitTest {
     CommandResult result;
 
     result = gfsh.executeCommand("list members");
-    System.out.println(result);
+    System.out.println(result.getContent());
     result = gfsh.executeCommand("show missing-disk-stores");
-    System.out.println(result);
+//    System.out.println(result.getContent());
   }
 
   private void putUsingGfsh(GfshShellConnectionRule gfsh, String regionName, int key, String val)

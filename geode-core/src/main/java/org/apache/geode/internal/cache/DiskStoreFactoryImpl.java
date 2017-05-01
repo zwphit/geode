@@ -35,6 +35,7 @@ import org.apache.geode.pdx.internal.TypeRegistry;
  * @since GemFire prPersistSprint2
  */
 public class DiskStoreFactoryImpl implements DiskStoreFactory {
+  public static boolean testhookResetWorkingDir;
   private final Cache cache;
   private final DiskStoreAttributes attrs = new DiskStoreAttributes();
 
@@ -189,6 +190,16 @@ public class DiskStoreFactoryImpl implements DiskStoreFactory {
   }
 
   public DiskStoreFactory setDiskDirsAndSizes(File[] diskDirs, int[] diskDirSizes) {
+    System.out.println("testhook = " + testhookResetWorkingDir);
+    if (testhookResetWorkingDir) {
+      // make sure the diskDirs are absolute path
+      for (int i=0; i<diskDirs.length; i++){
+        File dir = diskDirs[i];
+        if(!dir.isAbsolute()){
+          diskDirs[i] = new File(System.getProperty("user.dir"), dir.getPath());
+        }
+      }
+    }
     if (diskDirSizes.length != diskDirs.length) {
       throw new IllegalArgumentException(
           LocalizedStrings.AttributesFactory_NUMBER_OF_DISKSIZES_IS_0_WHICH_IS_NOT_EQUAL_TO_NUMBER_OF_DISK_DIRS_WHICH_IS_1

@@ -50,7 +50,7 @@ public class CreateDiskStoreFunction extends FunctionAdapter implements Internal
       final String diskStoreName = (String) args[0];
       final DiskStoreAttributes diskStoreAttrs = (DiskStoreAttributes) args[01];
 
-      GemFireCacheImpl cache = (GemFireCacheImpl) CacheFactory.getAnyInstance();
+      GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
 
       DistributedMember member = cache.getDistributedSystem().getDistributedMember();
 
