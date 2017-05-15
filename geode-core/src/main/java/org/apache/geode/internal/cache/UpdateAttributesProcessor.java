@@ -376,7 +376,7 @@ public class UpdateAttributesProcessor {
   }
 
 
-  public final static class ProfileReplyMessage extends ReplyMessage {
+  public static class ProfileReplyMessage extends ReplyMessage {
     Profile profile;
 
     public static void send(InternalDistributedMember recipient, int processorId,
