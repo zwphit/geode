@@ -2441,7 +2441,7 @@ public class BucketAdvisor extends CacheDistributionAdvisor {
   /**
    * Profile information for a remote bucket hosted by cache servers.
    */
-  public static final class ServerBucketProfile extends BucketProfile {
+  public static class ServerBucketProfile extends BucketProfile {
 
     public Set<BucketServerLocation66> bucketServerLocations;
 

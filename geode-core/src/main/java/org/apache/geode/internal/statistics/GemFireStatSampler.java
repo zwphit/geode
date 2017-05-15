@@ -46,7 +46,7 @@ import org.apache.logging.log4j.Logger;
  * The StatisticsManager is implemented by DistributedSystem.
  * 
  */
-public final class GemFireStatSampler extends HostStatSampler {
+public class GemFireStatSampler extends HostStatSampler {
 
   private static final Logger logger = LogService.getLogger();
 

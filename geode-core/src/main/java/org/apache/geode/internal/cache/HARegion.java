@@ -54,7 +54,7 @@ import org.apache.geode.internal.offheap.annotations.Released;
  * @since GemFire 4.3
  * 
  */
-public final class HARegion extends DistributedRegion {
+public class HARegion extends DistributedRegion {
   private static final Logger logger = LogService.getLogger();
 
   CachePerfStats haRegionStats;

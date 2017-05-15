@@ -1929,7 +1929,7 @@ public class TXEntryState implements Releasable {
    * 
    * @since GemFire 5.0
    */
-  public final class TxEntryEventImpl extends EntryEventImpl implements Comparable {
+  public class TxEntryEventImpl extends EntryEventImpl implements Comparable {
     /**
      * Creates a local tx entry event
      */

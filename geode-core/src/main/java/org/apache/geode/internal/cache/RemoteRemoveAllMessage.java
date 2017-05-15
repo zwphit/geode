@@ -65,7 +65,7 @@ import org.apache.geode.internal.offheap.annotations.Released;
  *
  * @since GemFire 8.1
  */
-public final class RemoteRemoveAllMessage extends RemoteOperationMessageWithDirectReply {
+public class RemoteRemoveAllMessage extends RemoteOperationMessageWithDirectReply {
   private static final Logger logger = LogService.getLogger();
 
   private RemoveAllEntryData[] removeAllData;
@@ -429,7 +429,7 @@ public final class RemoteRemoveAllMessage extends RemoteOperationMessageWithDire
     }
   }
 
-  public static final class RemoveAllReplyMessage extends ReplyMessage {
+  public static class RemoveAllReplyMessage extends ReplyMessage {
     /** Result of the RemoveAll operation */
     private VersionedObjectList versions;
 

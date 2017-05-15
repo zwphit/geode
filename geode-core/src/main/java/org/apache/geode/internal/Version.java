@@ -34,7 +34,7 @@ import org.apache.geode.internal.i18n.LocalizedStrings;
  * 
  * @since GemFire 5.7
  */
-public final class Version implements Comparable<Version> {
+public class Version implements Comparable<Version> {
 
   /** The name of this version */
   private final transient String name;

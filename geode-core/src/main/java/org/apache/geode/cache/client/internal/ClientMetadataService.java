@@ -52,7 +52,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * 
  * @since GemFire 6.5
  */
-public final class ClientMetadataService {
+public class ClientMetadataService {
 
   private static final Logger logger = LogService.getLogger();
 

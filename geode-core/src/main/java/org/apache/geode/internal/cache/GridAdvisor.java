@@ -379,7 +379,7 @@ public abstract class GridAdvisor extends DistributionAdvisor {
   /**
    * Basic idea is to base id off of host and port of GridProfile
    */
-  public static final class GridProfileId implements ProfileId {
+  public static class GridProfileId implements ProfileId {
 
     private final GridProfile gp;
 

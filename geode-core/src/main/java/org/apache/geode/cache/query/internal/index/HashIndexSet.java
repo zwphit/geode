@@ -46,7 +46,7 @@ public class HashIndexSet implements Set {
    * optional statistics object to track number of hash collisions and time spent probing based on
    * hash collisions
    */
-  final class HashIndexSetProperties {
+  class HashIndexSetProperties {
     /** the set of Objects */
     final protected transient Object[] set;
     /** used for hashing into the table **/

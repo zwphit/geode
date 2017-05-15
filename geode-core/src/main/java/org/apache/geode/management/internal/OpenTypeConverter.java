@@ -91,8 +91,7 @@ public abstract class OpenTypeConverter {
 
   private final Class openClass;
 
-  private static final class ConverterMap
-      extends WeakHashMap<Type, WeakReference<OpenTypeConverter>> {
+  private static class ConverterMap extends WeakHashMap<Type, WeakReference<OpenTypeConverter>> {
   }
 
   private static final ConverterMap converterMap = new ConverterMap();
@@ -513,7 +512,7 @@ public abstract class OpenTypeConverter {
    * 
    * 
    */
-  protected static final class CompositeBuilderViaFrom extends CompositeBuilder {
+  protected static class CompositeBuilderViaFrom extends CompositeBuilder {
 
     CompositeBuilderViaFrom(Class targetClass, String[] itemNames) {
       super(targetClass, itemNames);
@@ -669,7 +668,7 @@ public abstract class OpenTypeConverter {
    * 
    * 
    */
-  protected static final class CompositeBuilderViaConstructor extends CompositeBuilder {
+  protected static class CompositeBuilderViaConstructor extends CompositeBuilder {
 
     CompositeBuilderViaConstructor(Class targetClass, String[] itemNames) {
       super(targetClass, itemNames);
@@ -853,7 +852,7 @@ public abstract class OpenTypeConverter {
    * 
    * 
    */
-  protected static final class CompositeBuilderViaProxy extends CompositeBuilder {
+  protected static class CompositeBuilderViaProxy extends CompositeBuilder {
 
     CompositeBuilderViaProxy(Class targetClass, String[] itemNames) {
       super(targetClass, itemNames);

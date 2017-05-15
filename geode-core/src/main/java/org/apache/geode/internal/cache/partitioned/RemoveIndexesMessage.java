@@ -49,7 +49,7 @@ import org.apache.geode.internal.logging.log4j.LogMarker;
  * 
  * 
  */
-public final class RemoveIndexesMessage extends PartitionMessage {
+public class RemoveIndexesMessage extends PartitionMessage {
   private static final Logger logger = LogService.getLogger();
 
   /**
@@ -413,7 +413,7 @@ public final class RemoveIndexesMessage extends PartitionMessage {
    * index creation.
    *
    */
-  public static final class RemoveIndexesReplyMessage extends ReplyMessage {
+  public static class RemoveIndexesReplyMessage extends ReplyMessage {
 
     /** Indexes removed or not. */
     private boolean result;

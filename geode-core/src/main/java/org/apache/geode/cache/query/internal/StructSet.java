@@ -39,7 +39,7 @@ import org.apache.geode.internal.i18n.LocalizedStrings;
  * 
  * @since GemFire 4.0
  */
-public final class StructSet /* extends ObjectOpenCustomHashSet */ implements Set, SelectResults,
+public class StructSet /* extends ObjectOpenCustomHashSet */ implements Set, SelectResults,
     DataSerializableFixedID, StructFields {
   private static final long serialVersionUID = -1228835506930611510L;
 

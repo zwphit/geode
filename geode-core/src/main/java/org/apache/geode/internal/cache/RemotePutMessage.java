@@ -66,7 +66,7 @@ import static org.apache.geode.internal.offheap.annotations.OffHeapIdentifier.EN
  *
  * @since GemFire 6.5
  */
-public final class RemotePutMessage extends RemoteOperationMessageWithDirectReply
+public class RemotePutMessage extends RemoteOperationMessageWithDirectReply
     implements NewValueImporter, OldValueImporter {
   private static final Logger logger = LogService.getLogger();
 
@@ -776,7 +776,7 @@ public final class RemotePutMessage extends RemoteOperationMessageWithDirectRepl
     this.internalDs = internalDs;
   }
 
-  public static final class PutReplyMessage extends ReplyMessage implements OldValueImporter {
+  public static class PutReplyMessage extends ReplyMessage implements OldValueImporter {
 
     static final byte FLAG_RESULT = 0x01;
     static final byte FLAG_HASVERSION = 0x02;

@@ -20,7 +20,7 @@ import org.apache.geode.distributed.internal.DistributionConfig;
 /**
  * Used to determine if product should use pure java mode.
  */
-public final class PureJavaMode {
+public class PureJavaMode {
   /**
    * System property to set to true to force pure java mode
    */

@@ -546,7 +546,7 @@ public class IndexCreationMsg extends PartitionMessage {
    * 
    * 
    */
-  public static final class IndexCreationReplyMsg extends ReplyMessage {
+  public static class IndexCreationReplyMsg extends ReplyMessage {
 
     /** Index created or not. */
     private boolean result;

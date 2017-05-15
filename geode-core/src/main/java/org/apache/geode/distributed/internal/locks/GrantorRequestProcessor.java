@@ -458,7 +458,7 @@ public class GrantorRequestProcessor extends ReplyProcessor21 {
 
   /////////////// Inner message classes //////////////////
 
-  public static final class GrantorRequestMessage extends PooledDistributionMessage
+  public static class GrantorRequestMessage extends PooledDistributionMessage
       implements MessageWithReply {
     private long grantorVersion;
     private int dlsSerialNumber;
@@ -637,7 +637,7 @@ public class GrantorRequestProcessor extends ReplyProcessor21 {
     }
   }
 
-  public static final class GrantorInfoReplyMessage extends ReplyMessage {
+  public static class GrantorInfoReplyMessage extends ReplyMessage {
     private InternalDistributedMember grantor;
     private long elderVersionId;
     private int grantorSerialNumber;

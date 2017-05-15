@@ -3180,7 +3180,7 @@ public class DLockService extends DistributedLockService {
   // -------------------------------------------------------------------------
 
   /** Used as the name (key) for the suspend locking entry in the tokens map */
-  public static final class SuspendLockingToken implements DataSerializableFixedID {
+  public static class SuspendLockingToken implements DataSerializableFixedID {
     public SuspendLockingToken() {}
 
     @Override

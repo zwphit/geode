@@ -681,7 +681,7 @@ public class HeapDataOutputStream extends OutputStream
     return new HDInputStream();
   }
 
-  private final class HDInputStream extends InputStream {
+  private class HDInputStream extends InputStream {
     private Iterator<ByteBuffer> chunkIt;
     private ByteBuffer bb;
 

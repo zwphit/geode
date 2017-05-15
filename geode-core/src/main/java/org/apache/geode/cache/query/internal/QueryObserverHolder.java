@@ -35,7 +35,7 @@ package org.apache.geode.cache.query.internal;
  * 
  * @version $Revision: 1.1 $
  */
-public final class QueryObserverHolder {
+public class QueryObserverHolder {
 
   /**
    * The default 'do-nothing' query observer *

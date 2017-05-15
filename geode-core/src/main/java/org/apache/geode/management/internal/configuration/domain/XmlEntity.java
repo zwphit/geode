@@ -461,7 +461,7 @@ public class XmlEntity implements VersionedDataSerializable {
    *
    * @since GemFire 8.1
    */
-  public static final class XmlEntityBuilder {
+  public static class XmlEntityBuilder {
     private XmlEntity xmlEntity;
 
     /**

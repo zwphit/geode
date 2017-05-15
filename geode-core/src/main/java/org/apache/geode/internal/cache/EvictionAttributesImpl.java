@@ -47,7 +47,7 @@ import org.apache.geode.internal.cache.lru.MemLRUCapacityController;
  * 
  * @since GemFire 5.0
  */
-public final class EvictionAttributesImpl extends EvictionAttributes
+public class EvictionAttributesImpl extends EvictionAttributes
     implements EvictionAttributesMutator {
   private static final long serialVersionUID = -6404395520499379715L;
 

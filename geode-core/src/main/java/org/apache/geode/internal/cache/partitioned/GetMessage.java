@@ -64,7 +64,7 @@ import java.util.Set;
  * 
  * @since GemFire 5.0
  */
-public final class GetMessage extends PartitionMessageWithDirectReply {
+public class GetMessage extends PartitionMessageWithDirectReply {
   private static final Logger logger = LogService.getLogger();
 
   private Object key;
@@ -298,7 +298,7 @@ public final class GetMessage extends PartitionMessageWithDirectReply {
    * 
    * @since GemFire 5.0
    */
-  public static final class GetReplyMessage extends ReplyMessage {
+  public static class GetReplyMessage extends ReplyMessage {
     /**
      * The raw value in the cache which may be serialized to the output stream, if it is NOT already
      * a byte array

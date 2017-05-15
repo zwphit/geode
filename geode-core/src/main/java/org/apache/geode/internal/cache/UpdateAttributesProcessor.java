@@ -258,7 +258,7 @@ public class UpdateAttributesProcessor {
   }
 
 
-  public static final class UpdateAttributesMessage extends HighPriorityDistributionMessage
+  public static class UpdateAttributesMessage extends HighPriorityDistributionMessage
       implements MessageWithReply {
 
     protected String adviseePath;

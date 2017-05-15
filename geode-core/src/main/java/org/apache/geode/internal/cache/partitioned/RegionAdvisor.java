@@ -515,7 +515,7 @@ public class RegionAdvisor extends CacheDistributionAdvisor {
   /**
    * Profile information for a remote counterpart.
    */
-  public static final class PartitionProfile extends CacheProfile {
+  public static class PartitionProfile extends CacheProfile {
 
     /**
      * The number of Mb the VM is allowed to use for the PR

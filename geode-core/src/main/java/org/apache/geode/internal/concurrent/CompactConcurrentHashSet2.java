@@ -1030,7 +1030,7 @@ public class CompactConcurrentHashSet2<V> extends AbstractSet<V> implements Set<
   /**
    * A node inserted at head of bins during transfer operations.
    */
-  static final class ForwardingNode<K> extends Node<K> {
+  static class ForwardingNode<K> extends Node<K> {
     final Node<K>[] nextTable;
 
     ForwardingNode(Node<K>[] tab) {
@@ -1060,7 +1060,7 @@ public class CompactConcurrentHashSet2<V> extends AbstractSet<V> implements Set<
   /**
    * A place-holder node used in computeIfAbsent and compute
    */
-  static final class ReservationNode<K> extends Node<K> {
+  static class ReservationNode<K> extends Node<K> {
     ReservationNode() {
       super(RESERVED, null, null);
     }
@@ -1400,7 +1400,7 @@ public class CompactConcurrentHashSet2<V> extends AbstractSet<V> implements Set<
   /**
    * Nodes for use in TreeBins
    */
-  static final class TreeNode<K> extends Node<K> {
+  static class TreeNode<K> extends Node<K> {
     TreeNode<K> parent; // red-black tree links
     TreeNode<K> left;
     TreeNode<K> right;
@@ -1459,7 +1459,7 @@ public class CompactConcurrentHashSet2<V> extends AbstractSet<V> implements Set<
    * forcing writers (who hold bin lock) to wait for readers (who do not) to complete before tree
    * restructuring operations.
    */
-  static final class TreeBin<K> extends Node<K> {
+  static class TreeBin<K> extends Node<K> {
     TreeNode<K> root;
     volatile TreeNode<K> first;
     volatile Thread waiter;
@@ -1979,7 +1979,7 @@ public class CompactConcurrentHashSet2<V> extends AbstractSet<V> implements Set<
    * Records the table, its length, and current traversal index for a traverser that must process a
    * region of a forwarded table before proceeding with current table.
    */
-  static final class TableStack<K> {
+  static class TableStack<K> {
     int length;
     int index;
     Node<K>[] tab;
@@ -2120,7 +2120,7 @@ public class CompactConcurrentHashSet2<V> extends AbstractSet<V> implements Set<
     }
   }
 
-  static final class KeyIterator<K> extends BaseIterator<K> implements Iterator<K>, Enumeration<K> {
+  static class KeyIterator<K> extends BaseIterator<K> implements Iterator<K>, Enumeration<K> {
     KeyIterator(Node<K>[] tab, int index, int size, int limit, CompactConcurrentHashSet2<K> map) {
       super(tab, index, size, limit, map);
     }
@@ -2147,7 +2147,7 @@ public class CompactConcurrentHashSet2<V> extends AbstractSet<V> implements Set<
   // See their internal docs for explanation.
 
   // A padded cell for distributing counts
-  static final class CounterCell {
+  static class CounterCell {
     volatile long p0, p1, p2, p3, p4, p5, p6;
     volatile long value;
     volatile long q0, q1, q2, q3, q4, q5, q6;
@@ -2161,7 +2161,7 @@ public class CompactConcurrentHashSet2<V> extends AbstractSet<V> implements Set<
    * Holder for the thread-local hash code determining which CounterCell to use. The code is
    * initialized via the counterHashCodeGenerator, but may be moved upon collisions.
    */
-  static final class CounterHashCode {
+  static class CounterHashCode {
     int code;
   }
 

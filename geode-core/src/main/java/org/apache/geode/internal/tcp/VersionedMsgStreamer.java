@@ -27,7 +27,7 @@ import org.apache.geode.internal.VersionedDataStream;
  * 
  * @since GemFire 7.1
  */
-final class VersionedMsgStreamer extends MsgStreamer implements VersionedDataStream {
+class VersionedMsgStreamer extends MsgStreamer implements VersionedDataStream {
 
   private final Version version;
 

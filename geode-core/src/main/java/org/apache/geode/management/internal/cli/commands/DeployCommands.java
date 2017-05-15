@@ -57,7 +57,7 @@ import java.util.Set;
  * @see org.apache.geode.management.internal.cli.commands.AbstractCommandsSupport
  * @since GemFire 7.0
  */
-public final class DeployCommands extends AbstractCommandsSupport {
+public class DeployCommands extends AbstractCommandsSupport {
 
   private final DeployFunction deployFunction = new DeployFunction();
   private final UndeployFunction undeployFunction = new UndeployFunction();

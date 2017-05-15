@@ -254,7 +254,7 @@ public class DistributedRemoveAllOperation extends AbstractUpdateOperation // TO
   /**
    * Data that represents a single entry being RemoveAll'd.
    */
-  public static final class RemoveAllEntryData {
+  public static class RemoveAllEntryData {
 
     final Object key;
 

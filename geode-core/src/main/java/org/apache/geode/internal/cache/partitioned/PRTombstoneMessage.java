@@ -50,7 +50,7 @@ import org.apache.geode.internal.logging.log4j.LogMarker;
  * 
  * @since GemFire 7.0
  */
-public final class PRTombstoneMessage extends PartitionMessageWithDirectReply
+public class PRTombstoneMessage extends PartitionMessageWithDirectReply
     implements SerializationVersions {
 
   private static final Logger logger = LogService.getLogger();

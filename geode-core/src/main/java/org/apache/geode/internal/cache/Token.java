@@ -303,7 +303,7 @@ public abstract class Token {
   }
 
   /** Token used in StreamingOperation, StreamingPartitionOperation */
-  public static final class EndOfStream extends Token implements DataSerializableFixedID {
+  public static class EndOfStream extends Token implements DataSerializableFixedID {
     public EndOfStream() {}
 
     @Override

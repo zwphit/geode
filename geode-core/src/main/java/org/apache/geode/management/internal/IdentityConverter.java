@@ -24,7 +24,7 @@ import javax.management.openmbean.OpenType;
  * 
  *
  */
-public final class IdentityConverter extends OpenTypeConverter {
+public class IdentityConverter extends OpenTypeConverter {
   IdentityConverter(Type targetType, OpenType openType, Class openClass) {
     super(targetType, openType, openClass);
   }

@@ -26,7 +26,7 @@ import org.apache.geode.internal.i18n.LocalizedStrings;
  *
  * @since GemFire 3.0
  */
-public final class StatisticDescriptorImpl implements StatisticDescriptor {
+public class StatisticDescriptorImpl implements StatisticDescriptor {
 
   /** A constant for an <code>byte</code> type */
   static final byte BYTE = (byte) 3;

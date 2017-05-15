@@ -31,7 +31,7 @@ import org.apache.geode.distributed.internal.membership.NetView;
  * 
  */
 
-public final class LocalViewMessage extends SerialDistributionMessage {
+public class LocalViewMessage extends SerialDistributionMessage {
 
   private GMSMembershipManager manager;
   private long viewId;

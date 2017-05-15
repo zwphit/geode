@@ -2525,7 +2525,7 @@ public class EntryEventImpl
     return result;
   }
 
-  public static final class SerializedCacheValueImpl
+  public static class SerializedCacheValueImpl
       implements SerializedCacheValue, CachedDeserializable, Sendable {
     private final EntryEventImpl event;
     @Unretained

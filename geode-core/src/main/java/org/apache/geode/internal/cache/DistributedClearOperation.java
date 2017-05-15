@@ -262,7 +262,7 @@ public class DistributedClearOperation extends DistributedCacheOperation {
 
   }
 
-  public static final class ClearRegionWithContextMessage extends ClearRegionMessage {
+  public static class ClearRegionWithContextMessage extends ClearRegionMessage {
     protected transient Object context;
     protected RegionVersionVector rvv;
 

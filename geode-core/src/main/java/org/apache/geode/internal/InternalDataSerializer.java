@@ -3230,7 +3230,7 @@ public abstract class InternalDataSerializer extends DataSerializer implements D
    * A distribution message that alerts other members of the distributed cache of a new
    * {@code DataSerializer} being registered.
    */
-  public static final class RegistrationMessage extends SerialDistributionMessage {
+  public static class RegistrationMessage extends SerialDistributionMessage {
     /**
      * The id of the {@code DataSerializer} that was registered since 5.7 an int instead of a byte
      */

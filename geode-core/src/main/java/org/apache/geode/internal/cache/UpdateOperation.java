@@ -496,7 +496,7 @@ public class UpdateOperation extends AbstractUpdateOperation {
     }
   }
 
-  public static final class UpdateWithContextMessage extends UpdateMessage {
+  public static class UpdateWithContextMessage extends UpdateMessage {
 
     protected transient ClientProxyMembershipID clientID;
 

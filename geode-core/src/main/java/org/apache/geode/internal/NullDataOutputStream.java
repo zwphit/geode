@@ -27,7 +27,7 @@ import org.apache.geode.DataSerializer;
  * @since GemFire 5.0.2
  * 
  */
-public final class NullDataOutputStream extends OutputStream implements ObjToByteArraySerializer {
+public class NullDataOutputStream extends OutputStream implements ObjToByteArraySerializer {
 
   private int size;
 

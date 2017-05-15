@@ -39,8 +39,7 @@ import org.apache.geode.internal.i18n.LocalizedStrings;
  * 
  *
  */
-public final class DistPeerTXStateStub extends PeerTXStateStub
-    implements DistTXCoordinatorInterface {
+public class DistPeerTXStateStub extends PeerTXStateStub implements DistTXCoordinatorInterface {
   private ArrayList<DistTxEntryEvent> primaryTransactionalOperations = null;
   private ArrayList<DistTxEntryEvent> secondaryTransactionalOperations = null;
   private DistTXPrecommitMessage precommitDistTxMsg = null;

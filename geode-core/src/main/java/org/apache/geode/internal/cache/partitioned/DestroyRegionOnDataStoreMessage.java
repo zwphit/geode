@@ -41,7 +41,7 @@ import org.apache.geode.internal.cache.PartitionedRegionDataStore;
  * 
  * @since GemFire 5.0
  */
-public final class DestroyRegionOnDataStoreMessage extends PartitionMessage {
+public class DestroyRegionOnDataStoreMessage extends PartitionMessage {
 
   private Object callbackArg;
 

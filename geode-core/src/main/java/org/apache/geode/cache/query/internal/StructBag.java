@@ -41,7 +41,7 @@ import org.apache.geode.internal.i18n.LocalizedStrings;
  * 
  * @since GemFire 5.1
  */
-public final class StructBag extends ResultsBag implements StructFields {
+public class StructBag extends ResultsBag implements StructFields {
   /**
    * Holds value of property modifiable.
    */

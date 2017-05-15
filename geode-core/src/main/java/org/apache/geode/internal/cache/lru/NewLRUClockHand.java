@@ -408,7 +408,7 @@ public class NewLRUClockHand {
   protected static class HeadLock extends Object {
   }
 
-  private static final class GuardNode implements LRUClockNode {
+  private static class GuardNode implements LRUClockNode {
 
     private LRUClockNode next;
     LRUClockNode prev;

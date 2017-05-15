@@ -31,8 +31,7 @@ import org.apache.geode.internal.i18n.LocalizedStrings;
  * 
  * 
  */
-public final class DistTXStateOnCoordinator extends DistTXState
-    implements DistTXCoordinatorInterface {
+public class DistTXStateOnCoordinator extends DistTXState implements DistTXCoordinatorInterface {
 
   private ArrayList<DistTxEntryEvent> primaryTransactionalOperations = null;
   private ArrayList<DistTxEntryEvent> secondaryTransactionalOperations = null;

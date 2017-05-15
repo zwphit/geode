@@ -35,7 +35,7 @@ import javax.management.openmbean.OpenDataException;
  * 
  * 
  */
-public final class CollectionConverter extends OpenTypeConverter {
+public class CollectionConverter extends OpenTypeConverter {
   CollectionConverter(Type targetType, ArrayType openArrayType, Class openArrayClass,
       OpenTypeConverter elementConverter) {
     super(targetType, openArrayType, openArrayClass);

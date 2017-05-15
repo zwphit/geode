@@ -65,7 +65,7 @@ import org.apache.geode.internal.offheap.annotations.Released;
  *
  * @since GemFire 6.5
  */
-public final class RemotePutAllMessage extends RemoteOperationMessageWithDirectReply {
+public class RemotePutAllMessage extends RemoteOperationMessageWithDirectReply {
   private static final Logger logger = LogService.getLogger();
 
   private PutAllEntryData[] putAllData;
@@ -439,7 +439,7 @@ public final class RemotePutAllMessage extends RemoteOperationMessageWithDirectR
     }
   }
 
-  public static final class PutAllReplyMessage extends ReplyMessage {
+  public static class PutAllReplyMessage extends ReplyMessage {
     /** Result of the PutAll operation */
     // private PutAllResponseData[] responseData;
     private VersionedObjectList versions;

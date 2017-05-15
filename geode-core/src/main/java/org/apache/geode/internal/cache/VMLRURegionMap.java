@@ -26,7 +26,7 @@ import org.apache.geode.internal.cache.lru.*;
  *
  *
  */
-final class VMLRURegionMap extends AbstractLRURegionMap {
+class VMLRURegionMap extends AbstractLRURegionMap {
 
   VMLRURegionMap(Object owner, Attributes attr, InternalRegionArguments internalRegionArgs) {
     super(internalRegionArgs);

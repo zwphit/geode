@@ -305,7 +305,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
    * Segment.readValueUnderLock method is used as a backup in case a null (pre-initialized) value is
    * ever seen in an unsynchronized access method.
    */
-  static final class HashEntryImpl<K, V> implements HashEntry<K, V> {
+  static class HashEntryImpl<K, V> implements HashEntry<K, V> {
 
     protected final K key;
 
@@ -1069,7 +1069,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
    * 
    * @since GemFire 7.0
    */
-  static final class IdentitySegment<K, V> extends Segment<K, V> implements Serializable {
+  static class IdentitySegment<K, V> extends Segment<K, V> implements Serializable {
 
     private static final long serialVersionUID = 3086228147110819882L;
 
@@ -1212,7 +1212,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
   }
 
-  static final class DefaultHashEntryCreator<K, V> implements HashEntryCreator<K, V>, Serializable {
+  static class DefaultHashEntryCreator<K, V> implements HashEntryCreator<K, V>, Serializable {
 
     private static final long serialVersionUID = 3765680607280951726L;
 
@@ -2064,7 +2064,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
   }
 
-  final class KeyIterator extends HashIterator implements Iterator<K>, Enumeration<K> {
+  class KeyIterator extends HashIterator implements Iterator<K>, Enumeration<K> {
 
     public K next() {
       return super.nextEntry().getKey();
@@ -2075,7 +2075,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
   }
 
-  final class ValueIterator extends HashIterator implements Iterator<V>, Enumeration<V> {
+  class ValueIterator extends HashIterator implements Iterator<V>, Enumeration<V> {
 
     public V next() {
       return super.nextEntry().getMapValue();
@@ -2223,7 +2223,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
    * Custom Entry class used by EntryIterator.next(), that relays setValue changes to the underlying
    * map.
    */
-  final class WriteThroughEntry extends SimpleReusableEntry {
+  class WriteThroughEntry extends SimpleReusableEntry {
 
     private static final long serialVersionUID = -6364816773849437756L;
 
@@ -2254,7 +2254,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
   }
 
-  final class EntryIterator extends HashIterator implements Iterator<Map.Entry<K, V>> {
+  class EntryIterator extends HashIterator implements Iterator<Map.Entry<K, V>> {
 
     // GemStone change
     // added possibility to reuse a single Map.Entry for entire iteration
@@ -2276,7 +2276,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
     // End GemStone change
   }
 
-  final class KeySet extends AbstractSet<K> {
+  class KeySet extends AbstractSet<K> {
 
     @Override
     public Iterator<K> iterator() {
@@ -2304,7 +2304,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
   }
 
-  final class Values extends AbstractCollection<V> {
+  class Values extends AbstractCollection<V> {
 
     @Override
     public Iterator<V> iterator() {
@@ -2327,7 +2327,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
   }
 
-  final class EntrySet extends AbstractSet<Map.Entry<K, V>> {
+  class EntrySet extends AbstractSet<Map.Entry<K, V>> {
 
     // GemStone change
     // added possibility to reuse a single Map.Entry for entire iteration

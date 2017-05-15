@@ -77,7 +77,7 @@ import org.apache.geode.internal.offheap.annotations.Retained;
  *
  * @since GemFire 8.1
  */
-public final class RemoveAllPRMessage extends PartitionMessageWithDirectReply {
+public class RemoveAllPRMessage extends PartitionMessageWithDirectReply {
   private static final Logger logger = LogService.getLogger();
 
   private RemoveAllEntryData[] removeAllPRData;
@@ -664,7 +664,7 @@ public final class RemoveAllPRMessage extends PartitionMessageWithDirectReply {
     return _mayAddToMultipleSerialGateways(dm);
   }
 
-  public static final class RemoveAllReplyMessage extends ReplyMessage {
+  public static class RemoveAllReplyMessage extends ReplyMessage {
     /** Result of the RemoveAll operation */
     boolean result;
     VersionedObjectList versions;

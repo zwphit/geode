@@ -75,7 +75,7 @@ import static org.apache.geode.internal.offheap.annotations.OffHeapIdentifier.EN
  *
  * @since GemFire 5.0
  */
-public final class PutMessage extends PartitionMessageWithDirectReply implements NewValueImporter {
+public class PutMessage extends PartitionMessageWithDirectReply implements NewValueImporter {
   private static final Logger logger = LogService.getLogger();
 
   /** The key associated with the value that must be sent */
@@ -877,7 +877,7 @@ public final class PutMessage extends PartitionMessageWithDirectReply implements
     return _mayAddToMultipleSerialGateways(dm);
   }
 
-  public static final class PutReplyMessage extends ReplyMessage implements OldValueImporter {
+  public static class PutReplyMessage extends ReplyMessage implements OldValueImporter {
     /** Result of the Put operation */
     boolean result;
 

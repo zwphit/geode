@@ -34,7 +34,7 @@ import javax.management.openmbean.TabularType;
  * 
  * 
  */
-public final class TableConverter extends OpenTypeConverter {
+public class TableConverter extends OpenTypeConverter {
   TableConverter(Type targetType, boolean sortedMap, TabularType tabularType,
       OpenTypeConverter keyConverter, OpenTypeConverter valueConverter) {
     super(targetType, tabularType, TabularData.class);

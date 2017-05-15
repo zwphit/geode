@@ -99,7 +99,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
    */
   private final AtomicLongWithTerminalState bytesInMemory = new AtomicLongWithTerminalState();
 
-  public static final class RawValue {
+  public static class RawValue {
     private final Object rawValue;
 
     public RawValue(Object rawVal) {

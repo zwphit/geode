@@ -466,7 +466,7 @@ public class DestroyRegionOperation extends DistributedCacheOperation {
     }
   }
 
-  public static final class DestroyRegionWithContextMessage extends DestroyRegionMessage {
+  public static class DestroyRegionWithContextMessage extends DestroyRegionMessage {
 
     protected transient Object context;
 

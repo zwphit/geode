@@ -882,13 +882,13 @@ public class ObjectIntHashMap implements Cloneable, Serializable {
 
   }
 
-  private final class KeyIterator extends HashIterator<Object> {
+  private class KeyIterator extends HashIterator<Object> {
     public Object next() {
       return nextEntry().getKey();
     }
   }
 
-  private final class EntryIterator extends HashIterator<Entry> {
+  private class EntryIterator extends HashIterator<Entry> {
     public Entry next() {
       return nextEntry();
     }
@@ -923,7 +923,7 @@ public class ObjectIntHashMap implements Cloneable, Serializable {
     return (ks != null ? ks : (keySet = new KeySet()));
   }
 
-  private final class KeySet extends AbstractSet<Object> {
+  private class KeySet extends AbstractSet<Object> {
     public Iterator<Object> iterator() {
       return newKeyIterator();
     }
@@ -966,7 +966,7 @@ public class ObjectIntHashMap implements Cloneable, Serializable {
     return es != null ? es : (entrySet = new EntrySet());
   }
 
-  private final class EntrySet extends AbstractSet<Entry> {
+  private class EntrySet extends AbstractSet<Entry> {
     public Iterator<Entry> iterator() {
       return newEntryIterator();
     }
@@ -1055,7 +1055,7 @@ public class ObjectIntHashMap implements Cloneable, Serializable {
     return loadFactor;
   }
 
-  private final class IntHashMapStrategy implements HashingStrategy {
+  private class IntHashMapStrategy implements HashingStrategy {
 
     @Override
     public int hashCode(Object o) {

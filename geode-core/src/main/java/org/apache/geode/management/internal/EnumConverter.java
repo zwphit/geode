@@ -23,7 +23,7 @@ import javax.management.openmbean.SimpleType;
  * 
  * 
  */
-public final class EnumConverter<T extends Enum<T>> extends OpenTypeConverter {
+public class EnumConverter<T extends Enum<T>> extends OpenTypeConverter {
 
   EnumConverter(Class<T> enumClass) {
     super(enumClass, SimpleType.STRING, String.class);
