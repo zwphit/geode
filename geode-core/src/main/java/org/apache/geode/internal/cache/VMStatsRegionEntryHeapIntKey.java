@@ -15,50 +15,81 @@
 package org.apache.geode.internal.cache;
 
 // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
+
+
+
+
+
+
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+
 import org.apache.geode.internal.InternalStatisticsDisabledException;
+
 import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.HashEntry;
 
 // macros whose definition changes this class:
 // disk: DISK
 // lru: LRU
-// stats: STATS
+// stats: 1
 // versioned: VERSIONED
 // offheap: OFFHEAP
 // One of the following key macros must be defined:
 // key object: KEY_OBJECT
-// key int: KEY_INT
+// key int: 1
 // key long: KEY_LONG
 // key uuid: KEY_UUID
 // key string1: KEY_STRING1
 // key string2: KEY_STRING2
+
 /**
  * Do not modify this class. It was generated. Instead modify LeafRegionEntry.cpp and then run
  * ./dev-tools/generateRegionEntryClasses.sh (it must be run from the top level directory).
  */
 public class VMStatsRegionEntryHeapIntKey extends VMStatsRegionEntryHeap {
-  public VMStatsRegionEntryHeapIntKey(RegionEntryContext context, int key, Object value) {
-    super(context, value);
+  public VMStatsRegionEntryHeapIntKey  (RegionEntryContext context, int key, 
+
+
+
+      Object value
+
+
+
+      ) {
+    super(context, 
+
+
+
+          value
+
+        );
     // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
+
+
+
+
+
+
     this.key = key;
+
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
+  
   // common code
   protected int hash;
   private HashEntry<Object, Object> next;
   @SuppressWarnings("unused")
   private volatile long lastModified;
-  private static final AtomicLongFieldUpdater<VMStatsRegionEntryHeapIntKey> lastModifiedUpdater =
-      AtomicLongFieldUpdater.newUpdater(VMStatsRegionEntryHeapIntKey.class, "lastModified");
-  private volatile Object value;
+  private static final AtomicLongFieldUpdater<VMStatsRegionEntryHeapIntKey> lastModifiedUpdater
+    = AtomicLongFieldUpdater.newUpdater(VMStatsRegionEntryHeapIntKey.class, "lastModified");
 
+  private volatile Object value;
   @Override
-  protected final Object getValueField() {
+  protected Object getValueField() {
     return this.value;
   }
-
   @Override
   protected void setValueField(Object v) {
     this.value = v;
@@ -67,40 +98,40 @@ public class VMStatsRegionEntryHeapIntKey extends VMStatsRegionEntryHeap {
   protected long getLastModifiedField() {
     return lastModifiedUpdater.get(this);
   }
-
   protected boolean compareAndSetLastModifiedField(long expectedValue, long newValue) {
     return lastModifiedUpdater.compareAndSet(this, expectedValue, newValue);
   }
-
   /**
    * @see HashEntry#getEntryHash()
    */
-  public final int getEntryHash() {
+  public int getEntryHash() {
     return this.hash;
   }
-
   protected void setEntryHash(int v) {
     this.hash = v;
   }
-
   /**
    * @see HashEntry#getNextEntry()
    */
-  public final HashEntry<Object, Object> getNextEntry() {
+  public HashEntry<Object, Object> getNextEntry() {
     return this.next;
   }
-
   /**
    * @see HashEntry#setNextEntry
    */
-  public final void setNextEntry(final HashEntry<Object, Object> n) {
+  public void setNextEntry(final HashEntry<Object, Object> n) {
     this.next = n;
   }
 
+  
+
+
+
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
+  
   // stats code
   @Override
-  public final void updateStatsForGet(boolean hit, long time) {
+  public void updateStatsForGet(boolean hit, long time) {
     setLastAccessed(time);
     if (hit) {
       incrementHitCount();
@@ -108,79 +139,82 @@ public class VMStatsRegionEntryHeapIntKey extends VMStatsRegionEntryHeap {
       incrementMissCount();
     }
   }
-
   @Override
-  protected final void setLastModifiedAndAccessedTimes(long lastModified, long lastAccessed) {
+  protected void setLastModifiedAndAccessedTimes(long lastModified, long lastAccessed) {
     _setLastModified(lastModified);
-    if (!DISABLE_ACCESS_TIME_UPDATE_ON_PUT) {
+    if (!DISABLE_ACCESS_TIME_UPDATE_ON_PUT) { 
       setLastAccessed(lastAccessed);
     }
   }
-
   private volatile long lastAccessed;
   private volatile int hitCount;
   private volatile int missCount;
-  private static final AtomicIntegerFieldUpdater<VMStatsRegionEntryHeapIntKey> hitCountUpdater =
-      AtomicIntegerFieldUpdater.newUpdater(VMStatsRegionEntryHeapIntKey.class, "hitCount");
-  private static final AtomicIntegerFieldUpdater<VMStatsRegionEntryHeapIntKey> missCountUpdater =
-      AtomicIntegerFieldUpdater.newUpdater(VMStatsRegionEntryHeapIntKey.class, "missCount");
-
+  
+  private static final AtomicIntegerFieldUpdater<VMStatsRegionEntryHeapIntKey> hitCountUpdater 
+    = AtomicIntegerFieldUpdater.newUpdater(VMStatsRegionEntryHeapIntKey.class, "hitCount");
+  private static final AtomicIntegerFieldUpdater<VMStatsRegionEntryHeapIntKey> missCountUpdater 
+    = AtomicIntegerFieldUpdater.newUpdater(VMStatsRegionEntryHeapIntKey.class, "missCount");
+  
   @Override
-  public final long getLastAccessed() throws InternalStatisticsDisabledException {
+  public long getLastAccessed() throws InternalStatisticsDisabledException {
     return this.lastAccessed;
   }
-
   private void setLastAccessed(long lastAccessed) {
     this.lastAccessed = lastAccessed;
   }
-
   @Override
-  public final long getHitCount() throws InternalStatisticsDisabledException {
+  public long getHitCount() throws InternalStatisticsDisabledException {
     return this.hitCount & 0xFFFFFFFFL;
   }
-
   @Override
-  public final long getMissCount() throws InternalStatisticsDisabledException {
+  public long getMissCount() throws InternalStatisticsDisabledException {
     return this.missCount & 0xFFFFFFFFL;
   }
-
   private void incrementHitCount() {
     hitCountUpdater.incrementAndGet(this);
   }
-
   private void incrementMissCount() {
     missCountUpdater.incrementAndGet(this);
   }
-
   @Override
-  public final void resetCounts() throws InternalStatisticsDisabledException {
-    hitCountUpdater.set(this, 0);
-    missCountUpdater.set(this, 0);
+  public void resetCounts() throws InternalStatisticsDisabledException {
+    hitCountUpdater.set(this,0);
+    missCountUpdater.set(this,0);
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
+  
   @Override
-  public final void txDidDestroy(long currTime) {
+  public void txDidDestroy(long currTime) {
     setLastModified(currTime);
     setLastAccessed(currTime);
     this.hitCount = 0;
     this.missCount = 0;
   }
-
   @Override
   public boolean hasStats() {
     return true;
   }
 
-  // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  // key code
-  private final int key;
+  
 
+  
+  // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
+  
+  // key code
+
+
+
+
+
+
+
+
+  private final int key;
   @Override
-  public final Object getKey() {
+  public Object getKey() {
     return this.key;
   }
-
   @Override
   public boolean isKeyEqual(Object k) {
     if (k instanceof Integer) {
@@ -188,5 +222,8 @@ public class VMStatsRegionEntryHeapIntKey extends VMStatsRegionEntryHeap {
     }
     return false;
   }
+  
+
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
 }
+
