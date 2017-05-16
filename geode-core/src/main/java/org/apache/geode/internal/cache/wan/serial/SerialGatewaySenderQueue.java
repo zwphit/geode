@@ -1201,12 +1201,12 @@ public class SerialGatewaySenderQueue implements RegionQueue {
     }
 
     @Override
-    final public boolean isUsedForSerialGatewaySenderQueue() {
+    public boolean isUsedForSerialGatewaySenderQueue() {
       return true;
     }
 
     @Override
-    final public AbstractGatewaySender getSerialGatewaySender() {
+    public AbstractGatewaySender getSerialGatewaySender() {
       return sender;
     }
 

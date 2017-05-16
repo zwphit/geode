@@ -179,7 +179,7 @@ public class IndexCreationMsg extends PartitionMessage {
    * Process this index creation message on the receiver.
    */
   @Override
-  public final void process(final DistributionManager dm) {
+  public void process(final DistributionManager dm) {
 
     final boolean isDebugEnabled = logger.isDebugEnabled();
 

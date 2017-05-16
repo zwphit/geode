@@ -18,24 +18,13 @@ package org.apache.geode.internal.cache;
 
 
 
-
-
-
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
-
-
-
 import org.apache.geode.internal.cache.lru.EnableLRU;
 
-
 import org.apache.geode.internal.cache.persistence.DiskRecoveryStore;
-
-
-
-
 
 import org.apache.geode.internal.cache.lru.LRUClockNode;
 import org.apache.geode.internal.cache.lru.NewLRUClockHand;
@@ -61,7 +50,7 @@ import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.Ha
  * ./dev-tools/generateRegionEntryClasses.sh (it must be run from the top level directory).
  */
 public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionEntryHeap {
-  public VMThinDiskLRURegionEntryHeapStringKey2  (RegionEntryContext context, String key, 
+  public VMThinDiskLRURegionEntryHeapStringKey2(RegionEntryContext context, String key,
 
 
 
@@ -69,14 +58,14 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
 
       , boolean byteEncode
 
-      ) {
-    super(context, 
+  ) {
+    super(context,
 
-          (value instanceof RecoveredEntry ? null : value)
+        (value instanceof RecoveredEntry ? null : value)
 
 
 
-        );
+    );
     // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
 
     initialize(context, value);
@@ -85,19 +74,20 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
     long tmpBits1 = 0L;
     long tmpBits2 = 0L;
     if (byteEncode) {
-      for (int i=key.length()-1; i >= 0; i--) {
-        // Note: we know each byte is <= 0x7f so the "& 0xff" is not needed. But I added it in to keep findbugs happy.
+      for (int i = key.length() - 1; i >= 0; i--) {
+        // Note: we know each byte is <= 0x7f so the "& 0xff" is not needed. But I added it in to
+        // keep findbugs happy.
         if (i < 7) {
-          tmpBits1 |= (byte)key.charAt(i) & 0xff;
+          tmpBits1 |= (byte) key.charAt(i) & 0xff;
           tmpBits1 <<= 8;
         } else {
           tmpBits2 <<= 8;
-          tmpBits2 |= (byte)key.charAt(i) & 0xff;
+          tmpBits2 |= (byte) key.charAt(i) & 0xff;
         }
       }
-      tmpBits1 |= 1<<6;
+      tmpBits1 |= 1 << 6;
     } else {
-      for (int i=key.length()-1; i >= 0; i--) {
+      for (int i = key.length() - 1; i >= 0; i--) {
         if (i < 3) {
           tmpBits1 |= key.charAt(i);
           tmpBits1 <<= 16;
@@ -114,20 +104,23 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // common code
   protected int hash;
   private HashEntry<Object, Object> next;
   @SuppressWarnings("unused")
   private volatile long lastModified;
-  private static final AtomicLongFieldUpdater<VMThinDiskLRURegionEntryHeapStringKey2> lastModifiedUpdater
-    = AtomicLongFieldUpdater.newUpdater(VMThinDiskLRURegionEntryHeapStringKey2.class, "lastModified");
+  private static final AtomicLongFieldUpdater<VMThinDiskLRURegionEntryHeapStringKey2> lastModifiedUpdater =
+      AtomicLongFieldUpdater.newUpdater(VMThinDiskLRURegionEntryHeapStringKey2.class,
+          "lastModified");
 
   private volatile Object value;
+
   @Override
   protected Object getValueField() {
     return this.value;
   }
+
   @Override
   protected void setValueField(Object v) {
     this.value = v;
@@ -136,24 +129,29 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
   protected long getLastModifiedField() {
     return lastModifiedUpdater.get(this);
   }
+
   protected boolean compareAndSetLastModifiedField(long expectedValue, long newValue) {
     return lastModifiedUpdater.compareAndSet(this, expectedValue, newValue);
   }
+
   /**
    * @see HashEntry#getEntryHash()
    */
   public int getEntryHash() {
     return this.hash;
   }
+
   protected void setEntryHash(int v) {
     this.hash = v;
   }
+
   /**
    * @see HashEntry#getNextEntry()
    */
   public HashEntry<Object, Object> getNextEntry() {
     return this.next;
   }
+
   /**
    * @see HashEntry#setNextEntry
    */
@@ -163,13 +161,13 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
 
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // disk code
 
   protected void initialize(RegionEntryContext drs, Object value) {
     boolean isBackup;
     if (drs instanceof LocalRegion) {
-      isBackup = ((LocalRegion)drs).getDiskRegion().isBackup();
+      isBackup = ((LocalRegion) drs).getDiskRegion().isBackup();
     } else if (drs instanceof PlaceHolderDiskRegion) {
       isBackup = true;
     } else {
@@ -180,10 +178,11 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
       diskInitialize(drs, value);
     }
   }
+
   @Override
   public synchronized int updateAsyncEntrySize(EnableLRU capacityController) {
     int oldSize = getEntrySize();
-    int newSize = capacityController.entrySize( getKeyForSizing(), null);
+    int newSize = capacityController.entrySize(getKeyForSizing(), null);
     setEntrySize(newSize);
     int delta = newSize - oldSize;
     return delta;
@@ -191,12 +190,12 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
 
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   private void diskInitialize(RegionEntryContext context, Object value) {
-    DiskRecoveryStore drs = (DiskRecoveryStore)context;
+    DiskRecoveryStore drs = (DiskRecoveryStore) context;
     DiskStoreImpl ds = drs.getDiskStore();
     long maxOplogSize = ds.getMaxOplogSize();
-    //get appropriate instance of DiskId implementation based on maxOplogSize
+    // get appropriate instance of DiskId implementation based on maxOplogSize
     this.id = DiskId.createDiskId(maxOplogSize, true/* is persistence */, ds.needsLinkedList());
     Helper.initialize(this, drs, value);
   }
@@ -206,58 +205,60 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
    * 
    * @since GemFire 5.1
    */
-  protected DiskId id;//= new DiskId();
+  protected DiskId id;// = new DiskId();
+
   public DiskId getDiskId() {
     return this.id;
   }
+
   @Override
   void setDiskId(RegionEntry old) {
-    this.id = ((AbstractDiskRegionEntry)old).getDiskId();
+    this.id = ((AbstractDiskRegionEntry) old).getDiskId();
   }
-//  // inlining DiskId
-//  // always have these fields
-//  /**
-//   * id consists of
-//   * most significant
-//   * 1 byte = users bits
-//   * 2-8 bytes = oplog id
-//   * least significant.
-//   * 
-//   * The highest bit in the oplog id part is set to 1 if the oplog id
-//   * is negative.
-//   * @todo this field could be an int for an overflow only region
-//   */
-//  private long id;
-//  /**
-//   * Length of the bytes on disk.
-//   * This is always set. If the value is invalid then it will be set to 0.
-//   * The most significant bit is used by overflow to mark it as needing to be written.
-//   */
-//  protected int valueLength = 0;
-//  // have intOffset or longOffset
-//  // intOffset
-//  /**
-//   * The position in the oplog (the oplog offset) where this entry's value is
-//   * stored
-//   */
-//  private volatile int offsetInOplog;
-//  // longOffset
-//  /**
-//   * The position in the oplog (the oplog offset) where this entry's value is
-//   * stored
-//   */
-//  private volatile long offsetInOplog;
-//  // have overflowOnly or persistence
-//  // overflowOnly
-//  // no fields
-//  // persistent
-//  /** unique entry identifier * */
-//  private long keyId;
+  // // inlining DiskId
+  // // always have these fields
+  // /**
+  // * id consists of
+  // * most significant
+  // * 1 byte = users bits
+  // * 2-8 bytes = oplog id
+  // * least significant.
+  // *
+  // * The highest bit in the oplog id part is set to 1 if the oplog id
+  // * is negative.
+  // * @todo this field could be an int for an overflow only region
+  // */
+  // private long id;
+  // /**
+  // * Length of the bytes on disk.
+  // * This is always set. If the value is invalid then it will be set to 0.
+  // * The most significant bit is used by overflow to mark it as needing to be written.
+  // */
+  // protected int valueLength = 0;
+  // // have intOffset or longOffset
+  // // intOffset
+  // /**
+  // * The position in the oplog (the oplog offset) where this entry's value is
+  // * stored
+  // */
+  // private volatile int offsetInOplog;
+  // // longOffset
+  // /**
+  // * The position in the oplog (the oplog offset) where this entry's value is
+  // * stored
+  // */
+  // private volatile long offsetInOplog;
+  // // have overflowOnly or persistence
+  // // overflowOnly
+  // // no fields
+  // // persistent
+  // /** unique entry identifier * */
+  // private long keyId;
 
-  
+
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // lru code
   @Override
   public void setDelayedDiskId(LocalRegion r) {
@@ -269,36 +270,44 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
 
 
   }
+
   public synchronized int updateEntrySize(EnableLRU capacityController) {
-    return updateEntrySize(capacityController, _getValue());  // OFHEAP: _getValue ok w/o incing refcount because we are synced and only getting the size
+    return updateEntrySize(capacityController, _getValue()); // OFHEAP: _getValue ok w/o incing
+                                                             // refcount because we are synced and
+                                                             // only getting the size
   }
-  
+
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
-  public synchronized int updateEntrySize(EnableLRU capacityController,
-                                                Object value) {
+
+  public synchronized int updateEntrySize(EnableLRU capacityController, Object value) {
     int oldSize = getEntrySize();
-    int newSize = capacityController.entrySize( getKeyForSizing(), value);
+    int newSize = capacityController.entrySize(getKeyForSizing(), value);
     setEntrySize(newSize);
     int delta = newSize - oldSize;
     return delta;
   }
+
   public boolean testRecentlyUsed() {
     return areAnyBitsSet(RECENTLY_USED);
   }
+
   @Override
   public void setRecentlyUsed() {
     setBits(RECENTLY_USED);
   }
+
   public void unsetRecentlyUsed() {
     clearBits(~RECENTLY_USED);
   }
+
   public boolean testEvicted() {
     return areAnyBitsSet(EVICTED);
   }
+
   public void setEvicted() {
     setBits(EVICTED);
   }
+
   public void unsetEvicted() {
     clearBits(~EVICTED);
   }
@@ -308,30 +317,35 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
   private LRUClockNode nextLRU;
   private LRUClockNode prevLRU;
   private int size;
-  public void setNextLRUNode( LRUClockNode next ) {
+
+  public void setNextLRUNode(LRUClockNode next) {
     this.nextLRU = next;
   }
+
   public LRUClockNode nextLRUNode() {
     return this.nextLRU;
   }
-  public void setPrevLRUNode( LRUClockNode prev ) {
+
+  public void setPrevLRUNode(LRUClockNode prev) {
     this.prevLRU = prev;
   }
+
   public LRUClockNode prevLRUNode() {
     return this.prevLRU;
   }
+
   public int getEntrySize() {
     return this.size;
   }
+
   protected void setEntrySize(int size) {
     this.size = size;
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   @Override
   public Object getKeyForSizing() {
-
 
 
 
@@ -342,11 +356,8 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
 
 
 
-  
-
-  
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // key code
 
   // strlen is encoded in lowest 6 bits (max strlen is 63)
@@ -355,14 +366,17 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
   private final long bits1;
   // bits2 encodes character data
   private final long bits2;
+
   private int getKeyLength() {
     return (int) (this.bits1 & 0x003fL);
   }
+
   private int getEncoding() {
     // 0 means encoded as char
     // 1 means encoded as bytes that are all <= 0x7f;
     return (int) (this.bits1 >> 6) & 0x03;
   }
+
   @Override
   public Object getKey() {
     int keylen = getKeyLength();
@@ -370,7 +384,7 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
     long tmpBits1 = this.bits1;
     long tmpBits2 = this.bits2;
     if (getEncoding() == 1) {
-      for (int i=0; i < keylen; i++) {
+      for (int i = 0; i < keylen; i++) {
         if (i < 7) {
           tmpBits1 >>= 8;
           chars[i] = (char) (tmpBits1 & 0x00ff);
@@ -380,10 +394,10 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
         }
       }
     } else {
-      for (int i=0; i < keylen; i++) {
+      for (int i = 0; i < keylen; i++) {
         if (i < 3) {
           tmpBits1 >>= 16;
-        chars[i] = (char) (tmpBits1 & 0x00FFff);
+          chars[i] = (char) (tmpBits1 & 0x00FFff);
         } else {
           chars[i] = (char) (tmpBits2 & 0x00FFff);
           tmpBits2 >>= 16;
@@ -394,17 +408,17 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   @Override
   public boolean isKeyEqual(Object k) {
     if (k instanceof String) {
-      String str = (String)k;
+      String str = (String) k;
       int keylen = getKeyLength();
       if (str.length() == keylen) {
         long tmpBits1 = this.bits1;
         long tmpBits2 = this.bits2;
         if (getEncoding() == 1) {
-          for (int i=0; i < keylen; i++) {
+          for (int i = 0; i < keylen; i++) {
             char c;
             if (i < 7) {
               tmpBits1 >>= 8;
@@ -418,7 +432,7 @@ public class VMThinDiskLRURegionEntryHeapStringKey2 extends VMThinDiskLRURegionE
             }
           }
         } else {
-          for (int i=0; i < keylen; i++) {
+          for (int i = 0; i < keylen; i++) {
             char c;
             if (i < 3) {
               tmpBits1 >>= 16;

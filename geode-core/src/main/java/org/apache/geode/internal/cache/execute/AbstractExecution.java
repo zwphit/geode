@@ -116,8 +116,7 @@ public abstract class AbstractExecution implements InternalExecution {
 
   public static final byte HA_HASRESULT_OPTIMIZEFORWRITE_REEXECUTE = 15;
 
-  public static byte getFunctionState(boolean isHA, boolean hasResult,
-      boolean optimizeForWrite) {
+  public static byte getFunctionState(boolean isHA, boolean hasResult, boolean optimizeForWrite) {
     if (isHA) {
       if (hasResult) {
         if (optimizeForWrite) {

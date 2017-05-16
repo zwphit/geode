@@ -304,7 +304,7 @@ public class NullDataOutputStream extends OutputStream implements ObjToByteArray
    * @param str the string value to be written.
    * @exception IOException if an I/O error occurs.
    */
-  public final void writeUTF(String str) throws IOException {
+  public void writeUTF(String str) throws IOException {
     int strlen = str.length();
     if (strlen > 65535) {
       throw new UTFDataFormatException();

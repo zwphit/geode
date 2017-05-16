@@ -18,11 +18,6 @@ package org.apache.geode.internal.cache;
 
 
 
-
-
-
-
-
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import org.apache.geode.internal.offheap.OffHeapRegionEntryHelper;
@@ -51,7 +46,7 @@ import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.Ha
  * ./dev-tools/generateRegionEntryClasses.sh (it must be run from the top level directory).
  */
 public class VMThinRegionEntryOffHeapLongKey extends VMThinRegionEntryOffHeap {
-  public VMThinRegionEntryOffHeapLongKey  (RegionEntryContext context, long key, 
+  public VMThinRegionEntryOffHeapLongKey(RegionEntryContext context, long key,
 
       @Retained
 
@@ -59,20 +54,15 @@ public class VMThinRegionEntryOffHeapLongKey extends VMThinRegionEntryOffHeap {
 
 
 
-      ) {
-    super(context, 
+  ) {
+    super(context,
 
 
 
-          value
+        value
 
-        );
+    );
     // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-
-
-
-
-
 
 
 
@@ -81,35 +71,38 @@ public class VMThinRegionEntryOffHeapLongKey extends VMThinRegionEntryOffHeap {
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // common code
   protected int hash;
   private HashEntry<Object, Object> next;
   @SuppressWarnings("unused")
   private volatile long lastModified;
-  private static final AtomicLongFieldUpdater<VMThinRegionEntryOffHeapLongKey> lastModifiedUpdater
-    = AtomicLongFieldUpdater.newUpdater(VMThinRegionEntryOffHeapLongKey.class, "lastModified");
+  private static final AtomicLongFieldUpdater<VMThinRegionEntryOffHeapLongKey> lastModifiedUpdater =
+      AtomicLongFieldUpdater.newUpdater(VMThinRegionEntryOffHeapLongKey.class, "lastModified");
 
   /**
    * All access done using ohAddrUpdater so it is used even though the compiler can not tell it is.
    */
   @SuppressWarnings("unused")
-  @Retained @Released private volatile long ohAddress;
+  @Retained
+  @Released
+  private volatile long ohAddress;
   /**
-   * I needed to add this because I wanted clear to call setValue which normally can only be called while the re is synced.
-   * But if I sync in that code it causes a lock ordering deadlock with the disk regions because they also get a rw lock in clear.
-   * Some hardware platforms do not support CAS on a long. If gemfire is run on one of those the AtomicLongFieldUpdater does a sync
-   * on the re and we will once again be deadlocked.
-   * I don't know if we support any of the hardware platforms that do not have a 64bit CAS. If we do then we can expect deadlocks
-   * on disk regions.
+   * I needed to add this because I wanted clear to call setValue which normally can only be called
+   * while the re is synced. But if I sync in that code it causes a lock ordering deadlock with the
+   * disk regions because they also get a rw lock in clear. Some hardware platforms do not support
+   * CAS on a long. If gemfire is run on one of those the AtomicLongFieldUpdater does a sync on the
+   * re and we will once again be deadlocked. I don't know if we support any of the hardware
+   * platforms that do not have a 64bit CAS. If we do then we can expect deadlocks on disk regions.
    */
-  private final static AtomicLongFieldUpdater<VMThinRegionEntryOffHeapLongKey> ohAddrUpdater = AtomicLongFieldUpdater.newUpdater(VMThinRegionEntryOffHeapLongKey.class, "ohAddress");
-  
+  private final static AtomicLongFieldUpdater<VMThinRegionEntryOffHeapLongKey> ohAddrUpdater =
+      AtomicLongFieldUpdater.newUpdater(VMThinRegionEntryOffHeapLongKey.class, "ohAddress");
+
   @Override
   public Token getValueAsToken() {
     return OffHeapRegionEntryHelper.getValueAsToken(this);
   }
-  
+
   @Override
   protected Object getValueField() {
     return OffHeapRegionEntryHelper._getValue(this);
@@ -125,6 +118,7 @@ public class VMThinRegionEntryOffHeapLongKey extends VMThinRegionEntryOffHeap {
 
     OffHeapRegionEntryHelper.setValue(this, v);
   }
+
   @Override
 
   @Retained
@@ -142,7 +136,7 @@ public class VMThinRegionEntryOffHeapLongKey extends VMThinRegionEntryOffHeap {
   public boolean setAddress(long expectedAddr, long newAddr) {
     return ohAddrUpdater.compareAndSet(this, expectedAddr, newAddr);
   }
-  
+
   @Override
 
   @Released
@@ -150,36 +144,41 @@ public class VMThinRegionEntryOffHeapLongKey extends VMThinRegionEntryOffHeap {
   public void release() {
     OffHeapRegionEntryHelper.releaseEntry(this);
   }
-  
+
   @Override
   public void returnToPool() {
     // Deadcoded for now; never was working
-//    if (this instanceof VMThinRegionEntryLongKey) {
-//      factory.returnToPool((VMThinRegionEntryLongKey)this);
-//    }
+    // if (this instanceof VMThinRegionEntryLongKey) {
+    // factory.returnToPool((VMThinRegionEntryLongKey)this);
+    // }
   }
 
   protected long getLastModifiedField() {
     return lastModifiedUpdater.get(this);
   }
+
   protected boolean compareAndSetLastModifiedField(long expectedValue, long newValue) {
     return lastModifiedUpdater.compareAndSet(this, expectedValue, newValue);
   }
+
   /**
    * @see HashEntry#getEntryHash()
    */
   public int getEntryHash() {
     return this.hash;
   }
+
   protected void setEntryHash(int v) {
     this.hash = v;
   }
+
   /**
    * @see HashEntry#getNextEntry()
    */
   public HashEntry<Object, Object> getNextEntry() {
     return this.next;
   }
+
   /**
    * @see HashEntry#setNextEntry
    */
@@ -187,22 +186,19 @@ public class VMThinRegionEntryOffHeapLongKey extends VMThinRegionEntryOffHeap {
     this.next = n;
   }
 
-  
 
 
-
-  
-
-  
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // key code
 
   private final long key;
+
   @Override
   public Object getKey() {
     return this.key;
   }
+
   @Override
   public boolean isKeyEqual(Object k) {
     if (k instanceof Long) {
@@ -210,7 +206,7 @@ public class VMThinRegionEntryOffHeapLongKey extends VMThinRegionEntryOffHeap {
     }
     return false;
   }
-  
+
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
 }

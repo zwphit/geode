@@ -344,9 +344,8 @@ public class RemotePutAllMessage extends RemoteOperationMessageWithDirectReply {
    *        lastModified timestamp for last modification
    * @return If succeeds, return true, otherwise, throw exception
    */
-  public boolean doLocalPutAll(final LocalRegion r,
-      final InternalDistributedMember eventSender, long lastModified)
-      throws EntryExistsException, RemoteOperationException {
+  public boolean doLocalPutAll(final LocalRegion r, final InternalDistributedMember eventSender,
+      long lastModified) throws EntryExistsException, RemoteOperationException {
     final DistributedRegion dr = (DistributedRegion) r;
 
     // create a base event and a DPAO for PutAllMessage distributed btw redundant buckets

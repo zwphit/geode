@@ -332,7 +332,7 @@ public class DiskRegion extends AbstractDiskRegion {
     });
   }
 
-  public final boolean isOverflowEnabled() {
+  public boolean isOverflowEnabled() {
     return this.overflowEnabled;
   }
 

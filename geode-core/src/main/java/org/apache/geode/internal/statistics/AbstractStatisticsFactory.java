@@ -249,8 +249,7 @@ public abstract class AbstractStatisticsFactory implements StatisticsFactory, St
    * Creates or finds a StatisticType for the given shared class.
    */
   @Override
-  public StatisticsType createType(String name, String description,
-      StatisticDescriptor[] stats) {
+  public StatisticsType createType(String name, String description, StatisticDescriptor[] stats) {
     return tf.createType(name, description, stats);
   }
 
@@ -270,14 +269,12 @@ public abstract class AbstractStatisticsFactory implements StatisticsFactory, St
   }
 
   @Override
-  public StatisticDescriptor createLongCounter(String name, String description,
-      String units) {
+  public StatisticDescriptor createLongCounter(String name, String description, String units) {
     return tf.createLongCounter(name, description, units);
   }
 
   @Override
-  public StatisticDescriptor createDoubleCounter(String name, String description,
-      String units) {
+  public StatisticDescriptor createDoubleCounter(String name, String description, String units) {
     return tf.createDoubleCounter(name, description, units);
   }
 
@@ -292,8 +289,7 @@ public abstract class AbstractStatisticsFactory implements StatisticsFactory, St
   }
 
   @Override
-  public StatisticDescriptor createDoubleGauge(String name, String description,
-      String units) {
+  public StatisticDescriptor createDoubleGauge(String name, String description, String units) {
     return tf.createDoubleGauge(name, description, units);
   }
 
@@ -310,8 +306,8 @@ public abstract class AbstractStatisticsFactory implements StatisticsFactory, St
   }
 
   @Override
-  public StatisticDescriptor createDoubleCounter(String name, String description,
-      String units, boolean largerBetter) {
+  public StatisticDescriptor createDoubleCounter(String name, String description, String units,
+      boolean largerBetter) {
     return tf.createDoubleCounter(name, description, units, largerBetter);
   }
 

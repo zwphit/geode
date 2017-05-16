@@ -113,8 +113,8 @@ public class BecomePrimaryBucketMessage extends PartitionMessage {
   }
 
   @Override
-  protected boolean operateOnPartitionedRegion(DistributionManager dm,
-      PartitionedRegion region, long startTime) throws ForceReattemptException {
+  protected boolean operateOnPartitionedRegion(DistributionManager dm, PartitionedRegion region,
+      long startTime) throws ForceReattemptException {
 
     // this is executing in the WAITING_POOL_EXECUTOR
     byte responseCode = BecomePrimaryBucketReplyMessage.NOT_SECONDARY;

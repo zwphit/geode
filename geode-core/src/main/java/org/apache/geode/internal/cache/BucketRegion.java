@@ -1049,7 +1049,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
         && EvictionAction.LOCAL_DESTROY.equals(getEvictionAttributes().getAction());
   }
 
-  protected final void processPendingSecondaryExpires() {
+  protected void processPendingSecondaryExpires() {
     ExpiryTask[] tasks;
     while (true) {
       // note we just keep looping until no more pendingExpires exist

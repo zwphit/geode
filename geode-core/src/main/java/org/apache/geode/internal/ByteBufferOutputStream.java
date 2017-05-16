@@ -62,7 +62,7 @@ public class ByteBufferOutputStream extends OutputStream {
 
   /** override OutputStream's write() */
   @Override
-  public final void write(byte[] source, int offset, int len) {
+  public void write(byte[] source, int offset, int len) {
     try {
       // System.out.println("writing len="+len + " cap=" + buffer.capacity() + "
       // pos="+buffer.position());

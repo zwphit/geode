@@ -658,7 +658,7 @@ public class HashIndexSet implements Set {
   /**
    * After insert, allows for calculating metadata
    */
-  protected final void postInsertHook(boolean usedFreeSlot) {
+  protected void postInsertHook(boolean usedFreeSlot) {
     if (usedFreeSlot) {
       hashIndexSetProperties.free--;
     } else {

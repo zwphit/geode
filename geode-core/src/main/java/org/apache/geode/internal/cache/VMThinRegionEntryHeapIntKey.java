@@ -18,11 +18,6 @@ package org.apache.geode.internal.cache;
 
 
 
-
-
-
-
-
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.HashEntry;
@@ -46,7 +41,7 @@ import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.Ha
  * ./dev-tools/generateRegionEntryClasses.sh (it must be run from the top level directory).
  */
 public class VMThinRegionEntryHeapIntKey extends VMThinRegionEntryHeap {
-  public VMThinRegionEntryHeapIntKey  (RegionEntryContext context, int key, 
+  public VMThinRegionEntryHeapIntKey(RegionEntryContext context, int key,
 
 
 
@@ -54,18 +49,15 @@ public class VMThinRegionEntryHeapIntKey extends VMThinRegionEntryHeap {
 
 
 
-      ) {
-    super(context, 
+  ) {
+    super(context,
 
 
 
-          value
+        value
 
-        );
+    );
     // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-
-
-
 
 
 
@@ -74,20 +66,22 @@ public class VMThinRegionEntryHeapIntKey extends VMThinRegionEntryHeap {
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // common code
   protected int hash;
   private HashEntry<Object, Object> next;
   @SuppressWarnings("unused")
   private volatile long lastModified;
-  private static final AtomicLongFieldUpdater<VMThinRegionEntryHeapIntKey> lastModifiedUpdater
-    = AtomicLongFieldUpdater.newUpdater(VMThinRegionEntryHeapIntKey.class, "lastModified");
+  private static final AtomicLongFieldUpdater<VMThinRegionEntryHeapIntKey> lastModifiedUpdater =
+      AtomicLongFieldUpdater.newUpdater(VMThinRegionEntryHeapIntKey.class, "lastModified");
 
   private volatile Object value;
+
   @Override
   protected Object getValueField() {
     return this.value;
   }
+
   @Override
   protected void setValueField(Object v) {
     this.value = v;
@@ -96,24 +90,29 @@ public class VMThinRegionEntryHeapIntKey extends VMThinRegionEntryHeap {
   protected long getLastModifiedField() {
     return lastModifiedUpdater.get(this);
   }
+
   protected boolean compareAndSetLastModifiedField(long expectedValue, long newValue) {
     return lastModifiedUpdater.compareAndSet(this, expectedValue, newValue);
   }
+
   /**
    * @see HashEntry#getEntryHash()
    */
   public int getEntryHash() {
     return this.hash;
   }
+
   protected void setEntryHash(int v) {
     this.hash = v;
   }
+
   /**
    * @see HashEntry#getNextEntry()
    */
   public HashEntry<Object, Object> getNextEntry() {
     return this.next;
   }
+
   /**
    * @see HashEntry#setNextEntry
    */
@@ -121,29 +120,21 @@ public class VMThinRegionEntryHeapIntKey extends VMThinRegionEntryHeap {
     this.next = n;
   }
 
-  
 
 
-
-  
-
-  
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // key code
 
 
 
-
-
-
-
-
   private final int key;
+
   @Override
   public Object getKey() {
     return this.key;
   }
+
   @Override
   public boolean isKeyEqual(Object k) {
     if (k instanceof Integer) {
@@ -151,7 +142,7 @@ public class VMThinRegionEntryHeapIntKey extends VMThinRegionEntryHeap {
     }
     return false;
   }
-  
+
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
 }

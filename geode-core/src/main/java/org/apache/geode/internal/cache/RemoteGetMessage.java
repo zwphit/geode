@@ -94,8 +94,8 @@ public class RemoteGetMessage extends RemoteOperationMessageWithDirectReply {
   }
 
   @Override
-  protected final boolean operateOnRegion(final DistributionManager dm, LocalRegion r,
-      long startTime) throws RemoteOperationException {
+  protected boolean operateOnRegion(final DistributionManager dm, LocalRegion r, long startTime)
+      throws RemoteOperationException {
     if (logger.isTraceEnabled(LogMarker.DM)) {
       logger.trace(LogMarker.DM, "RemoteGetMessage operateOnRegion: {}", r.getFullPath());
     }

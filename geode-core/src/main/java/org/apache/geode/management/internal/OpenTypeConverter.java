@@ -594,8 +594,7 @@ public abstract class OpenTypeConverter {
       return possibleCause;
     }
 
-    Object fromCompositeData(CompositeData cd, String[] itemNames,
-        OpenTypeConverter[] converters) {
+    Object fromCompositeData(CompositeData cd, String[] itemNames, OpenTypeConverter[] converters) {
       throw new Error();
     }
 

@@ -18,11 +18,6 @@ package org.apache.geode.internal.cache;
 
 
 
-
-
-
-
-
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import org.apache.geode.cache.EntryEvent;
@@ -31,12 +26,6 @@ import org.apache.geode.distributed.internal.membership.InternalDistributedMembe
 import org.apache.geode.internal.cache.versions.VersionSource;
 import org.apache.geode.internal.cache.versions.VersionStamp;
 import org.apache.geode.internal.cache.versions.VersionTag;
-
-
-
-
-
-
 
 import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.HashEntry;
 
@@ -59,7 +48,7 @@ import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.Ha
  * ./dev-tools/generateRegionEntryClasses.sh (it must be run from the top level directory).
  */
 public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionEntryHeap {
-  public VersionedThinRegionEntryHeapStringKey1  (RegionEntryContext context, String key, 
+  public VersionedThinRegionEntryHeapStringKey1(RegionEntryContext context, String key,
 
 
 
@@ -67,27 +56,28 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
 
       , boolean byteEncode
 
-      ) {
-    super(context, 
+  ) {
+    super(context,
 
 
 
-          value
+        value
 
-        );
+    );
     // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
 
     // caller has already confirmed that key.length <= MAX_INLINE_STRING_KEY
     long tmpBits1 = 0L;
     if (byteEncode) {
-      for (int i=key.length()-1; i >= 0; i--) {
-        // Note: we know each byte is <= 0x7f so the "& 0xff" is not needed. But I added it in to keep findbugs happy.
-        tmpBits1 |= (byte)key.charAt(i) & 0xff;
+      for (int i = key.length() - 1; i >= 0; i--) {
+        // Note: we know each byte is <= 0x7f so the "& 0xff" is not needed. But I added it in to
+        // keep findbugs happy.
+        tmpBits1 |= (byte) key.charAt(i) & 0xff;
         tmpBits1 <<= 8;
       }
-      tmpBits1 |= 1<<6;
+      tmpBits1 |= 1 << 6;
     } else {
-      for (int i=key.length()-1; i >= 0; i--) {
+      for (int i = key.length() - 1; i >= 0; i--) {
         tmpBits1 |= key.charAt(i);
         tmpBits1 <<= 16;
       }
@@ -98,20 +88,23 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // common code
   protected int hash;
   private HashEntry<Object, Object> next;
   @SuppressWarnings("unused")
   private volatile long lastModified;
-  private static final AtomicLongFieldUpdater<VersionedThinRegionEntryHeapStringKey1> lastModifiedUpdater
-    = AtomicLongFieldUpdater.newUpdater(VersionedThinRegionEntryHeapStringKey1.class, "lastModified");
+  private static final AtomicLongFieldUpdater<VersionedThinRegionEntryHeapStringKey1> lastModifiedUpdater =
+      AtomicLongFieldUpdater.newUpdater(VersionedThinRegionEntryHeapStringKey1.class,
+          "lastModified");
 
   private volatile Object value;
+
   @Override
   protected Object getValueField() {
     return this.value;
   }
+
   @Override
   protected void setValueField(Object v) {
     this.value = v;
@@ -120,24 +113,29 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
   protected long getLastModifiedField() {
     return lastModifiedUpdater.get(this);
   }
+
   protected boolean compareAndSetLastModifiedField(long expectedValue, long newValue) {
     return lastModifiedUpdater.compareAndSet(this, expectedValue, newValue);
   }
+
   /**
    * @see HashEntry#getEntryHash()
    */
   public int getEntryHash() {
     return this.hash;
   }
+
   protected void setEntryHash(int v) {
     this.hash = v;
   }
+
   /**
    * @see HashEntry#getNextEntry()
    */
   public HashEntry<Object, Object> getNextEntry() {
     return this.next;
   }
+
   /**
    * @see HashEntry#setNextEntry
    */
@@ -145,14 +143,10 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
     this.next = n;
   }
 
-  
 
-
-
-  
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // versioned code
   private VersionSource memberID;
   private short entryVersionLowBytes;
@@ -164,16 +158,16 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
   public int getEntryVersion() {
     return ((entryVersionHighByte << 16) & 0xFF0000) | (entryVersionLowBytes & 0xFFFF);
   }
-  
+
   public long getRegionVersion() {
-    return (((long)regionVersionHighBytes) << 32) | (regionVersionLowBytes & 0x00000000FFFFFFFFL);  
+    return (((long) regionVersionHighBytes) << 32) | (regionVersionLowBytes & 0x00000000FFFFFFFFL);
   }
-  
-  
+
+
   public long getVersionTimeStamp() {
     return getLastModified();
   }
-  
+
   public void setVersionTimeStamp(long time) {
     setLastModified(time);
   }
@@ -181,17 +175,18 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
   public VersionSource getMemberID() {
     return this.memberID;
   }
+
   public int getDistributedSystemId() {
     return this.distributedSystemId;
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   public void setVersions(VersionTag tag) {
     this.memberID = tag.getMemberID();
     int eVersion = tag.getEntryVersion();
-    this.entryVersionLowBytes = (short)(eVersion & 0xffff);
-    this.entryVersionHighByte = (byte)((eVersion & 0xff0000) >> 16);
+    this.entryVersionLowBytes = (short) (eVersion & 0xffff);
+    this.entryVersionHighByte = (byte) ((eVersion & 0xff0000) >> 16);
     this.regionVersionHighBytes = tag.getRegionVersionHighBytes();
     this.regionVersionLowBytes = tag.getRegionVersionLowBytes();
     if (!(tag.isGatewayTag()) && this.distributedSystemId == tag.getDistributedSystemId()) {
@@ -203,11 +198,11 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
     } else {
       setVersionTimeStamp(tag.getVersionTimeStamp());
     }
-    this.distributedSystemId = (byte)(tag.getDistributedSystemId() & 0xff);
+    this.distributedSystemId = (byte) (tag.getDistributedSystemId() & 0xff);
   }
 
   public void setMemberID(VersionSource memberID) {
-    this.memberID = memberID; 
+    this.memberID = memberID;
   }
 
   @Override
@@ -216,7 +211,7 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   public VersionTag asVersionTag() {
     VersionTag tag = VersionTag.create(memberID);
     tag.setEntryVersion(getEntryVersion());
@@ -226,9 +221,9 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
     return tag;
   }
 
-  public void processVersionTag(LocalRegion r, VersionTag tag,
-      boolean isTombstoneFromGII, boolean hasDelta,
-      VersionSource thisVM, InternalDistributedMember sender, boolean checkForConflicts) {
+  public void processVersionTag(LocalRegion r, VersionTag tag, boolean isTombstoneFromGII,
+      boolean hasDelta, VersionSource thisVM, InternalDistributedMember sender,
+      boolean checkForConflicts) {
     basicProcessVersionTag(r, tag, isTombstoneFromGII, hasDelta, thisVM, sender, checkForConflicts);
   }
 
@@ -243,38 +238,41 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
   public short getRegionVersionHighBytes() {
     return this.regionVersionHighBytes;
   }
-  
+
   /** get rvv internal low bytes. Used by region entries for transferring to storage */
   public int getRegionVersionLowBytes() {
     return this.regionVersionLowBytes;
   }
 
-  
+
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // key code
 
   private final long bits1;
+
   private int getKeyLength() {
     return (int) (this.bits1 & 0x003fL);
   }
+
   private int getEncoding() {
     // 0 means encoded as char
     // 1 means encoded as bytes that are all <= 0x7f;
     return (int) (this.bits1 >> 6) & 0x03;
   }
+
   @Override
   public Object getKey() {
     int keylen = getKeyLength();
     char[] chars = new char[keylen];
     long tmpBits1 = this.bits1;
     if (getEncoding() == 1) {
-      for (int i=0; i < keylen; i++) {
+      for (int i = 0; i < keylen; i++) {
         tmpBits1 >>= 8;
-      chars[i] = (char) (tmpBits1 & 0x00ff);
+        chars[i] = (char) (tmpBits1 & 0x00ff);
       }
     } else {
-      for (int i=0; i < keylen; i++) {
+      for (int i = 0; i < keylen; i++) {
         tmpBits1 >>= 16;
         chars[i] = (char) (tmpBits1 & 0x00FFff);
       }
@@ -283,16 +281,16 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   @Override
   public boolean isKeyEqual(Object k) {
     if (k instanceof String) {
-      String str = (String)k;
+      String str = (String) k;
       int keylen = getKeyLength();
       if (str.length() == keylen) {
         long tmpBits1 = this.bits1;
         if (getEncoding() == 1) {
-          for (int i=0; i < keylen; i++) {
+          for (int i = 0; i < keylen; i++) {
             tmpBits1 >>= 8;
             char c = (char) (tmpBits1 & 0x00ff);
             if (str.charAt(i) != c) {
@@ -300,7 +298,7 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
             }
           }
         } else {
-          for (int i=0; i < keylen; i++) {
+          for (int i = 0; i < keylen; i++) {
             tmpBits1 >>= 16;
             char c = (char) (tmpBits1 & 0x00FFff);
             if (str.charAt(i) != c) {
@@ -313,7 +311,7 @@ public class VersionedThinRegionEntryHeapStringKey1 extends VersionedThinRegionE
     }
     return false;
   }
-  
+
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
 }

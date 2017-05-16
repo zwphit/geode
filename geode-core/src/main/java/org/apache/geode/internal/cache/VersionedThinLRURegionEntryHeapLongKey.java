@@ -18,39 +18,21 @@ package org.apache.geode.internal.cache;
 
 
 
-
-
-
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import org.apache.geode.cache.EntryEvent;
 
-
 import org.apache.geode.internal.cache.lru.EnableLRU;
-
-
-
-
-
-
-
 
 import org.apache.geode.internal.cache.lru.LRUClockNode;
 import org.apache.geode.internal.cache.lru.NewLRUClockHand;
-
 
 import org.apache.geode.distributed.internal.membership.InternalDistributedMember;
 import org.apache.geode.internal.cache.versions.VersionSource;
 import org.apache.geode.internal.cache.versions.VersionStamp;
 import org.apache.geode.internal.cache.versions.VersionTag;
-
-
-
-
-
-
 
 import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.HashEntry;
 
@@ -73,7 +55,7 @@ import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.Ha
  * ./dev-tools/generateRegionEntryClasses.sh (it must be run from the top level directory).
  */
 public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegionEntryHeap {
-  public VersionedThinLRURegionEntryHeapLongKey  (RegionEntryContext context, long key, 
+  public VersionedThinLRURegionEntryHeapLongKey(RegionEntryContext context, long key,
 
 
 
@@ -81,20 +63,15 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
 
 
 
-      ) {
-    super(context, 
+  ) {
+    super(context,
 
 
 
-          value
+        value
 
-        );
+    );
     // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-
-
-
-
-
 
 
 
@@ -103,20 +80,23 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // common code
   protected int hash;
   private HashEntry<Object, Object> next;
   @SuppressWarnings("unused")
   private volatile long lastModified;
-  private static final AtomicLongFieldUpdater<VersionedThinLRURegionEntryHeapLongKey> lastModifiedUpdater
-    = AtomicLongFieldUpdater.newUpdater(VersionedThinLRURegionEntryHeapLongKey.class, "lastModified");
+  private static final AtomicLongFieldUpdater<VersionedThinLRURegionEntryHeapLongKey> lastModifiedUpdater =
+      AtomicLongFieldUpdater.newUpdater(VersionedThinLRURegionEntryHeapLongKey.class,
+          "lastModified");
 
   private volatile Object value;
+
   @Override
   protected Object getValueField() {
     return this.value;
   }
+
   @Override
   protected void setValueField(Object v) {
     this.value = v;
@@ -125,24 +105,29 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
   protected long getLastModifiedField() {
     return lastModifiedUpdater.get(this);
   }
+
   protected boolean compareAndSetLastModifiedField(long expectedValue, long newValue) {
     return lastModifiedUpdater.compareAndSet(this, expectedValue, newValue);
   }
+
   /**
    * @see HashEntry#getEntryHash()
    */
   public int getEntryHash() {
     return this.hash;
   }
+
   protected void setEntryHash(int v) {
     this.hash = v;
   }
+
   /**
    * @see HashEntry#getNextEntry()
    */
   public HashEntry<Object, Object> getNextEntry() {
     return this.next;
   }
+
   /**
    * @see HashEntry#setNextEntry
    */
@@ -150,51 +135,57 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
     this.next = n;
   }
 
-  
+
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // lru code
   @Override
   public void setDelayedDiskId(LocalRegion r) {
 
 
 
-
-
-  // nothing needed for LRUs with no disk
+    // nothing needed for LRUs with no disk
 
   }
+
   public synchronized int updateEntrySize(EnableLRU capacityController) {
-    return updateEntrySize(capacityController, _getValue());  // OFHEAP: _getValue ok w/o incing refcount because we are synced and only getting the size
+    return updateEntrySize(capacityController, _getValue()); // OFHEAP: _getValue ok w/o incing
+                                                             // refcount because we are synced and
+                                                             // only getting the size
   }
-  
+
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
-  public synchronized int updateEntrySize(EnableLRU capacityController,
-                                                Object value) {
+
+  public synchronized int updateEntrySize(EnableLRU capacityController, Object value) {
     int oldSize = getEntrySize();
-    int newSize = capacityController.entrySize( getKeyForSizing(), value);
+    int newSize = capacityController.entrySize(getKeyForSizing(), value);
     setEntrySize(newSize);
     int delta = newSize - oldSize;
     return delta;
   }
+
   public boolean testRecentlyUsed() {
     return areAnyBitsSet(RECENTLY_USED);
   }
+
   @Override
   public void setRecentlyUsed() {
     setBits(RECENTLY_USED);
   }
+
   public void unsetRecentlyUsed() {
     clearBits(~RECENTLY_USED);
   }
+
   public boolean testEvicted() {
     return areAnyBitsSet(EVICTED);
   }
+
   public void setEvicted() {
     setBits(EVICTED);
   }
+
   public void unsetEvicted() {
     clearBits(~EVICTED);
   }
@@ -204,30 +195,35 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
   private LRUClockNode nextLRU;
   private LRUClockNode prevLRU;
   private int size;
-  public void setNextLRUNode( LRUClockNode next ) {
+
+  public void setNextLRUNode(LRUClockNode next) {
     this.nextLRU = next;
   }
+
   public LRUClockNode nextLRUNode() {
     return this.nextLRU;
   }
-  public void setPrevLRUNode( LRUClockNode prev ) {
+
+  public void setPrevLRUNode(LRUClockNode prev) {
     this.prevLRU = prev;
   }
+
   public LRUClockNode prevLRUNode() {
     return this.prevLRU;
   }
+
   public int getEntrySize() {
     return this.size;
   }
+
   protected void setEntrySize(int size) {
     this.size = size;
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   @Override
   public Object getKeyForSizing() {
-
 
 
 
@@ -238,10 +234,8 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
 
 
 
-  
-
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // versioned code
   private VersionSource memberID;
   private short entryVersionLowBytes;
@@ -253,16 +247,16 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
   public int getEntryVersion() {
     return ((entryVersionHighByte << 16) & 0xFF0000) | (entryVersionLowBytes & 0xFFFF);
   }
-  
+
   public long getRegionVersion() {
-    return (((long)regionVersionHighBytes) << 32) | (regionVersionLowBytes & 0x00000000FFFFFFFFL);  
+    return (((long) regionVersionHighBytes) << 32) | (regionVersionLowBytes & 0x00000000FFFFFFFFL);
   }
-  
-  
+
+
   public long getVersionTimeStamp() {
     return getLastModified();
   }
-  
+
   public void setVersionTimeStamp(long time) {
     setLastModified(time);
   }
@@ -270,17 +264,18 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
   public VersionSource getMemberID() {
     return this.memberID;
   }
+
   public int getDistributedSystemId() {
     return this.distributedSystemId;
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   public void setVersions(VersionTag tag) {
     this.memberID = tag.getMemberID();
     int eVersion = tag.getEntryVersion();
-    this.entryVersionLowBytes = (short)(eVersion & 0xffff);
-    this.entryVersionHighByte = (byte)((eVersion & 0xff0000) >> 16);
+    this.entryVersionLowBytes = (short) (eVersion & 0xffff);
+    this.entryVersionHighByte = (byte) ((eVersion & 0xff0000) >> 16);
     this.regionVersionHighBytes = tag.getRegionVersionHighBytes();
     this.regionVersionLowBytes = tag.getRegionVersionLowBytes();
     if (!(tag.isGatewayTag()) && this.distributedSystemId == tag.getDistributedSystemId()) {
@@ -292,11 +287,11 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
     } else {
       setVersionTimeStamp(tag.getVersionTimeStamp());
     }
-    this.distributedSystemId = (byte)(tag.getDistributedSystemId() & 0xff);
+    this.distributedSystemId = (byte) (tag.getDistributedSystemId() & 0xff);
   }
 
   public void setMemberID(VersionSource memberID) {
-    this.memberID = memberID; 
+    this.memberID = memberID;
   }
 
   @Override
@@ -305,7 +300,7 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   public VersionTag asVersionTag() {
     VersionTag tag = VersionTag.create(memberID);
     tag.setEntryVersion(getEntryVersion());
@@ -315,9 +310,9 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
     return tag;
   }
 
-  public void processVersionTag(LocalRegion r, VersionTag tag,
-      boolean isTombstoneFromGII, boolean hasDelta,
-      VersionSource thisVM, InternalDistributedMember sender, boolean checkForConflicts) {
+  public void processVersionTag(LocalRegion r, VersionTag tag, boolean isTombstoneFromGII,
+      boolean hasDelta, VersionSource thisVM, InternalDistributedMember sender,
+      boolean checkForConflicts) {
     basicProcessVersionTag(r, tag, isTombstoneFromGII, hasDelta, thisVM, sender, checkForConflicts);
   }
 
@@ -332,22 +327,24 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
   public short getRegionVersionHighBytes() {
     return this.regionVersionHighBytes;
   }
-  
+
   /** get rvv internal low bytes. Used by region entries for transferring to storage */
   public int getRegionVersionLowBytes() {
     return this.regionVersionLowBytes;
   }
 
-  
+
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // key code
 
   private final long key;
+
   @Override
   public Object getKey() {
     return this.key;
   }
+
   @Override
   public boolean isKeyEqual(Object k) {
     if (k instanceof Long) {
@@ -355,7 +352,7 @@ public class VersionedThinLRURegionEntryHeapLongKey extends VersionedThinLRURegi
     }
     return false;
   }
-  
+
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
 }

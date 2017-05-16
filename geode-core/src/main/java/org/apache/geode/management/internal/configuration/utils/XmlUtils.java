@@ -281,8 +281,7 @@ public class XmlUtils {
    * @return {@link Map} of schema namespace URIs to location URLs.
    * @since GemFire 8.1
    */
-  public static Map<String, List<String>> buildSchemaLocationMap(
-      final String schemaLocation) {
+  public static Map<String, List<String>> buildSchemaLocationMap(final String schemaLocation) {
     return buildSchemaLocationMap(new HashMap<String, List<String>>(), schemaLocation);
   }
 
@@ -585,8 +584,7 @@ public class XmlUtils {
    * @param schemaLocationMap {@link Map} to get schema locations from.
    * @since GemFire 8.1
    */
-  private static String getSchemaLocationValue(
-      final Map<String, List<String>> schemaLocationMap) {
+  private static String getSchemaLocationValue(final Map<String, List<String>> schemaLocationMap) {
     final StringBuilder sb = new StringBuilder();
     for (final Map.Entry<String, List<String>> entry : schemaLocationMap.entrySet()) {
       for (final String schemaLocation : entry.getValue()) {

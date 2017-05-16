@@ -286,8 +286,8 @@ public abstract class AbstractRegionMap implements RegionMap {
     }
   }
 
-  public void removeEntry(Object key, RegionEntry re, boolean updateStat,
-      EntryEventImpl event, final LocalRegion owner) {
+  public void removeEntry(Object key, RegionEntry re, boolean updateStat, EntryEventImpl event,
+      final LocalRegion owner) {
     boolean success = false;
     if (re.isTombstone() && _getMap().get(key) == re) {
       logger.fatal(
@@ -1858,8 +1858,8 @@ public abstract class AbstractRegionMap implements RegionMap {
     }
   }
 
-  public boolean invalidate(EntryEventImpl event, boolean invokeCallbacks,
-      boolean forceNewEntry, boolean forceCallbacks) throws EntryNotFoundException {
+  public boolean invalidate(EntryEventImpl event, boolean invokeCallbacks, boolean forceNewEntry,
+      boolean forceCallbacks) throws EntryNotFoundException {
     final boolean isDebugEnabled = logger.isDebugEnabled();
 
     final LocalRegion owner = _getOwner();
@@ -2344,11 +2344,11 @@ public abstract class AbstractRegionMap implements RegionMap {
     }
   }
 
-  public void txApplyInvalidate(Object key, Object newValue, boolean didDestroy,
-      TransactionId txId, TXRmtEvent txEvent, boolean localOp, EventID eventId,
-      Object aCallbackArgument, List<EntryEventImpl> pendingCallbacks,
-      FilterRoutingInfo filterRoutingInfo, ClientProxyMembershipID bridgeContext,
-      TXEntryState txEntryState, VersionTag versionTag, long tailKey) {
+  public void txApplyInvalidate(Object key, Object newValue, boolean didDestroy, TransactionId txId,
+      TXRmtEvent txEvent, boolean localOp, EventID eventId, Object aCallbackArgument,
+      List<EntryEventImpl> pendingCallbacks, FilterRoutingInfo filterRoutingInfo,
+      ClientProxyMembershipID bridgeContext, TXEntryState txEntryState, VersionTag versionTag,
+      long tailKey) {
     // boolean didInvalidate = false;
     final LocalRegion owner = _getOwner();
 

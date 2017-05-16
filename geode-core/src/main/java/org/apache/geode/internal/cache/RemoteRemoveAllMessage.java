@@ -333,8 +333,7 @@ public class RemoteRemoveAllMessage extends RemoteOperationMessageWithDirectRepl
    * @param eventSender the endpoint server who received request from client
    * @return If succeeds, return true, otherwise, throw exception
    */
-  public boolean doLocalRemoveAll(final LocalRegion r,
-      final InternalDistributedMember eventSender)
+  public boolean doLocalRemoveAll(final LocalRegion r, final InternalDistributedMember eventSender)
       throws EntryExistsException, RemoteOperationException {
     final DistributedRegion dr = (DistributedRegion) r;
 

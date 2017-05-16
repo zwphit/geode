@@ -145,8 +145,8 @@ public class GetMessage extends PartitionMessageWithDirectReply {
   }
 
   @Override
-  protected final boolean operateOnPartitionedRegion(final DistributionManager dm,
-      PartitionedRegion r, long startTime) throws ForceReattemptException {
+  protected boolean operateOnPartitionedRegion(final DistributionManager dm, PartitionedRegion r,
+      long startTime) throws ForceReattemptException {
     if (logger.isTraceEnabled(LogMarker.DM)) {
       logger.trace(LogMarker.DM, "GetMessage operateOnRegion: {}", r.getFullPath());
     }

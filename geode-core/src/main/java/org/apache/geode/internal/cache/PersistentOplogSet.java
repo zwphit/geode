@@ -335,7 +335,7 @@ public class PersistentOplogSet implements OplogSet {
     }
   }
 
-  public final void recoverRegionsThatAreReady() {
+  public void recoverRegionsThatAreReady() {
     // The following sync also prevents concurrent recoveries by multiple regions
     // which is needed currently.
     synchronized (this.alreadyRecoveredOnce) {

@@ -152,7 +152,7 @@ public class CqConflatable implements Conflatable, Serializable {
   /**
    * @return Returns the key.
    */
-  final Object getKey() {
+  Object getKey() {
     return key;
   }
 

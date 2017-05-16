@@ -68,8 +68,8 @@ public class InterestEventMessage extends PartitionMessage {
   }
 
   @Override
-  protected boolean operateOnPartitionedRegion(final DistributionManager dm,
-      PartitionedRegion r, long startTime) throws ForceReattemptException {
+  protected boolean operateOnPartitionedRegion(final DistributionManager dm, PartitionedRegion r,
+      long startTime) throws ForceReattemptException {
     if (logger.isTraceEnabled(LogMarker.DM)) {
       logger.debug("InterestEventMessage operateOnPartitionedRegion: {}", r.getFullPath());
     }

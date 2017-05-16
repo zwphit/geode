@@ -291,7 +291,7 @@ public class HARegion extends DistributedRegion {
   }
 
   @Override
-  final protected boolean shouldNotifyBridgeClients() {
+  protected boolean shouldNotifyBridgeClients() {
     return false;
   }
 

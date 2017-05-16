@@ -170,8 +170,8 @@ public class CacheElement {
    * @throws XPathExpressionException
    * @since GemFire 8.1
    */
-  private static void buildElementMapCacheType(
-      final LinkedHashMap<String, CacheElement> elementMap, final InputSource inputSource)
+  private static void buildElementMapCacheType(final LinkedHashMap<String, CacheElement> elementMap,
+      final InputSource inputSource)
       throws SAXException, IOException, ParserConfigurationException, XPathExpressionException {
     final Document doc = XmlUtils.getDocumentBuilder().parse(inputSource);
 

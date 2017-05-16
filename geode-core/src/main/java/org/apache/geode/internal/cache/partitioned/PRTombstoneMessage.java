@@ -93,8 +93,8 @@ public class PRTombstoneMessage extends PartitionMessageWithDirectReply
   }
 
   @Override
-  protected boolean operateOnPartitionedRegion(final DistributionManager dm,
-      PartitionedRegion r, long startTime) throws ForceReattemptException {
+  protected boolean operateOnPartitionedRegion(final DistributionManager dm, PartitionedRegion r,
+      long startTime) throws ForceReattemptException {
     if (logger.isTraceEnabled(LogMarker.DM)) {
       logger.debug("PRTombstoneMessage operateOnRegion: {}", r.getFullPath());
     }

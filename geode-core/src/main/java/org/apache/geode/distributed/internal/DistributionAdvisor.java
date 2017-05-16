@@ -732,7 +732,7 @@ public class DistributionAdvisor {
    * @return the current membership version for this advisor
    * @since GemFire 5.1
    */
-  public final synchronized long startOperation() {
+  public synchronized long startOperation() {
     if (logger.isTraceEnabled(LogMarker.DISTRIBUTION_STATE_FLUSH_OP)) {
       logger.trace(LogMarker.DISTRIBUTION_STATE_FLUSH_OP,
           "startOperation() op count is now {} in view version {}", currentVersionOpCount + 1,
@@ -1622,8 +1622,8 @@ public class DistributionAdvisor {
      * @param removeProfile true to remove profile else add profile
      * @param exchangeProfiles true to add the profile to reply
      */
-    protected void handleDistributionAdvisee(DistributionAdvisee advisee,
-        boolean removeProfile, boolean exchangeProfiles, final List<Profile> replyProfiles) {
+    protected void handleDistributionAdvisee(DistributionAdvisee advisee, boolean removeProfile,
+        boolean exchangeProfiles, final List<Profile> replyProfiles) {
       final DistributionAdvisor da;
       if (advisee != null && (da = advisee.getDistributionAdvisor()) != null) {
         if (removeProfile) {

@@ -18,11 +18,6 @@ package org.apache.geode.internal.cache;
 
 
 
-
-
-
-
-
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import org.apache.geode.cache.EntryEvent;
@@ -31,12 +26,6 @@ import org.apache.geode.distributed.internal.membership.InternalDistributedMembe
 import org.apache.geode.internal.cache.versions.VersionSource;
 import org.apache.geode.internal.cache.versions.VersionStamp;
 import org.apache.geode.internal.cache.versions.VersionTag;
-
-
-
-
-
-
 
 import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.HashEntry;
 
@@ -59,7 +48,7 @@ import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.Ha
  * ./dev-tools/generateRegionEntryClasses.sh (it must be run from the top level directory).
  */
 public class VersionedThinRegionEntryHeapObjectKey extends VersionedThinRegionEntryHeap {
-  public VersionedThinRegionEntryHeapObjectKey  (RegionEntryContext context, Object key, 
+  public VersionedThinRegionEntryHeapObjectKey(RegionEntryContext context, Object key,
 
 
 
@@ -67,16 +56,15 @@ public class VersionedThinRegionEntryHeapObjectKey extends VersionedThinRegionEn
 
 
 
-      ) {
-    super(context, 
+  ) {
+    super(context,
 
 
 
-          value
+        value
 
-        );
+    );
     // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-
 
 
 
@@ -85,20 +73,23 @@ public class VersionedThinRegionEntryHeapObjectKey extends VersionedThinRegionEn
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // common code
   protected int hash;
   private HashEntry<Object, Object> next;
   @SuppressWarnings("unused")
   private volatile long lastModified;
-  private static final AtomicLongFieldUpdater<VersionedThinRegionEntryHeapObjectKey> lastModifiedUpdater
-    = AtomicLongFieldUpdater.newUpdater(VersionedThinRegionEntryHeapObjectKey.class, "lastModified");
+  private static final AtomicLongFieldUpdater<VersionedThinRegionEntryHeapObjectKey> lastModifiedUpdater =
+      AtomicLongFieldUpdater.newUpdater(VersionedThinRegionEntryHeapObjectKey.class,
+          "lastModified");
 
   private volatile Object value;
+
   @Override
   protected Object getValueField() {
     return this.value;
   }
+
   @Override
   protected void setValueField(Object v) {
     this.value = v;
@@ -107,24 +98,29 @@ public class VersionedThinRegionEntryHeapObjectKey extends VersionedThinRegionEn
   protected long getLastModifiedField() {
     return lastModifiedUpdater.get(this);
   }
+
   protected boolean compareAndSetLastModifiedField(long expectedValue, long newValue) {
     return lastModifiedUpdater.compareAndSet(this, expectedValue, newValue);
   }
+
   /**
    * @see HashEntry#getEntryHash()
    */
   public int getEntryHash() {
     return this.hash;
   }
+
   protected void setEntryHash(int v) {
     this.hash = v;
   }
+
   /**
    * @see HashEntry#getNextEntry()
    */
   public HashEntry<Object, Object> getNextEntry() {
     return this.next;
   }
+
   /**
    * @see HashEntry#setNextEntry
    */
@@ -132,14 +128,10 @@ public class VersionedThinRegionEntryHeapObjectKey extends VersionedThinRegionEn
     this.next = n;
   }
 
-  
 
-
-
-  
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // versioned code
   private VersionSource memberID;
   private short entryVersionLowBytes;
@@ -151,16 +143,16 @@ public class VersionedThinRegionEntryHeapObjectKey extends VersionedThinRegionEn
   public int getEntryVersion() {
     return ((entryVersionHighByte << 16) & 0xFF0000) | (entryVersionLowBytes & 0xFFFF);
   }
-  
+
   public long getRegionVersion() {
-    return (((long)regionVersionHighBytes) << 32) | (regionVersionLowBytes & 0x00000000FFFFFFFFL);  
+    return (((long) regionVersionHighBytes) << 32) | (regionVersionLowBytes & 0x00000000FFFFFFFFL);
   }
-  
-  
+
+
   public long getVersionTimeStamp() {
     return getLastModified();
   }
-  
+
   public void setVersionTimeStamp(long time) {
     setLastModified(time);
   }
@@ -168,17 +160,18 @@ public class VersionedThinRegionEntryHeapObjectKey extends VersionedThinRegionEn
   public VersionSource getMemberID() {
     return this.memberID;
   }
+
   public int getDistributedSystemId() {
     return this.distributedSystemId;
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   public void setVersions(VersionTag tag) {
     this.memberID = tag.getMemberID();
     int eVersion = tag.getEntryVersion();
-    this.entryVersionLowBytes = (short)(eVersion & 0xffff);
-    this.entryVersionHighByte = (byte)((eVersion & 0xff0000) >> 16);
+    this.entryVersionLowBytes = (short) (eVersion & 0xffff);
+    this.entryVersionHighByte = (byte) ((eVersion & 0xff0000) >> 16);
     this.regionVersionHighBytes = tag.getRegionVersionHighBytes();
     this.regionVersionLowBytes = tag.getRegionVersionLowBytes();
     if (!(tag.isGatewayTag()) && this.distributedSystemId == tag.getDistributedSystemId()) {
@@ -190,11 +183,11 @@ public class VersionedThinRegionEntryHeapObjectKey extends VersionedThinRegionEn
     } else {
       setVersionTimeStamp(tag.getVersionTimeStamp());
     }
-    this.distributedSystemId = (byte)(tag.getDistributedSystemId() & 0xff);
+    this.distributedSystemId = (byte) (tag.getDistributedSystemId() & 0xff);
   }
 
   public void setMemberID(VersionSource memberID) {
-    this.memberID = memberID; 
+    this.memberID = memberID;
   }
 
   @Override
@@ -203,7 +196,7 @@ public class VersionedThinRegionEntryHeapObjectKey extends VersionedThinRegionEn
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   public VersionTag asVersionTag() {
     VersionTag tag = VersionTag.create(memberID);
     tag.setEntryVersion(getEntryVersion());
@@ -213,9 +206,9 @@ public class VersionedThinRegionEntryHeapObjectKey extends VersionedThinRegionEn
     return tag;
   }
 
-  public void processVersionTag(LocalRegion r, VersionTag tag,
-      boolean isTombstoneFromGII, boolean hasDelta,
-      VersionSource thisVM, InternalDistributedMember sender, boolean checkForConflicts) {
+  public void processVersionTag(LocalRegion r, VersionTag tag, boolean isTombstoneFromGII,
+      boolean hasDelta, VersionSource thisVM, InternalDistributedMember sender,
+      boolean checkForConflicts) {
     basicProcessVersionTag(r, tag, isTombstoneFromGII, hasDelta, thisVM, sender, checkForConflicts);
   }
 
@@ -230,18 +223,19 @@ public class VersionedThinRegionEntryHeapObjectKey extends VersionedThinRegionEn
   public short getRegionVersionHighBytes() {
     return this.regionVersionHighBytes;
   }
-  
+
   /** get rvv internal low bytes. Used by region entries for transferring to storage */
   public int getRegionVersionLowBytes() {
     return this.regionVersionLowBytes;
   }
 
-  
+
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // key code
 
   private final Object key;
+
   @Override
   public Object getKey() {
     return this.key;

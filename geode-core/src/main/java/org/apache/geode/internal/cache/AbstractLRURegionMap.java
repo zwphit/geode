@@ -860,7 +860,7 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
   }
 
   @Override
-  final boolean confirmEvictionDestroy(RegionEntry re) {
+  boolean confirmEvictionDestroy(RegionEntry re) {
     // We assume here that a LRURegionMap contains LRUEntries
     LRUEntry lruRe = (LRUEntry) re;
     if (lruRe.isInUseByTransaction() || lruRe.isDestroyed()) {

@@ -18,39 +18,23 @@ package org.apache.geode.internal.cache;
 
 
 
-
-
-
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import org.apache.geode.cache.EntryEvent;
 
-
 import org.apache.geode.internal.cache.lru.EnableLRU;
-
-
-
-
 
 import org.apache.geode.internal.InternalStatisticsDisabledException;
 
-
 import org.apache.geode.internal.cache.lru.LRUClockNode;
 import org.apache.geode.internal.cache.lru.NewLRUClockHand;
-
 
 import org.apache.geode.distributed.internal.membership.InternalDistributedMember;
 import org.apache.geode.internal.cache.versions.VersionSource;
 import org.apache.geode.internal.cache.versions.VersionStamp;
 import org.apache.geode.internal.cache.versions.VersionTag;
-
-
-
-
-
-
 
 import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.HashEntry;
 
@@ -73,7 +57,7 @@ import org.apache.geode.internal.util.concurrent.CustomEntryConcurrentHashMap.Ha
  * ./dev-tools/generateRegionEntryClasses.sh (it must be run from the top level directory).
  */
 public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLRURegionEntryHeap {
-  public VersionedStatsLRURegionEntryHeapStringKey1  (RegionEntryContext context, String key, 
+  public VersionedStatsLRURegionEntryHeapStringKey1(RegionEntryContext context, String key,
 
 
 
@@ -81,27 +65,28 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
 
       , boolean byteEncode
 
-      ) {
-    super(context, 
+  ) {
+    super(context,
 
 
 
-          value
+        value
 
-        );
+    );
     // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
 
     // caller has already confirmed that key.length <= MAX_INLINE_STRING_KEY
     long tmpBits1 = 0L;
     if (byteEncode) {
-      for (int i=key.length()-1; i >= 0; i--) {
-        // Note: we know each byte is <= 0x7f so the "& 0xff" is not needed. But I added it in to keep findbugs happy.
-        tmpBits1 |= (byte)key.charAt(i) & 0xff;
+      for (int i = key.length() - 1; i >= 0; i--) {
+        // Note: we know each byte is <= 0x7f so the "& 0xff" is not needed. But I added it in to
+        // keep findbugs happy.
+        tmpBits1 |= (byte) key.charAt(i) & 0xff;
         tmpBits1 <<= 8;
       }
-      tmpBits1 |= 1<<6;
+      tmpBits1 |= 1 << 6;
     } else {
-      for (int i=key.length()-1; i >= 0; i--) {
+      for (int i = key.length() - 1; i >= 0; i--) {
         tmpBits1 |= key.charAt(i);
         tmpBits1 <<= 16;
       }
@@ -112,20 +97,23 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // common code
   protected int hash;
   private HashEntry<Object, Object> next;
   @SuppressWarnings("unused")
   private volatile long lastModified;
-  private static final AtomicLongFieldUpdater<VersionedStatsLRURegionEntryHeapStringKey1> lastModifiedUpdater
-    = AtomicLongFieldUpdater.newUpdater(VersionedStatsLRURegionEntryHeapStringKey1.class, "lastModified");
+  private static final AtomicLongFieldUpdater<VersionedStatsLRURegionEntryHeapStringKey1> lastModifiedUpdater =
+      AtomicLongFieldUpdater.newUpdater(VersionedStatsLRURegionEntryHeapStringKey1.class,
+          "lastModified");
 
   private volatile Object value;
+
   @Override
   protected Object getValueField() {
     return this.value;
   }
+
   @Override
   protected void setValueField(Object v) {
     this.value = v;
@@ -134,24 +122,29 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
   protected long getLastModifiedField() {
     return lastModifiedUpdater.get(this);
   }
+
   protected boolean compareAndSetLastModifiedField(long expectedValue, long newValue) {
     return lastModifiedUpdater.compareAndSet(this, expectedValue, newValue);
   }
+
   /**
    * @see HashEntry#getEntryHash()
    */
   public int getEntryHash() {
     return this.hash;
   }
+
   protected void setEntryHash(int v) {
     this.hash = v;
   }
+
   /**
    * @see HashEntry#getNextEntry()
    */
   public HashEntry<Object, Object> getNextEntry() {
     return this.next;
   }
+
   /**
    * @see HashEntry#setNextEntry
    */
@@ -159,51 +152,57 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
     this.next = n;
   }
 
-  
+
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // lru code
   @Override
   public void setDelayedDiskId(LocalRegion r) {
 
 
 
-
-
-  // nothing needed for LRUs with no disk
+    // nothing needed for LRUs with no disk
 
   }
+
   public synchronized int updateEntrySize(EnableLRU capacityController) {
-    return updateEntrySize(capacityController, _getValue());  // OFHEAP: _getValue ok w/o incing refcount because we are synced and only getting the size
+    return updateEntrySize(capacityController, _getValue()); // OFHEAP: _getValue ok w/o incing
+                                                             // refcount because we are synced and
+                                                             // only getting the size
   }
-  
+
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
-  public synchronized int updateEntrySize(EnableLRU capacityController,
-                                                Object value) {
+
+  public synchronized int updateEntrySize(EnableLRU capacityController, Object value) {
     int oldSize = getEntrySize();
-    int newSize = capacityController.entrySize( getKeyForSizing(), value);
+    int newSize = capacityController.entrySize(getKeyForSizing(), value);
     setEntrySize(newSize);
     int delta = newSize - oldSize;
     return delta;
   }
+
   public boolean testRecentlyUsed() {
     return areAnyBitsSet(RECENTLY_USED);
   }
+
   @Override
   public void setRecentlyUsed() {
     setBits(RECENTLY_USED);
   }
+
   public void unsetRecentlyUsed() {
     clearBits(~RECENTLY_USED);
   }
+
   public boolean testEvicted() {
     return areAnyBitsSet(EVICTED);
   }
+
   public void setEvicted() {
     setBits(EVICTED);
   }
+
   public void unsetEvicted() {
     clearBits(~EVICTED);
   }
@@ -213,30 +212,35 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
   private LRUClockNode nextLRU;
   private LRUClockNode prevLRU;
   private int size;
-  public void setNextLRUNode( LRUClockNode next ) {
+
+  public void setNextLRUNode(LRUClockNode next) {
     this.nextLRU = next;
   }
+
   public LRUClockNode nextLRUNode() {
     return this.nextLRU;
   }
-  public void setPrevLRUNode( LRUClockNode prev ) {
+
+  public void setPrevLRUNode(LRUClockNode prev) {
     this.prevLRU = prev;
   }
+
   public LRUClockNode prevLRUNode() {
     return this.prevLRU;
   }
+
   public int getEntrySize() {
     return this.size;
   }
+
   protected void setEntrySize(int size) {
     this.size = size;
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   @Override
   public Object getKeyForSizing() {
-
 
 
 
@@ -248,7 +252,7 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
 
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // stats code
   @Override
   public void updateStatsForGet(boolean hit, long time) {
@@ -259,51 +263,61 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
       incrementMissCount();
     }
   }
+
   @Override
   protected void setLastModifiedAndAccessedTimes(long lastModified, long lastAccessed) {
     _setLastModified(lastModified);
-    if (!DISABLE_ACCESS_TIME_UPDATE_ON_PUT) { 
+    if (!DISABLE_ACCESS_TIME_UPDATE_ON_PUT) {
       setLastAccessed(lastAccessed);
     }
   }
+
   private volatile long lastAccessed;
   private volatile int hitCount;
   private volatile int missCount;
-  
-  private static final AtomicIntegerFieldUpdater<VersionedStatsLRURegionEntryHeapStringKey1> hitCountUpdater 
-    = AtomicIntegerFieldUpdater.newUpdater(VersionedStatsLRURegionEntryHeapStringKey1.class, "hitCount");
-  private static final AtomicIntegerFieldUpdater<VersionedStatsLRURegionEntryHeapStringKey1> missCountUpdater 
-    = AtomicIntegerFieldUpdater.newUpdater(VersionedStatsLRURegionEntryHeapStringKey1.class, "missCount");
-  
+
+  private static final AtomicIntegerFieldUpdater<VersionedStatsLRURegionEntryHeapStringKey1> hitCountUpdater =
+      AtomicIntegerFieldUpdater.newUpdater(VersionedStatsLRURegionEntryHeapStringKey1.class,
+          "hitCount");
+  private static final AtomicIntegerFieldUpdater<VersionedStatsLRURegionEntryHeapStringKey1> missCountUpdater =
+      AtomicIntegerFieldUpdater.newUpdater(VersionedStatsLRURegionEntryHeapStringKey1.class,
+          "missCount");
+
   @Override
   public long getLastAccessed() throws InternalStatisticsDisabledException {
     return this.lastAccessed;
   }
+
   private void setLastAccessed(long lastAccessed) {
     this.lastAccessed = lastAccessed;
   }
+
   @Override
   public long getHitCount() throws InternalStatisticsDisabledException {
     return this.hitCount & 0xFFFFFFFFL;
   }
+
   @Override
   public long getMissCount() throws InternalStatisticsDisabledException {
     return this.missCount & 0xFFFFFFFFL;
   }
+
   private void incrementHitCount() {
     hitCountUpdater.incrementAndGet(this);
   }
+
   private void incrementMissCount() {
     missCountUpdater.incrementAndGet(this);
   }
+
   @Override
   public void resetCounts() throws InternalStatisticsDisabledException {
-    hitCountUpdater.set(this,0);
-    missCountUpdater.set(this,0);
+    hitCountUpdater.set(this, 0);
+    missCountUpdater.set(this, 0);
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   @Override
   public void txDidDestroy(long currTime) {
     setLastModified(currTime);
@@ -311,15 +325,16 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
     this.hitCount = 0;
     this.missCount = 0;
   }
+
   @Override
   public boolean hasStats() {
     return true;
   }
 
-  
+
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // versioned code
   private VersionSource memberID;
   private short entryVersionLowBytes;
@@ -331,16 +346,16 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
   public int getEntryVersion() {
     return ((entryVersionHighByte << 16) & 0xFF0000) | (entryVersionLowBytes & 0xFFFF);
   }
-  
+
   public long getRegionVersion() {
-    return (((long)regionVersionHighBytes) << 32) | (regionVersionLowBytes & 0x00000000FFFFFFFFL);  
+    return (((long) regionVersionHighBytes) << 32) | (regionVersionLowBytes & 0x00000000FFFFFFFFL);
   }
-  
-  
+
+
   public long getVersionTimeStamp() {
     return getLastModified();
   }
-  
+
   public void setVersionTimeStamp(long time) {
     setLastModified(time);
   }
@@ -348,17 +363,18 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
   public VersionSource getMemberID() {
     return this.memberID;
   }
+
   public int getDistributedSystemId() {
     return this.distributedSystemId;
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   public void setVersions(VersionTag tag) {
     this.memberID = tag.getMemberID();
     int eVersion = tag.getEntryVersion();
-    this.entryVersionLowBytes = (short)(eVersion & 0xffff);
-    this.entryVersionHighByte = (byte)((eVersion & 0xff0000) >> 16);
+    this.entryVersionLowBytes = (short) (eVersion & 0xffff);
+    this.entryVersionHighByte = (byte) ((eVersion & 0xff0000) >> 16);
     this.regionVersionHighBytes = tag.getRegionVersionHighBytes();
     this.regionVersionLowBytes = tag.getRegionVersionLowBytes();
     if (!(tag.isGatewayTag()) && this.distributedSystemId == tag.getDistributedSystemId()) {
@@ -370,11 +386,11 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
     } else {
       setVersionTimeStamp(tag.getVersionTimeStamp());
     }
-    this.distributedSystemId = (byte)(tag.getDistributedSystemId() & 0xff);
+    this.distributedSystemId = (byte) (tag.getDistributedSystemId() & 0xff);
   }
 
   public void setMemberID(VersionSource memberID) {
-    this.memberID = memberID; 
+    this.memberID = memberID;
   }
 
   @Override
@@ -383,7 +399,7 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   public VersionTag asVersionTag() {
     VersionTag tag = VersionTag.create(memberID);
     tag.setEntryVersion(getEntryVersion());
@@ -393,9 +409,9 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
     return tag;
   }
 
-  public void processVersionTag(LocalRegion r, VersionTag tag,
-      boolean isTombstoneFromGII, boolean hasDelta,
-      VersionSource thisVM, InternalDistributedMember sender, boolean checkForConflicts) {
+  public void processVersionTag(LocalRegion r, VersionTag tag, boolean isTombstoneFromGII,
+      boolean hasDelta, VersionSource thisVM, InternalDistributedMember sender,
+      boolean checkForConflicts) {
     basicProcessVersionTag(r, tag, isTombstoneFromGII, hasDelta, thisVM, sender, checkForConflicts);
   }
 
@@ -410,38 +426,41 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
   public short getRegionVersionHighBytes() {
     return this.regionVersionHighBytes;
   }
-  
+
   /** get rvv internal low bytes. Used by region entries for transferring to storage */
   public int getRegionVersionLowBytes() {
     return this.regionVersionLowBytes;
   }
 
-  
+
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   // key code
 
   private final long bits1;
+
   private int getKeyLength() {
     return (int) (this.bits1 & 0x003fL);
   }
+
   private int getEncoding() {
     // 0 means encoded as char
     // 1 means encoded as bytes that are all <= 0x7f;
     return (int) (this.bits1 >> 6) & 0x03;
   }
+
   @Override
   public Object getKey() {
     int keylen = getKeyLength();
     char[] chars = new char[keylen];
     long tmpBits1 = this.bits1;
     if (getEncoding() == 1) {
-      for (int i=0; i < keylen; i++) {
+      for (int i = 0; i < keylen; i++) {
         tmpBits1 >>= 8;
-      chars[i] = (char) (tmpBits1 & 0x00ff);
+        chars[i] = (char) (tmpBits1 & 0x00ff);
       }
     } else {
-      for (int i=0; i < keylen; i++) {
+      for (int i = 0; i < keylen; i++) {
         tmpBits1 >>= 16;
         chars[i] = (char) (tmpBits1 & 0x00FFff);
       }
@@ -450,16 +469,16 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
   }
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
-  
+
   @Override
   public boolean isKeyEqual(Object k) {
     if (k instanceof String) {
-      String str = (String)k;
+      String str = (String) k;
       int keylen = getKeyLength();
       if (str.length() == keylen) {
         long tmpBits1 = this.bits1;
         if (getEncoding() == 1) {
-          for (int i=0; i < keylen; i++) {
+          for (int i = 0; i < keylen; i++) {
             tmpBits1 >>= 8;
             char c = (char) (tmpBits1 & 0x00ff);
             if (str.charAt(i) != c) {
@@ -467,7 +486,7 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
             }
           }
         } else {
-          for (int i=0; i < keylen; i++) {
+          for (int i = 0; i < keylen; i++) {
             tmpBits1 >>= 16;
             char c = (char) (tmpBits1 & 0x00FFff);
             if (str.charAt(i) != c) {
@@ -480,7 +499,7 @@ public class VersionedStatsLRURegionEntryHeapStringKey1 extends VersionedStatsLR
     }
     return false;
   }
-  
+
 
   // DO NOT modify this class. It was generated from LeafRegionEntry.cpp
 }

@@ -2173,12 +2173,12 @@ public class EntryEventImpl
         | FLAG_INHIBIT_LISTENER_NOTIFICATION | FLAG_SERIALIZATION_DEFERRED | FLAG_FROM_SERVER
         | FLAG_FROM_RI_LOCAL_DESTROY | FLAG_INHIBIT_DISTRIBUTION | FLAG_REDESTROYED_TOMBSTONE);
 
-    protected static final boolean isSet(short flags, short mask) {
+    protected static boolean isSet(short flags, short mask) {
       return (flags & mask) != 0;
     }
 
     /** WARNING: Does not set the bit in place, returns new short with bit set */
-    protected static final short set(short flags, short mask, boolean on) {
+    protected static short set(short flags, short mask, boolean on) {
       return (short) (on ? (flags | mask) : (flags & ~mask));
     }
   }
