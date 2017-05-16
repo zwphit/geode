@@ -369,7 +369,7 @@ public class DistributedRemoveAllOperation extends AbstractUpdateOperation // TO
      * {@link PutAllPRMessage#toData(DataOutput)} <br>
      * {@link RemotePutAllMessage#toData(DataOutput)} <br>
      */
-    public final void toData(final DataOutput out) throws IOException {
+    public void toData(final DataOutput out) throws IOException {
       Object key = this.key;
       DataSerializer.writeObject(key, out);
 

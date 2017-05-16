@@ -42,22 +42,22 @@ class VMLRURegionMap extends AbstractLRURegionMap {
   private NewLRUClockHand lruList;
 
   @Override
-  protected final void _setCCHelper(EnableLRU ccHelper) {
+  protected void _setCCHelper(EnableLRU ccHelper) {
     this.ccHelper = ccHelper;
   }
 
   @Override
-  protected final EnableLRU _getCCHelper() {
+  protected EnableLRU _getCCHelper() {
     return this.ccHelper;
   }
 
   @Override
-  protected final void _setLruList(NewLRUClockHand lruList) {
+  protected void _setLruList(NewLRUClockHand lruList) {
     this.lruList = lruList;
   }
 
   @Override
-  public final NewLRUClockHand _getLruList() {
+  public NewLRUClockHand _getLruList() {
     return this.lruList;
   }
 }

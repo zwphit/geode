@@ -47,7 +47,7 @@ public class LocalViewMessage extends SerialDistributionMessage {
   }
 
   @Override
-  final public int getProcessorType() {
+  public int getProcessorType() {
     return DistributionManager.VIEW_EXECUTOR;
   }
 

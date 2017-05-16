@@ -268,7 +268,7 @@ public class DistributedClearOperation extends DistributedCacheOperation {
 
 
     @Override
-    final public RegionEventImpl createRegionEvent(DistributedRegion rgn) {
+    public RegionEventImpl createRegionEvent(DistributedRegion rgn) {
 
       ClientRegionEventImpl event = new ClientRegionEventImpl(rgn, getOperation(), this.callbackArg,
           true /* originRemote */, getSender(), (ClientProxyMembershipID) this.context);

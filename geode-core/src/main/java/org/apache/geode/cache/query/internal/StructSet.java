@@ -64,7 +64,7 @@ public class StructSet /* extends ObjectOpenCustomHashSet */ implements Set, Sel
   protected static class ObjectArrayHashingStrategy implements ObjectOpenCustomHashSet.Strategy {
     private static final long serialVersionUID = -6407549977968716071L;
 
-    public final int hashCode(Object o) {
+    public int hashCode(Object o) {
       // throws ClassCastException if not Object[]
       // compute hash code based on all elements
       Object[] oa = (Object[]) o;
@@ -77,7 +77,7 @@ public class StructSet /* extends ObjectOpenCustomHashSet */ implements Set, Sel
       return h;
     }
 
-    public final boolean equals(Object o1, Object o2) {
+    public boolean equals(Object o1, Object o2) {
       // throws ClassCastException if not Object[]
       if (o1 == null)
         return o2 == null;

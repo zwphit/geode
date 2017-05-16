@@ -356,11 +356,11 @@ public class ProxyBucketRegion implements Bucket {
     return this.advisor.getBucketRedundancy() + 1;
   }
 
-  public final int getBucketId() {
+  public int getBucketId() {
     return this.bid;
   }
 
-  public final int getId() {
+  public int getId() {
     return getBucketId();
   }
 

@@ -69,7 +69,7 @@ public class NativeCallsJNAImpl {
    */
   private static final NativeCalls instance = getImplInstance();
 
-  private static final NativeCalls getImplInstance() {
+  private static NativeCalls getImplInstance() {
     if (Platform.isLinux()) {
       return new LinuxNativeCalls();
     }

@@ -222,11 +222,11 @@ public class EvictionAttributesImpl extends EvictionAttributes
     return this.algorithm.isLIFO();
   }
 
-  public final boolean isLIFOEntry() {
+  public boolean isLIFOEntry() {
     return this.algorithm == EvictionAlgorithm.LIFO_ENTRY;
   }
 
-  public final boolean isLIFOMemory() {
+  public boolean isLIFOMemory() {
     return this.algorithm == EvictionAlgorithm.LIFO_MEMORY;
   }
 

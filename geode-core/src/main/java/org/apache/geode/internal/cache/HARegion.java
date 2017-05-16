@@ -211,7 +211,7 @@ public class HARegion extends DistributedRegion {
   }
 
   @Override
-  public final Object put(Object key, Object value, Object aCallbackArgument)
+  public Object put(Object key, Object value, Object aCallbackArgument)
       throws TimeoutException, CacheWriterException {
     checkReadiness();
 
@@ -323,7 +323,7 @@ public class HARegion extends DistributedRegion {
    * Never genearte EventID for any Entry or Region operation on the HARegion
    */
   @Override
-  final public boolean generateEventID() {
+  public boolean generateEventID() {
     return false;
   }
 

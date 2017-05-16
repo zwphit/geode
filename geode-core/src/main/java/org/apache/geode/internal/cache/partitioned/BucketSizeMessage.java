@@ -66,7 +66,7 @@ public class BucketSizeMessage extends PartitionMessage {
   }
 
   @Override
-  final public int getProcessorType() {
+  public int getProcessorType() {
     return DistributionManager.STANDARD_EXECUTOR;
   }
 

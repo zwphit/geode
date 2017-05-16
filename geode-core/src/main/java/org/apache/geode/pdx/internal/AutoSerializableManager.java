@@ -744,14 +744,14 @@ public class AutoSerializableManager {
 
     public abstract void orderedDeserialize(InternalPdxReader reader, Object obj);
 
-    protected final Object readTransformIf(Object o, Object serializedValue)
+    protected Object readTransformIf(Object o, Object serializedValue)
         throws IllegalArgumentException, IllegalAccessException {
       if (!transform())
         return serializedValue;
       return readTransform(o, serializedValue);
     }
 
-    protected final Object readTransform(Object o, Object serializedValue)
+    protected Object readTransform(Object o, Object serializedValue)
         throws IllegalArgumentException, IllegalAccessException {
       return this.owner.getOwner().readTransform(getField(), o.getClass(), serializedValue);
     }

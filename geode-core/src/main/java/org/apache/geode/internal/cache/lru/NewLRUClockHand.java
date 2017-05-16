@@ -141,7 +141,7 @@ public class NewLRUClockHand {
    *
    * @param aNode Description of the Parameter
    */
-  public final void appendEntry(final LRUClockNode aNode) {
+  public void appendEntry(final LRUClockNode aNode) {
     synchronized (this.lock) {
       if (aNode.nextLRUNode() != null || aNode.prevLRUNode() != null) {
         return;

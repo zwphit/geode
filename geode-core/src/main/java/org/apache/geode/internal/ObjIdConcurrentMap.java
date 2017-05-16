@@ -200,7 +200,7 @@ public class ObjIdConcurrentMap<V> /* extends AbstractMap<K, V> */
     }
 
     @SuppressWarnings("unchecked")
-    static final <V> HashEntry<V>[] newArray(int i) {
+    static <V> HashEntry<V>[] newArray(int i) {
       return new HashEntry[i];
     }
   }
@@ -279,7 +279,7 @@ public class ObjIdConcurrentMap<V> /* extends AbstractMap<K, V> */
     }
 
     @SuppressWarnings("unchecked")
-    static final <K, V> Segment<V>[] newArray(int i) {
+    static <K, V> Segment<V>[] newArray(int i) {
       return new Segment[i];
     }
 

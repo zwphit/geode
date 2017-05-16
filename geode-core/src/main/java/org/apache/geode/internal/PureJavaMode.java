@@ -67,11 +67,11 @@ public class PureJavaMode {
     osStatsAreAvailable = osName.startsWith("Linux") || !isPure;
   }
 
-  public final static boolean isPure() {
+  public static boolean isPure() {
     return isPure;
   }
 
-  public final static boolean is64Bit() {
+  public static boolean is64Bit() {
     return is64Bit;
   }
 
@@ -79,7 +79,7 @@ public class PureJavaMode {
    * Linux has OsStats even in PureJava mode but other platforms require the native code to provide
    * OS Statistics. return true if OSStatistics are available
    */
-  public final static boolean osStatsAreAvailable() {
+  public static boolean osStatsAreAvailable() {
     return osStatsAreAvailable;
   }
 }

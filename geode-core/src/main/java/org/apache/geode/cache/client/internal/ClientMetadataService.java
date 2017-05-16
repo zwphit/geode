@@ -539,7 +539,7 @@ public class ClientMetadataService {
     }
   }
 
-  public final void getClientPRMetadata(LocalRegion region) {
+  void getClientPRMetadata(LocalRegion region ) {
     final String regionFullPath = region.getFullPath();
     ClientPartitionAdvisor advisor = null;
     InternalPool pool = region.getServerProxy().getPool();

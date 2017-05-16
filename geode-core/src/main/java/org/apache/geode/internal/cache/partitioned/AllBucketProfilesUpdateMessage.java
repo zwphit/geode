@@ -54,7 +54,7 @@ public class AllBucketProfilesUpdateMessage extends DistributionMessage
   public AllBucketProfilesUpdateMessage() {}
 
   @Override
-  final public int getProcessorType() {
+  public int getProcessorType() {
     return DistributionManager.WAITING_POOL_EXECUTOR;
   }
 

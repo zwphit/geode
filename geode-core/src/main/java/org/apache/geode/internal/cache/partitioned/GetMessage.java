@@ -102,7 +102,7 @@ public class GetMessage extends PartitionMessageWithDirectReply {
       Boolean.getBoolean(DistributionConfig.GEMFIRE_PREFIX + "order-pr-gets");
 
   @Override
-  final public int getProcessorType() {
+  public int getProcessorType() {
     if (!forceUseOfPRExecutor && !ORDER_PR_GETS && !isDirectAck()) {
       try {
         PartitionedRegion pr = PartitionedRegion.getPRFromId(this.regionId);

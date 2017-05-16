@@ -218,7 +218,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
    * tables, that otherwise encounter collisions for hashCodes that do not differ in lower or upper
    * bits.
    */
-  public static final int keyHash(final Object o, final boolean compareValues) {
+  public static int keyHash(final Object o, final boolean compareValues) {
     int h = compareValues ? o.hashCode() : System.identityHashCode(o);
     // Spread bits to regularize both segment and index locations,
     // using variant of single-word Wang/Jenkins hash.
@@ -236,7 +236,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
    * @param hash the hash code for the key
    * @return the segment
    */
-  final Segment<K, V> segmentFor(final int hash) {
+  Segment<K, V> segmentFor(final int hash) {
     if (this.segmentMask == 0) {
       return this.segments[0];
     }
@@ -329,42 +329,42 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
     /**
      * @see CustomEntryConcurrentHashMap.HashEntry#getKey()
      */
-    public final K getKey() {
+    public K getKey() {
       return this.key;
     }
 
     /**
      * @see CustomEntryConcurrentHashMap.HashEntry#getMapValue()
      */
-    public final V getMapValue() {
+    public V getMapValue() {
       return this.value;
     }
 
     /**
      * @see CustomEntryConcurrentHashMap.HashEntry#setMapValue(Object)
      */
-    public final void setMapValue(V newValue) {
+    public void setMapValue(V newValue) {
       this.value = newValue;
     }
 
     /**
      * @see CustomEntryConcurrentHashMap.HashEntry#getEntryHash()
      */
-    public final int getEntryHash() {
+    public int getEntryHash() {
       return this.hash;
     }
 
     /**
      * @see CustomEntryConcurrentHashMap.HashEntry#getNextEntry()
      */
-    public final HashEntry<K, V> getNextEntry() {
+    public HashEntry<K, V> getNextEntry() {
       return this.next;
     }
 
     /**
      * @see CustomEntryConcurrentHashMap.HashEntry#setNextEntry
      */
-    public final void setNextEntry(final HashEntry<K, V> n) {
+    public void setNextEntry(final HashEntry<K, V> n) {
       this.next = n;
     }
 
@@ -504,7 +504,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
     /**
      * Sets table to new HashEntry array. Call only while holding lock or in constructor.
      */
-    final void setTable(final HashEntry<K, V>[] newTable) {
+    void setTable(final HashEntry<K, V>[] newTable) {
       this.threshold = (int) (newTable.length * this.loadFactor);
       this.table = newTable;
     }
@@ -512,7 +512,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
     /**
      * Returns properly casted first entry of bin for given hash.
      */
-    final HashEntry<K, V> getFirst(final int hash) {
+    HashEntry<K, V> getFirst(final int hash) {
       final HashEntry<K, V>[] tab = this.table;
       return tab[hash & (tab.length - 1)];
     }
@@ -522,7 +522,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * is possible only if a compiler happens to reorder a HashEntry initialization with its table
      * assignment, which is legal under memory model but is not known to ever occur.
      */
-    final V readValueUnderLock(final HashEntry<K, V> e) {
+    V readValueUnderLock(final HashEntry<K, V> e) {
       final ReentrantReadWriteLock.ReadLock readLock = super.readLock();
       readLock.lock();
       final V v = e.getMapValue();
@@ -553,7 +553,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     /* Specialized implementations of map methods */
 
-    final V get(final Object key, final int hash) {
+    V get(final Object key, final int hash) {
       if (this.count != 0) { // read-volatile
         // GemStone change to acquire the read lock on list updates
         final ReentrantReadWriteLock.ReadLock listLock = this.listUpdateLock.readLock();
@@ -582,7 +582,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
       return null;
     }
 
-    final V getNoLock(final Object key, final int hash, final boolean lockListForRead) {
+    V getNoLock(final Object key, final int hash, final boolean lockListForRead) {
       if (this.count != 0) { // read-volatile
         // GemStone change to acquire the read lock on list updates
         ReentrantReadWriteLock.ReadLock listLock = null;
@@ -607,7 +607,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
       return null;
     }
 
-    final boolean containsKey(final Object key, final int hash) {
+    boolean containsKey(final Object key, final int hash) {
       if (this.count != 0) { // read-volatile
         // GemStone change to acquire the read lock on list updates
         final ReentrantReadWriteLock.ReadLock listLock = this.listUpdateLock.readLock();
@@ -627,7 +627,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
       return false;
     }
 
-    final boolean containsValue(final Object value) {
+    boolean containsValue(final Object value) {
       if (this.count != 0) { // read-volatile
         // GemStone change to acquire the read lock on list updates
         ReentrantReadWriteLock.ReadLock readLock = this.listUpdateLock.readLock();
@@ -662,7 +662,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
       return false;
     }
 
-    final boolean replace(final K key, final int hash, final V oldValue, final V newValue) {
+    boolean replace(final K key, final int hash, final V oldValue, final V newValue) {
       final ReentrantReadWriteLock.WriteLock writeLock = super.writeLock();
       writeLock.lock();
       try {
@@ -682,7 +682,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
       }
     }
 
-    final V replace(final K key, final int hash, final V newValue) {
+    V replace(final K key, final int hash, final V newValue) {
       final ReentrantReadWriteLock.WriteLock writeLock = super.writeLock();
       writeLock.lock();
       try {
@@ -702,7 +702,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
       }
     }
 
-    final V put(final K key, final int hash, final V value, final boolean onlyIfAbsent) {
+    V put(final K key, final int hash, final V value, final boolean onlyIfAbsent) {
       final ReentrantReadWriteLock.WriteLock writeLock = super.writeLock();
       writeLock.lock();
       try {
@@ -738,7 +738,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     // GemStone additions
 
-    final <C, P> V create(final K key, final int hash, final MapCallback<K, V, C, P> valueCreator,
+    <C, P> V create(final K key, final int hash, final MapCallback<K, V, C, P> valueCreator,
         final C context, final P createParams, final boolean lockForRead) {
       // TODO: This can be optimized by having a special lock implementation
       // that will allow upgrade from read to write lock atomically. This can
@@ -804,7 +804,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
       }
     }
 
-    final V get(final Object key, final int hash, final MapCallback<K, V, ?, ?> readCallback) {
+    V get(final Object key, final int hash, final MapCallback<K, V, ?, ?> readCallback) {
       final ReentrantReadWriteLock.ReadLock readLock = super.readLock();
       readLock.lock();
       try {
@@ -831,7 +831,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     // End GemStone additions
 
-    final void rehash() {
+    void rehash() {
       final HashEntry<K, V>[] oldTable = this.table;
       final int oldCapacity = oldTable.length;
       if (oldCapacity >= MAXIMUM_CAPACITY) {
@@ -934,7 +934,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     // GemStone change
     // added "condition" and "removeParams" parameters
-    final <C, P> V remove(final Object key, final int hash, final Object value,
+    <C, P> V remove(final Object key, final int hash, final Object value,
         final MapCallback<K, V, C, P> condition, final C context, final P removeParams) {
       // End GemStone change
       final ReentrantReadWriteLock.WriteLock writeLock = super.writeLock();
@@ -1003,7 +1003,7 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
     /**
      * GemStone added the clearedEntries param and the result
      */
-    final ArrayList<HashEntry<?, ?>> clear(ArrayList<HashEntry<?, ?>> clearedEntries) {
+    ArrayList<HashEntry<?, ?>> clear(ArrayList<HashEntry<?, ?>> clearedEntries) {
       if (this.count != 0) {
         final ReentrantReadWriteLock.WriteLock writeLock = super.writeLock();
         writeLock.lock();

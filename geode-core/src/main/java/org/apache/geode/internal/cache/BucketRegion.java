@@ -106,7 +106,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
       this.rawValue = rawVal;
     }
 
-    public final boolean isValueByteArray() {
+    public boolean isValueByteArray() {
       return this.rawValue instanceof byte[];
     }
 
@@ -1017,7 +1017,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
   }
 
   @Override
-  final void performExpiryTimeout(ExpiryTask expiryTask) throws CacheException {
+  void performExpiryTimeout(ExpiryTask expiryTask) throws CacheException {
     ExpiryTask task = expiryTask;
     boolean isEvictDestroy = isEntryEvictDestroyEnabled();
     // Fix for bug 43805 - get the primary lock before

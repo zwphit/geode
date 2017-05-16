@@ -323,7 +323,7 @@ public abstract class AbstractOp implements Op {
    * @throws Exception if response could not be processed or we received a response with a server
    *         exception.
    */
-  protected final void processChunkedResponse(ChunkedMessage msg, String opName,
+  protected void processChunkedResponse(ChunkedMessage msg, String opName,
       ChunkHandler callback) throws Exception {
     msg.readHeader();
     final int msgType = msg.getMessageType();
@@ -392,11 +392,11 @@ public abstract class AbstractOp implements Op {
     }
   }
 
-  protected final boolean hasFailed() {
+  protected boolean hasFailed() {
     return this.failed;
   }
 
-  protected final boolean hasTimedOut() {
+  protected boolean hasTimedOut() {
     return this.timedOut;
   }
 

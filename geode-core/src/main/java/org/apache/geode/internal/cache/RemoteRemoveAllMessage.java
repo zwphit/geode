@@ -253,7 +253,7 @@ public class RemoteRemoveAllMessage extends RemoteOperationMessageWithDirectRepl
   }
 
   @Override
-  public final void toData(DataOutput out) throws IOException {
+  public void toData(DataOutput out) throws IOException {
     super.toData(out);
     DataSerializer.writeObject(this.eventId, out);
     DataSerializer.writeObject(this.callbackArg, out);
@@ -333,7 +333,7 @@ public class RemoteRemoveAllMessage extends RemoteOperationMessageWithDirectRepl
    * @param eventSender the endpoint server who received request from client
    * @return If succeeds, return true, otherwise, throw exception
    */
-  public final boolean doLocalRemoveAll(final LocalRegion r,
+  public boolean doLocalRemoveAll(final LocalRegion r,
       final InternalDistributedMember eventSender)
       throws EntryExistsException, RemoteOperationException {
     final DistributedRegion dr = (DistributedRegion) r;
@@ -417,7 +417,7 @@ public class RemoteRemoveAllMessage extends RemoteOperationMessageWithDirectRepl
 
 
   @Override
-  protected final void appendFields(StringBuffer buff) {
+  protected void appendFields(StringBuffer buff) {
     super.appendFields(buff);
     buff.append("; removeAllDataCount=").append(removeAllDataCount);
     if (this.bridgeContext != null) {

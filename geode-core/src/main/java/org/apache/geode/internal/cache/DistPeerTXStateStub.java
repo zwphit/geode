@@ -113,7 +113,7 @@ public class DistPeerTXStateStub extends PeerTXStateStub implements DistTXCoordi
     return primaryTransactionalOperations;
   }
 
-  private final void addPrimaryTransactionalOperations(DistTxEntryEvent dtop) {
+  private void addPrimaryTransactionalOperations(DistTxEntryEvent dtop) {
     if (logger.isDebugEnabled()) {
       // [DISTTX] TODO Remove these
       logger.debug("DistPeerTXStateStub.addPrimaryTransactionalOperations add " + dtop
@@ -128,7 +128,7 @@ public class DistPeerTXStateStub extends PeerTXStateStub implements DistTXCoordi
   }
 
   @Override
-  public final void addSecondaryTransactionalOperations(DistTxEntryEvent dtop)
+  public void addSecondaryTransactionalOperations(DistTxEntryEvent dtop)
       throws UnsupportedOperationInTransactionException {
     secondaryTransactionalOperations.add(dtop);
   }

@@ -41,7 +41,7 @@ class VersionedMsgStreamer extends MsgStreamer implements VersionedDataStream {
    * {@inheritDoc}
    */
   @Override
-  public final Version getVersion() {
+  public Version getVersion() {
     return this.version;
   }
 

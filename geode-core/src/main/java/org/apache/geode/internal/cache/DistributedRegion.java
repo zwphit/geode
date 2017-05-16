@@ -1969,7 +1969,7 @@ public class DistributedRegion extends LocalRegion implements CacheDistributionA
     super.basicLocalClear(rEvent);
   }
 
-  public final DistributionConfig getDistributionConfig() {
+  public DistributionConfig getDistributionConfig() {
     return getSystem().getDistributionManager().getConfig();
   }
 

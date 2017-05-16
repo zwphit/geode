@@ -437,15 +437,15 @@ public class PutMessage extends PartitionMessageWithDirectReply implements NewVa
     return e2;
   }
 
-  public final Object getKey() {
+  public Object getKey() {
     return this.key;
   }
 
-  public final void setKey(Object key) {
+  public void setKey(Object key) {
     this.key = key;
   }
 
-  public final byte[] getValBytes() {
+  public byte[] getValBytes() {
     return this.valBytes;
   }
 
@@ -468,16 +468,16 @@ public class PutMessage extends PartitionMessageWithDirectReply implements NewVa
     }
   }
 
-  public final Object getCallbackArg() {
+  public Object getCallbackArg() {
     return this.cbArg;
   }
 
-  protected final Operation getOperation() {
+  protected Operation getOperation() {
     return this.op;
   }
 
   @Override
-  public final void setOperation(Operation operation) {
+  public void setOperation(Operation operation) {
     this.op = operation;
   }
 
@@ -509,7 +509,7 @@ public class PutMessage extends PartitionMessageWithDirectReply implements NewVa
   }
 
   @Override
-  public final void fromData(DataInput in) throws IOException, ClassNotFoundException {
+  public void fromData(DataInput in) throws IOException, ClassNotFoundException {
     super.fromData(in);
 
     final int extraFlags = in.readUnsignedByte();
@@ -567,7 +567,7 @@ public class PutMessage extends PartitionMessageWithDirectReply implements NewVa
    * buff.append("; oldvalue object="+this.oldValObj); buff.toString(); return buff.toString(); }
    */
   @Override
-  public final void toData(DataOutput out) throws IOException {
+  public void toData(DataOutput out) throws IOException {
     PartitionedRegion region = null;
     try {
       boolean flag = internalDs.getConfig().getDeltaPropagation();
@@ -675,7 +675,7 @@ public class PutMessage extends PartitionMessageWithDirectReply implements NewVa
    * indefinitely for the acknowledgement
    */
   @Override
-  protected final boolean operateOnPartitionedRegion(DistributionManager dm, PartitionedRegion r,
+  protected boolean operateOnPartitionedRegion(DistributionManager dm, PartitionedRegion r,
       long startTime) throws EntryExistsException, DataLocationException, IOException {
     this.setInternalDs(r.getSystem());// set the internal DS. Required to
                                       // checked DS level delta-enabled property
@@ -823,7 +823,7 @@ public class PutMessage extends PartitionMessageWithDirectReply implements NewVa
 
 
   @Override
-  protected final void appendFields(StringBuilder buff) {
+  protected void appendFields(StringBuilder buff) {
     super.appendFields(buff);
     buff.append("; key=").append(getKey()).append("; value=");
     // buff.append(getValBytes());
@@ -864,11 +864,11 @@ public class PutMessage extends PartitionMessageWithDirectReply implements NewVa
     }
   }
 
-  public final InternalDistributedSystem getInternalDs() {
+  public InternalDistributedSystem getInternalDs() {
     return internalDs;
   }
 
-  public final void setInternalDs(InternalDistributedSystem internalDs) {
+  public void setInternalDs(InternalDistributedSystem internalDs) {
     this.internalDs = internalDs;
   }
 

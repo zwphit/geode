@@ -120,7 +120,7 @@ public class RemoteSizeMessage extends RemoteOperationMessage {
    * of the initialization
    */
   @Override
-  protected final boolean failIfRegionMissing() {
+  protected boolean failIfRegionMissing() {
     return false;
   }
 

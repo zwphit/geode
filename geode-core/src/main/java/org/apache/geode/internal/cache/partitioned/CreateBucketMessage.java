@@ -81,7 +81,7 @@ public class CreateBucketMessage extends PartitionMessage {
   }
 
   @Override
-  final public int getProcessorType() {
+  public int getProcessorType() {
     return DistributionManager.WAITING_POOL_EXECUTOR;
   }
 

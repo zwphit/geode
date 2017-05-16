@@ -340,7 +340,7 @@ public class ObjectIntHashMap implements Cloneable, Serializable {
    * Returns the entry associated with the specified key in the IntHashMap. Returns null if the
    * IntHashMap contains no mapping for the key.
    */
-  final Entry getEntry(Object key) {
+  Entry getEntry(Object key) {
     int hash = (key == null) ? 0 : hash(hashingStrategy.hashCode(key));
     for (Entry e = table[indexFor(hash, table.length)]; e != null; e = e.next) {
       Object k;
@@ -530,7 +530,7 @@ public class ObjectIntHashMap implements Cloneable, Serializable {
    * Removes and returns the entry associated with the specified key in the IntHashMap. Returns null
    * if the IntHashMap contains no mapping for this key.
    */
-  final Entry removeEntryForKey(Object key) {
+  Entry removeEntryForKey(Object key) {
     int hash = (key == null) ? 0 : hash(hashingStrategy.hashCode(key));
     int i = indexFor(hash, table.length);
     Entry prev = table[i];
@@ -560,7 +560,7 @@ public class ObjectIntHashMap implements Cloneable, Serializable {
   /**
    * Special version of remove for EntrySet.
    */
-  final Entry removeMapping(Object o) {
+  Entry removeMapping(Object o) {
     if (!(o instanceof Entry))
       return null;
 
@@ -850,11 +850,11 @@ public class ObjectIntHashMap implements Cloneable, Serializable {
       }
     }
 
-    public final boolean hasNext() {
+    public boolean hasNext() {
       return next != null;
     }
 
-    final Entry nextEntry() {
+    Entry nextEntry() {
       if (modCount != expectedModCount)
         throw new ConcurrentModificationException();
       Entry e = next;

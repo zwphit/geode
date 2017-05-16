@@ -42,7 +42,7 @@ public class VersionedDataOutputStream extends DataOutputStream implements Versi
    * {@inheritDoc}
    */
   @Override
-  public final Version getVersion() {
+  public Version getVersion() {
     return this.version;
   }
 }

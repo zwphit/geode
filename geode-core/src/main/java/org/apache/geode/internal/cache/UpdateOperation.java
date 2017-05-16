@@ -502,7 +502,7 @@ public class UpdateOperation extends AbstractUpdateOperation {
 
     @Override
     @Retained
-    final public EntryEventImpl createEntryEvent(DistributedRegion rgn) {
+    public EntryEventImpl createEntryEvent(DistributedRegion rgn) {
       // Object oldValue = null;
       final Object argNewValue = null;
       // boolean localLoad = false, netLoad = false, netSearch = false,

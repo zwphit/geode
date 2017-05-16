@@ -101,13 +101,13 @@ public class DestroyRegionOnDataStoreMessage extends PartitionMessage {
   }
 
   @Override
-  public final void fromData(final DataInput in) throws IOException, ClassNotFoundException {
+  public void fromData(final DataInput in) throws IOException, ClassNotFoundException {
     super.fromData(in);
     callbackArg = DataSerializer.readObject(in);
   }
 
   @Override
-  public final void toData(final DataOutput out) throws IOException {
+  public void toData(final DataOutput out) throws IOException {
     super.toData(out);
     DataSerializer.writeObject(callbackArg, out);
   }

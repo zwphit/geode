@@ -117,7 +117,7 @@ public abstract class OpenTypeConverter {
    * @return the java type object
    * @throws InvalidObjectException
    */
-  public final Object fromOpenValue(Object value) throws InvalidObjectException {
+  public Object fromOpenValue(Object value) throws InvalidObjectException {
     if (value == null)
       return null;
     else
@@ -143,7 +143,7 @@ public abstract class OpenTypeConverter {
    * @return open class object
    * @throws OpenDataException
    */
-  final Object toOpenValue(Object value) throws OpenDataException {
+  Object toOpenValue(Object value) throws OpenDataException {
     if (value == null)
       return null;
     else
@@ -161,15 +161,15 @@ public abstract class OpenTypeConverter {
     return false;
   }
 
-  final Type getTargetType() {
+  Type getTargetType() {
     return targetType;
   }
 
-  final OpenType getOpenType() {
+  OpenType getOpenType() {
     return openType;
   }
 
-  final Class getOpenClass() {
+  Class getOpenClass() {
     return openClass;
   }
 
@@ -594,7 +594,7 @@ public abstract class OpenTypeConverter {
       return possibleCause;
     }
 
-    final Object fromCompositeData(CompositeData cd, String[] itemNames,
+    Object fromCompositeData(CompositeData cd, String[] itemNames,
         OpenTypeConverter[] converters) {
       throw new Error();
     }

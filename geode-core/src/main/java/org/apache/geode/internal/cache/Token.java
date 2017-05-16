@@ -88,23 +88,23 @@ public abstract class Token {
   /**
    * Returns true if o is INVALID, LOCAL_INVALID, DESTROYED, or REMOVED.
    */
-  public static final boolean isInvalidOrRemoved(Object o) {
+  public static boolean isInvalidOrRemoved(Object o) {
     return isInvalid(o) || isRemoved(o);
   }
 
-  public static final boolean isInvalid(Object o) {
+  public static boolean isInvalid(Object o) {
     return o == INVALID || o == LOCAL_INVALID;
   }
 
-  public static final boolean isRemoved(Object o) {
+  public static boolean isRemoved(Object o) {
     return o == DESTROYED || o == REMOVED_PHASE1 || o == REMOVED_PHASE2 || o == TOMBSTONE;
   }
 
-  public static final boolean isRemovedFromDisk(Object o) {
+  public static boolean isRemovedFromDisk(Object o) {
     return o == DESTROYED || o == REMOVED_PHASE1 || o == REMOVED_PHASE2;
   }
 
-  public static final boolean isDestroyed(Object o) {
+  public static boolean isDestroyed(Object o) {
     return o == DESTROYED;
   }
 

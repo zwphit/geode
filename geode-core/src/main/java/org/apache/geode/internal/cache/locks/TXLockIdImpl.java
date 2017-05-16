@@ -50,11 +50,11 @@ public class TXLockIdImpl implements TXLockId, DataSerializableFixedID {
     }
   }
 
-  public final int getCount() {
+  public int getCount() {
     return this.id;
   }
 
-  public final InternalDistributedMember getMemberId() {
+  public InternalDistributedMember getMemberId() {
     return this.memberId;
   }
 

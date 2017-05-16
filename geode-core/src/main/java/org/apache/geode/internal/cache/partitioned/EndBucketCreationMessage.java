@@ -90,7 +90,7 @@ public class EndBucketCreationMessage extends PartitionMessage {
   }
 
   @Override
-  protected final boolean operateOnPartitionedRegion(DistributionManager dm,
+  protected boolean operateOnPartitionedRegion(DistributionManager dm,
       PartitionedRegion region, long startTime) throws ForceReattemptException {
 
     // this is executing in the WAITING_POOL_EXECUTOR

@@ -372,7 +372,7 @@ public class DistributionAdvisor {
     return getAdvisee().getDistributionManager();
   }
 
-  public final DistributionAdvisee getAdvisee() {
+  public DistributionAdvisee getAdvisee() {
     return this.advisee;
   }
 
@@ -458,7 +458,7 @@ public class DistributionAdvisor {
   }
 
   // wait for pending profile exchange to complete before returning
-  public final boolean isInitialized() {
+  public boolean isInitialized() {
     synchronized (this.initializeLock) {
       return this.initialized;
     }
@@ -470,7 +470,7 @@ public class DistributionAdvisor {
    * 
    * @since GemFire 5.7
    */
-  public final boolean pollIsInitialized() {
+  public boolean pollIsInitialized() {
     return this.initialized;
   }
 
@@ -755,7 +755,7 @@ public class DistributionAdvisor {
    * @param version The membership version returned by startOperation
    * @since GemFire 5.1
    */
-  public final synchronized long endOperation(long version) {
+  public synchronized long endOperation(long version) {
     synchronized (this.opCountLock) {
       if (version == membershipVersion) {
         currentVersionOpCount--;
@@ -1182,7 +1182,7 @@ public class DistributionAdvisor {
    * @since GemFire 5.7
    */
   @SuppressWarnings("unchecked")
-  protected final Set<InternalDistributedMember> getDefaultDistributionMembers() {
+  protected Set<InternalDistributedMember> getDefaultDistributionMembers() {
     if (!useAdminMembersForDefault()) {
       return getDistributionManager().getOtherDistributionManagerIds();
     } else {
@@ -1622,7 +1622,7 @@ public class DistributionAdvisor {
      * @param removeProfile true to remove profile else add profile
      * @param exchangeProfiles true to add the profile to reply
      */
-    protected final void handleDistributionAdvisee(DistributionAdvisee advisee,
+    protected void handleDistributionAdvisee(DistributionAdvisee advisee,
         boolean removeProfile, boolean exchangeProfiles, final List<Profile> replyProfiles) {
       final DistributionAdvisor da;
       if (advisee != null && (da = advisee.getDistributionAdvisor()) != null) {

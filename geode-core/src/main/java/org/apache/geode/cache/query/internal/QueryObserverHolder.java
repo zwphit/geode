@@ -49,7 +49,7 @@ public class QueryObserverHolder {
   /**
    * Set the given observer to be notified of query events. Returns the current observer.
    */
-  public static final QueryObserver setInstance(QueryObserver observer) {
+  public static QueryObserver setInstance(QueryObserver observer) {
     Support.assertArg(observer != null, "setInstance expects a non-null argument!");
     QueryObserver oldObserver = _instance;
     _instance = observer;
@@ -61,14 +61,14 @@ public class QueryObserverHolder {
   }
 
   /** Return the current QueryObserver instance */
-  public static final QueryObserver getInstance() {
+  public static QueryObserver getInstance() {
     return _instance;
   }
 
   /**
    * Only for test purposes.
    */
-  public static final void reset() {
+  public static void reset() {
     _instance = NO_OBSERVER;
   }
 }

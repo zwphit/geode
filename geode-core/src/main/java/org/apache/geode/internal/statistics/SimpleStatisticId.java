@@ -50,7 +50,7 @@ public class SimpleStatisticId implements StatisticId {
    * Object equality must be based on instance identity.
    */
   @Override
-  public final boolean equals(Object obj) {
+  public boolean equals(Object obj) {
     return super.equals(obj);
   }
 
@@ -58,7 +58,7 @@ public class SimpleStatisticId implements StatisticId {
    * Object equality must be based on instance identity.
    */
   @Override
-  public final int hashCode() {
+  public int hashCode() {
     return super.hashCode();
   }
 }

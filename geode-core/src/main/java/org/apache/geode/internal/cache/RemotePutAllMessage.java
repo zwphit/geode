@@ -261,7 +261,7 @@ public class RemotePutAllMessage extends RemoteOperationMessageWithDirectReply {
   }
 
   @Override
-  public final void toData(DataOutput out) throws IOException {
+  public void toData(DataOutput out) throws IOException {
     super.toData(out);
     DataSerializer.writeObject(this.eventId, out);
     DataSerializer.writeObject(this.callbackArg, out);
@@ -344,7 +344,7 @@ public class RemotePutAllMessage extends RemoteOperationMessageWithDirectReply {
    *        lastModified timestamp for last modification
    * @return If succeeds, return true, otherwise, throw exception
    */
-  public final boolean doLocalPutAll(final LocalRegion r,
+  public boolean doLocalPutAll(final LocalRegion r,
       final InternalDistributedMember eventSender, long lastModified)
       throws EntryExistsException, RemoteOperationException {
     final DistributedRegion dr = (DistributedRegion) r;
@@ -427,7 +427,7 @@ public class RemotePutAllMessage extends RemoteOperationMessageWithDirectReply {
 
 
   @Override
-  protected final void appendFields(StringBuffer buff) {
+  protected void appendFields(StringBuffer buff) {
     super.appendFields(buff);
     buff.append("; putAllDataCount=").append(putAllDataCount);
     if (this.bridgeContext != null) {

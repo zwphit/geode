@@ -37,7 +37,7 @@ public class IdentityConverter extends OpenTypeConverter {
     return value;
   }
 
-  public final Object fromNonNullOpenValue(Object value) {
+  public Object fromNonNullOpenValue(Object value) {
     return value;
   }
 }

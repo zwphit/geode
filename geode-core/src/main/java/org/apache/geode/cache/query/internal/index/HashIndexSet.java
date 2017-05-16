@@ -484,7 +484,7 @@ public class HashIndexSet implements Set {
     return false;
   }
 
-  public final boolean areObjectsEqual(Object o1, Object o2) {
+  public boolean areObjectsEqual(Object o1, Object o2) {
     if (o1 == null) {
       return o2 == null;
     }
@@ -671,7 +671,7 @@ public class HashIndexSet implements Set {
   /**
    * Before inserting we can ensure we have capacity
    */
-  protected final void preInsertHook() {
+  protected void preInsertHook() {
     if (hashIndexSetProperties.size > hashIndexSetProperties.maxSize
         || hashIndexSetProperties.free == 0 || TEST_ALWAYS_REHASH) {
       rehash(arraySize(hashIndexSetProperties.size + 1, _loadFactor));
