@@ -17,7 +17,6 @@ package org.apache.geode.management.internal.security;
 import static org.apache.geode.distributed.ConfigurationProperties.SECURITY_MANAGER;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -35,6 +34,7 @@ import org.apache.geode.test.junit.categories.SecurityTest;
 
 @Category({IntegrationTest.class, SecurityTest.class})
 public class DiskStoreMXBeanSecurityJUnitTest {
+
   private DiskStoreMXBean bean;
 
   @ClassRule
@@ -114,28 +114,25 @@ public class DiskStoreMXBeanSecurityJUnitTest {
   @Test
   @ConnectionConfiguration(user = "noAccess", password = "noAccess")
   public void testNoAccess() throws Exception {
-    SoftAssertions softly = new SoftAssertions();
-
-    softly.assertThatThrownBy(() -> bean.flush())
+    assertThatThrownBy(() -> bean.flush())
         .hasMessageContaining(TestCommand.clusterManageDisk.toString());
-    softly.assertThatThrownBy(() -> bean.forceCompaction())
+    assertThatThrownBy(() -> bean.forceCompaction())
         .hasMessageContaining(TestCommand.clusterManageDisk.toString());
-    softly.assertThatThrownBy(() -> bean.forceRoll())
+    assertThatThrownBy(() -> bean.forceRoll())
         .hasMessageContaining(TestCommand.clusterManageDisk.toString());
-    softly.assertThatThrownBy(() -> bean.getCompactionThreshold())
+    assertThatThrownBy(() -> bean.getCompactionThreshold())
         .hasMessageContaining(TestCommand.clusterRead.toString());
-    softly.assertThatThrownBy(() -> bean.getDiskDirectories())
+    assertThatThrownBy(() -> bean.getDiskDirectories())
         .hasMessageContaining(TestCommand.clusterRead.toString());
-    softly.assertThatThrownBy(() -> bean.getDiskReadsRate())
+    assertThatThrownBy(() -> bean.getDiskReadsRate())
         .hasMessageContaining(TestCommand.clusterRead.toString());
-    softly.assertThatThrownBy(() -> bean.isAutoCompact())
+    assertThatThrownBy(() -> bean.isAutoCompact())
         .hasMessageContaining(TestCommand.clusterRead.toString());
-    softly.assertThatThrownBy(() -> bean.isForceCompactionAllowed())
+    assertThatThrownBy(() -> bean.isForceCompactionAllowed())
         .hasMessageContaining(TestCommand.clusterRead.toString());
-    softly.assertThatThrownBy(() -> bean.setDiskUsageCriticalPercentage(0.5f))
+    assertThatThrownBy(() -> bean.setDiskUsageCriticalPercentage(0.5f))
         .hasMessageContaining(TestCommand.clusterManageDisk.toString());
-    softly.assertThatThrownBy(() -> bean.setDiskUsageWarningPercentage(0.5f))
+    assertThatThrownBy(() -> bean.setDiskUsageWarningPercentage(0.5f))
         .hasMessageContaining(TestCommand.clusterManageDisk.toString());
-    softly.assertAll();
   }
 }

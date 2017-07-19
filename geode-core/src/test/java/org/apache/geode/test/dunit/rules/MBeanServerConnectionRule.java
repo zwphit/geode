@@ -165,7 +165,8 @@ public class MBeanServerConnectionRule extends DescribedExternalResource {
       try {
         jmxConnector = JMXConnectorFactory.connect(url, env);
       } catch (Exception e) {
-        if (e.getMessage().contains("no such object in table")) {
+        if (e.getMessage().contains("no such object in table")
+            || e.getMessage().contains("Failed to retrieve RMIServer stub")) {
           // keep waiting
           return false;
         }

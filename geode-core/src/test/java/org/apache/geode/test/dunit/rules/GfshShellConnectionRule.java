@@ -161,10 +161,11 @@ public class GfshShellConnectionRule extends DescribedExternalResource {
     CommandResult result = null;
     for (int i = 0; i < 50; i++) {
       result = executeCommand(connectCommand.toString());
-      if (!gfsh.outputString.contains("no such object in table")) {
+      if (!gfsh.outputString.contains("no such object in table")
+          && !gfsh.outputString.contains("Failed to retrieve RMIServer stub")) {
         break;
       }
-      Thread.currentThread().sleep(2000);
+      Thread.sleep(2000);
     }
     connected = (result.getStatus() == Result.Status.OK);
   }
