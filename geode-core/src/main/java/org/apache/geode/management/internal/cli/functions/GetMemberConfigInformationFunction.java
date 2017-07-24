@@ -14,9 +14,19 @@
  */
 package org.apache.geode.management.internal.cli.functions;
 
+import static org.apache.geode.distributed.ConfigurationProperties.SOCKET_BUFFER_SIZE;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.server.CacheServer;
 import org.apache.geode.distributed.internal.DistributionConfig;
@@ -29,30 +39,16 @@ import org.apache.geode.internal.cache.GemFireCacheImpl;
 import org.apache.geode.internal.cache.ha.HARegionQueue;
 import org.apache.geode.management.internal.cli.domain.MemberConfigurationInfo;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
-import java.util.*;
+public class GetMemberConfigInformationFunction implements InternalEntity, Function {
 
-import static org.apache.geode.distributed.ConfigurationProperties.*;
-
-/****
- * 
- *
- */
-public class GetMemberConfigInformationFunction extends FunctionAdapter implements InternalEntity {
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = 1L;
-
 
   @Override
   public void execute(FunctionContext context) {
     Object argsObject = context.getArguments();
-    boolean hideDefaults = ((Boolean) argsObject).booleanValue();
+    boolean hideDefaults = (Boolean) argsObject;
 
-    Cache cache = CacheFactory.getAnyInstance();
+    Cache cache = context.getCache();
     InternalDistributedSystem system = (InternalDistributedSystem) cache.getDistributedSystem();
     DistributionConfig config = system.getConfig();
 
@@ -70,7 +66,7 @@ public class GetMemberConfigInformationFunction extends FunctionAdapter implemen
     memberConfigInfo.setGfePropsSetFromFile(distConfigImpl.getConfigPropsDefinedUsingFiles());
 
     // CacheAttributes
-    Map<String, String> cacheAttributes = new HashMap<String, String>();
+    Map<String, String> cacheAttributes = new HashMap<>();
 
     cacheAttributes.put("copy-on-read", Boolean.toString(cache.getCopyOnRead()));
     cacheAttributes.put("is-server", Boolean.toString(cache.isServer()));
@@ -96,12 +92,12 @@ public class GetMemberConfigInformationFunction extends FunctionAdapter implemen
 
     memberConfigInfo.setCacheAttributes(cacheAttributes);
 
-    List<Map<String, String>> cacheServerAttributesList = new ArrayList<Map<String, String>>();
+    List<Map<String, String>> cacheServerAttributesList = new ArrayList<>();
     List<CacheServer> cacheServers = cache.getCacheServers();
 
     if (cacheServers != null)
       for (CacheServer cacheServer : cacheServers) {
-        Map<String, String> cacheServerAttributes = new HashMap<String, String>();
+        Map<String, String> cacheServerAttributes = new HashMap<>();
 
         cacheServerAttributes.put("bind-address", cacheServer.getBindAddress());
         cacheServerAttributes.put("hostname-for-clients", cacheServer.getHostnameForClients());
@@ -134,14 +130,14 @@ public class GetMemberConfigInformationFunction extends FunctionAdapter implemen
     context.getResultSender().lastResult(memberConfigInfo);
   }
 
-  /****
+  /**
    * Gets the default values for the cache attributes
    * 
    * @return a map containing the cache attributes - default values
    */
   private Map<String, String> getCacheAttributesDefaultValues() {
     String d = CacheConfig.DEFAULT_PDX_DISK_STORE;
-    Map<String, String> cacheAttributesDefault = new HashMap<String, String>();
+    Map<String, String> cacheAttributesDefault = new HashMap<>();
     cacheAttributesDefault.put("pdx-disk-store", "");
     cacheAttributesDefault.put("pdx-read-serialized",
         Boolean.toString(CacheConfig.DEFAULT_PDX_READ_SERIALIZED));
@@ -163,13 +159,13 @@ public class GetMemberConfigInformationFunction extends FunctionAdapter implemen
     return cacheAttributesDefault;
   }
 
-  /***
+  /**
    * Gets the default values for the cache attributes
    * 
    * @return a map containing the cache server attributes - default values
    */
   private Map<String, String> getCacheServerAttributesDefaultValues() {
-    Map<String, String> csAttributesDefault = new HashMap<String, String>();
+    Map<String, String> csAttributesDefault = new HashMap<>();
     csAttributesDefault.put("bind-address", CacheServer.DEFAULT_BIND_ADDRESS);
     csAttributesDefault.put("hostname-for-clients", CacheServer.DEFAULT_HOSTNAME_FOR_CLIENTS);
     csAttributesDefault.put("max-connections",
@@ -189,46 +185,35 @@ public class GetMemberConfigInformationFunction extends FunctionAdapter implemen
     csAttributesDefault.put("load-poll-interval",
         Long.toString(CacheServer.DEFAULT_LOAD_POLL_INTERVAL));
     return csAttributesDefault;
-
   }
 
-  /****
+  /**
    * Removes the default values from the attributesMap based on defaultAttributesMap
-   * 
-   * @param attributesMap
-   * @param defaultAttributesMap
    */
   private void removeDefaults(Map<String, String> attributesMap,
       Map<String, String> defaultAttributesMap) {
     // Make a copy to avoid the CME's
-    Set<String> attributesSet = new HashSet<String>(attributesMap.keySet());
+    Set<String> attributesSet = new HashSet<>(attributesMap.keySet());
 
-    if (attributesSet != null) {
-      for (String attribute : attributesSet) {
-        String attributeValue = attributesMap.get(attribute);
-        String defaultValue = defaultAttributesMap.get(attribute);
+    for (String attribute : attributesSet) {
+      String attributeValue = attributesMap.get(attribute);
+      String defaultValue = defaultAttributesMap.get(attribute);
 
-        if (attributeValue != null) {
-          if (attributeValue.equals(defaultValue)) {
-            attributesMap.remove(attribute);
-          }
-        } else {
-          if (defaultValue == null || defaultValue.equals("")) {
-            attributesMap.remove(attribute);
-          }
+      if (attributeValue != null) {
+        if (attributeValue.equals(defaultValue)) {
+          attributesMap.remove(attribute);
+        }
+      } else {
+        if (defaultValue == null || defaultValue.equals("")) {
+          attributesMap.remove(attribute);
         }
       }
     }
-  }
-
-  @Override
-  public String getId() {
-    // TODO Auto-generated method stub
-    return GetMemberConfigInformationFunction.class.toString();
   }
 
   private List<String> getJvmInputArguments() {
     RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
     return runtimeBean.getInputArguments();
   }
+
 }

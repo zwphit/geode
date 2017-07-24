@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.execute.Execution;
 import org.apache.geode.cache.execute.Function;
@@ -33,18 +32,16 @@ import org.apache.geode.management.internal.cli.GfshParser;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 
 /**
- * 
  * @since GemFire 7.0
  */
 public class UserFunctionExecution implements Function, InternalEntity {
-  public static final String ID = UserFunctionExecution.class.getName();
 
   private static final long serialVersionUID = 1L;
 
   @Override
   public void execute(FunctionContext context) {
     try {
-      Cache cache = CacheFactory.getAnyInstance();
+      Cache cache = context.getCache();
       DistributedMember member = cache.getDistributedSystem().getDistributedMember();
       String[] functionArgs = null;
       Object[] args = (Object[]) context.getArguments();
@@ -143,11 +140,6 @@ public class UserFunctionExecution implements Function, InternalEntity {
     } catch (Exception ex) {
       context.getResultSender().lastResult(ex.getMessage());
     }
-  }
-
-  @Override
-  public String getId() {
-    return UserFunctionExecution.ID;
   }
 
   @Override

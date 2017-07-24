@@ -19,20 +19,21 @@ import org.apache.geode.cache.Cache;
 /**
  * Defines the execution context of a {@link Function}. It is required by the
  * {@link Function#execute(FunctionContext)} to execute a {@link Function} on a particular member.
+ *
  * <p>
  * A context can be data dependent or data independent. For data dependent functions refer to
  * {@link RegionFunctionContext}
- * </p>
+ *
  * <p>
  * This interface is implemented by GemFire. Instances of it will be passed in to
  * {@link Function#execute(FunctionContext)}.
- * 
- * @param T1 object type of Arguments
+ *
+ * <p>
+ * T1 object type of Arguments
  *
  * @since GemFire 6.0
  *
  * @see RegionFunctionContext
- *
  */
 public interface FunctionContext<T1> {
   /**
@@ -64,7 +65,6 @@ public interface FunctionContext<T1> {
    * @return ResultSender
    * @since GemFire 6.0
    */
-
   public <T2> ResultSender<T2> getResultSender();
 
   /**
@@ -78,5 +78,12 @@ public interface FunctionContext<T1> {
    */
   public boolean isPossibleDuplicate();
 
+  /**
+   * Returns a reference to the Cache.
+   *
+   * @return a reference to the Cache
+   *
+   * @since Geode 1.2
+   */
   public Cache getCache();
 }

@@ -17,12 +17,12 @@ package org.apache.geode.management.internal.cli.functions;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
-import org.apache.geode.cache.CacheFactory;
+
+import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.internal.cache.CacheServerImpl;
-import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.cache.tier.sockets.AcceptorImpl;
 import org.apache.geode.internal.cache.tier.sockets.CacheClientNotifier;
 import org.apache.geode.internal.cache.tier.sockets.CacheClientProxy;
@@ -33,19 +33,14 @@ import org.apache.geode.internal.cache.tier.sockets.ServerConnection;
  * @since GemFire 8.0
  */
 public class ContinuousQueryFunction implements Function, InternalEntity {
+
   private static final long serialVersionUID = 1L;
-
-  public static final String ID = ContinuousQueryFunction.class.getName();
-
-  private InternalCache getCache() {
-    return (InternalCache) CacheFactory.getAnyInstance();
-  }
 
   @Override
   public void execute(FunctionContext context) {
     try {
       String clientID = (String) context.getArguments();
-      InternalCache cache = getCache();
+      Cache cache = context.getCache();
       if (cache.getCacheServers().size() > 0) {
         CacheServerImpl server = (CacheServerImpl) cache.getCacheServers().iterator().next();
         if (server != null) {
@@ -100,16 +95,13 @@ public class ContinuousQueryFunction implements Function, InternalEntity {
           }
         }
       }
+
     } catch (Exception e) {
       context.getResultSender()
           .lastResult("Exception in ContinuousQueryFunction =" + e.getMessage());
     }
-    context.getResultSender().lastResult(null);
-  }
 
-  @Override
-  public String getId() {
-    return ContinuousQueryFunction.ID;
+    context.getResultSender().lastResult(null);
   }
 
   @Override
@@ -128,13 +120,15 @@ public class ContinuousQueryFunction implements Function, InternalEntity {
   }
 
   public class ClientInfo implements Serializable {
-    private static final long serialVersionUID = 1L;
-    public String isDurable;
-    public String primaryServer;
-    public String secondaryServer;
 
-    public ClientInfo(String IsClientDurable, String primaryServerId, String secondaryServerId) {
-      isDurable = IsClientDurable;
+    private static final long serialVersionUID = 1L;
+
+    public final String isDurable;
+    public final String primaryServer;
+    public final String secondaryServer;
+
+    public ClientInfo(final String isClientDurable, final String primaryServerId, final String secondaryServerId) {
+      isDurable = isClientDurable;
       primaryServer = primaryServerId;
       secondaryServer = secondaryServerId;
     }
@@ -145,4 +139,5 @@ public class ContinuousQueryFunction implements Function, InternalEntity {
           + ", secondaryServer=" + secondaryServer + "]";
     }
   }
+
 }

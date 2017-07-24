@@ -12,18 +12,20 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package org.apache.geode.management.internal.cli.functions;
 
+import java.io.File;
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.Logger;
+
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.DataPolicy;
 import org.apache.geode.cache.DiskStore;
 import org.apache.geode.cache.EvictionAction;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.asyncqueue.AsyncEventQueue;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.server.CacheServer;
 import org.apache.geode.cache.wan.GatewaySender;
@@ -35,12 +37,6 @@ import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.internal.util.ArrayUtils;
 import org.apache.geode.management.internal.cli.domain.DiskStoreDetails;
 import org.apache.geode.management.internal.cli.util.DiskStoreNotFoundException;
-import org.apache.logging.log4j.Logger;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
 
 /**
  * The DescribeDiskStoreFunction class is an implementation of a GemFire Function used to collect
@@ -55,16 +51,9 @@ import java.util.Set;
  * @see org.apache.geode.management.internal.cli.domain.DiskStoreDetails
  * @since GemFire 7.0
  */
-public class DescribeDiskStoreFunction extends FunctionAdapter implements InternalEntity {
+public class DescribeDiskStoreFunction implements InternalEntity, Function {
 
   private static final Logger logger = LogService.getLogger();
-
-  private static final Set<DataPolicy> PERSISTENT_DATA_POLICIES = new HashSet<>(2);
-
-  static {
-    PERSISTENT_DATA_POLICIES.add(DataPolicy.PERSISTENT_PARTITION);
-    PERSISTENT_DATA_POLICIES.add(DataPolicy.PERSISTENT_REPLICATE);
-  }
 
   protected static void assertState(final boolean condition, final String message,
       final Object... args) {
@@ -73,61 +62,46 @@ public class DescribeDiskStoreFunction extends FunctionAdapter implements Intern
     }
   }
 
-  protected Cache getCache() {
-    return CacheFactory.getAnyInstance();
-  }
-
-  public String getId() {
-    return getClass().getName();
-  }
-
-  @SuppressWarnings("unused")
-  public void init(final Properties props) {}
-
   public void execute(final FunctionContext context) {
-    Cache cache = getCache();
+    InternalCache cache = (InternalCache) context.getCache();
 
     try {
-      if (cache instanceof InternalCache) {
-        InternalCache gemfireCache = (InternalCache) cache;
+      DistributedMember member = cache.getMyId();
 
-        DistributedMember member = gemfireCache.getMyId();
+      String diskStoreName = (String) context.getArguments();
+      String memberId = member.getId();
+      String memberName = member.getName();
 
-        String diskStoreName = (String) context.getArguments();
-        String memberId = member.getId();
-        String memberName = member.getName();
+      DiskStore diskStore = cache.findDiskStore(diskStoreName);
 
-        DiskStore diskStore = gemfireCache.findDiskStore(diskStoreName);
+      if (diskStore != null) {
+        DiskStoreDetails diskStoreDetails = new DiskStoreDetails(diskStore.getDiskStoreUUID(),
+            diskStore.getName(), memberId, memberName);
 
-        if (diskStore != null) {
-          DiskStoreDetails diskStoreDetails = new DiskStoreDetails(diskStore.getDiskStoreUUID(),
-              diskStore.getName(), memberId, memberName);
+        diskStoreDetails.setAllowForceCompaction(diskStore.getAllowForceCompaction());
+        diskStoreDetails.setAutoCompact(diskStore.getAutoCompact());
+        diskStoreDetails.setCompactionThreshold(diskStore.getCompactionThreshold());
+        diskStoreDetails.setMaxOplogSize(diskStore.getMaxOplogSize());
+        diskStoreDetails.setQueueSize(diskStore.getQueueSize());
+        diskStoreDetails.setTimeInterval(diskStore.getTimeInterval());
+        diskStoreDetails.setWriteBufferSize(diskStore.getWriteBufferSize());
+        diskStoreDetails.setDiskUsageWarningPercentage(diskStore.getDiskUsageWarningPercentage());
+        diskStoreDetails
+            .setDiskUsageCriticalPercentage(diskStore.getDiskUsageCriticalPercentage());
 
-          diskStoreDetails.setAllowForceCompaction(diskStore.getAllowForceCompaction());
-          diskStoreDetails.setAutoCompact(diskStore.getAutoCompact());
-          diskStoreDetails.setCompactionThreshold(diskStore.getCompactionThreshold());
-          diskStoreDetails.setMaxOplogSize(diskStore.getMaxOplogSize());
-          diskStoreDetails.setQueueSize(diskStore.getQueueSize());
-          diskStoreDetails.setTimeInterval(diskStore.getTimeInterval());
-          diskStoreDetails.setWriteBufferSize(diskStore.getWriteBufferSize());
-          diskStoreDetails.setDiskUsageWarningPercentage(diskStore.getDiskUsageWarningPercentage());
-          diskStoreDetails
-              .setDiskUsageCriticalPercentage(diskStore.getDiskUsageCriticalPercentage());
+        setDiskDirDetails(diskStore, diskStoreDetails);
+        setRegionDetails(cache, diskStore, diskStoreDetails);
+        setCacheServerDetails(cache, diskStore, diskStoreDetails);
+        setGatewayDetails(cache, diskStore, diskStoreDetails);
+        setPdxSerializationDetails(cache, diskStore, diskStoreDetails);
+        setAsyncEventQueueDetails(cache, diskStore, diskStoreDetails);
 
-          setDiskDirDetails(diskStore, diskStoreDetails);
-          setRegionDetails(gemfireCache, diskStore, diskStoreDetails);
-          setCacheServerDetails(gemfireCache, diskStore, diskStoreDetails);
-          setGatewayDetails(gemfireCache, diskStore, diskStoreDetails);
-          setPdxSerializationDetails(gemfireCache, diskStore, diskStoreDetails);
-          setAsyncEventQueueDetails(gemfireCache, diskStore, diskStoreDetails);
-
-          context.getResultSender().lastResult(diskStoreDetails);
-        } else {
-          context.getResultSender()
-              .sendException(new DiskStoreNotFoundException(
-                  String.format("A disk store with name (%1$s) was not found on member (%2$s).",
-                      diskStoreName, memberName)));
-        }
+        context.getResultSender().lastResult(diskStoreDetails);
+      } else {
+        context.getResultSender()
+            .sendException(new DiskStoreNotFoundException(
+                String.format("A disk store with name (%1$s) was not found on member (%2$s).",
+                    diskStoreName, memberName)));
       }
     } catch (Exception e) {
       logger.error("Error occurred while executing 'describe disk-store': {}!", e.getMessage(), e);

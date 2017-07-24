@@ -16,8 +16,8 @@ package org.apache.geode.management.internal.cli.functions;
 
 import java.io.Serializable;
 
-
 public class GatewaySenderFunctionArgs implements Serializable {
+
   private static final long serialVersionUID = -5158224572470173267L;
 
   private final String id;
@@ -36,7 +36,8 @@ public class GatewaySenderFunctionArgs implements Serializable {
   private final Integer alertThreshold;
   private final Integer dispatcherThreads;
   private final String orderPolicy;
-  // array of fully qualified class names of the filters
+
+  /** array of fully qualified class names of the filters */
   private final String[] gatewayEventFilters;
   private final String[] gatewayTransportFilters;
 
@@ -138,4 +139,5 @@ public class GatewaySenderFunctionArgs implements Serializable {
   public String[] getGatewayTransportFilter() {
     return this.gatewayTransportFilters;
   }
+
 }

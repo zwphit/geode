@@ -20,20 +20,15 @@ import java.io.Serializable;
  * This class stores the arguments provided in the create gateway-receiver command.
  */
 public class GatewayReceiverFunctionArgs implements Serializable {
+
   private static final long serialVersionUID = -5158224572470173267L;
 
   private final Boolean manualStart;
-
   private final Integer startPort;
-
   private final Integer endPort;
-
   private final String bindAddress;
-
   private final Integer socketBufferSize;
-
   private final Integer maximumTimeBetweenPings;
-
   private final String[] gatewayTransportFilters;
 
   public GatewayReceiverFunctionArgs(Boolean manualStart, Integer startPort, Integer endPort,
@@ -75,4 +70,5 @@ public class GatewayReceiverFunctionArgs implements Serializable {
   public String[] getGatewayTransportFilters() {
     return this.gatewayTransportFilters;
   }
+
 }

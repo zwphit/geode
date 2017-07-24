@@ -14,11 +14,6 @@
  */
 package org.apache.geode.management.internal.cli.functions;
 
-import org.apache.geode.DataSerializer;
-import org.apache.geode.internal.DataSerializableFixedID;
-import org.apache.geode.internal.Version;
-import org.apache.geode.management.internal.configuration.domain.XmlEntity;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -28,7 +23,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.geode.DataSerializer;
+import org.apache.geode.internal.DataSerializableFixedID;
+import org.apache.geode.internal.Version;
+import org.apache.geode.management.internal.configuration.domain.XmlEntity;
+
 public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSerializableFixedID {
+
   private String memberIdOrName;
   private Serializable[] serializables = new String[0];
   private Throwable throwable;
@@ -36,7 +37,9 @@ public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSer
   private XmlEntity xmlEntity;
   private byte[] byteData = new byte[0];
 
-  public CliFunctionResult() {}
+  public CliFunctionResult() {
+    // nothing
+  }
 
   public CliFunctionResult(final String memberIdOrName) {
     this.memberIdOrName = memberIdOrName;
@@ -64,7 +67,6 @@ public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSer
 
     this.successful = true;
   }
-
 
   public CliFunctionResult(final String memberIdOrName, final XmlEntity xmlEntity,
       final Serializable[] serializables) {
@@ -131,7 +133,7 @@ public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSer
   }
 
   @Override
-  public void toData(DataOutput out) throws IOException {
+  public void toData(final DataOutput out) throws IOException {
     DataSerializer.writeString(this.memberIdOrName, out);
     DataSerializer.writePrimitiveBoolean(this.successful, out);
     DataSerializer.writeObject(this.xmlEntity, out);
@@ -140,14 +142,14 @@ public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSer
     DataSerializer.writeByteArray(this.byteData, out);
   }
 
-  public void toDataPre_GFE_8_0_0_0(DataOutput out) throws IOException {
+  public void toDataPre_GFE_8_0_0_0(final DataOutput out) throws IOException {
     DataSerializer.writeString(this.memberIdOrName, out);
     DataSerializer.writeObjectArray(this.serializables, out);
     DataSerializer.writeObject(this.throwable, out);
   }
 
   @Override
-  public void fromData(DataInput in) throws IOException, ClassNotFoundException {
+  public void fromData(final DataInput in) throws IOException, ClassNotFoundException {
     this.memberIdOrName = DataSerializer.readString(in);
     this.successful = DataSerializer.readPrimitiveBoolean(in);
     this.xmlEntity = DataSerializer.readObject(in);
@@ -156,7 +158,7 @@ public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSer
     this.byteData = DataSerializer.readByteArray(in);
   }
 
-  public void fromDataPre_GFE_8_0_0_0(DataInput in) throws IOException, ClassNotFoundException {
+  public void fromDataPre_GFE_8_0_0_0(final DataInput in) throws IOException, ClassNotFoundException {
     this.memberIdOrName = DataSerializer.readString(in);
     this.throwable = DataSerializer.readObject(in);
     this.serializables = (Serializable[]) DataSerializer.readObjectArray(in);
@@ -175,7 +177,7 @@ public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSer
   }
 
   @Override
-  public int compareTo(CliFunctionResult o) {
+  public int compareTo(final CliFunctionResult o) {
     if (this.memberIdOrName == null && o.memberIdOrName == null) {
       return 0;
     }
@@ -190,14 +192,14 @@ public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSer
 
   @Override
   public int hashCode() {
-    final int prime = 31;
+    int prime = 31;
     int result = 1;
     result = prime * result + ((this.memberIdOrName == null) ? 0 : this.memberIdOrName.hashCode());
     return result;
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj)
       return true;
     if (obj == null)
@@ -227,8 +229,8 @@ public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSer
    * @param results The results to clean.
    * @return The cleaned results.
    */
-  public static List<CliFunctionResult> cleanResults(List<?> results) {
-    List<CliFunctionResult> returnResults = new ArrayList<CliFunctionResult>(results.size());
+  public static List<CliFunctionResult> cleanResults(final List<?> results) {
+    List<CliFunctionResult> returnResults = new ArrayList<>(results.size());
     for (Object result : results) {
       if (result instanceof CliFunctionResult) {
         returnResults.add((CliFunctionResult) result);
@@ -243,4 +245,5 @@ public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSer
   public Version[] getSerializationVersions() {
     return new Version[] {Version.GFE_80};
   }
+
 }

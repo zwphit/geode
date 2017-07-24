@@ -15,7 +15,6 @@
 package org.apache.geode.management.internal.cli.functions;
 
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
@@ -25,15 +24,11 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
 import org.apache.geode.management.internal.configuration.domain.XmlEntity;
 
 /**
- * 
  * @since GemFire 7.0
  */
 public class RegionDestroyFunction implements Function, InternalEntity {
+
   private static final long serialVersionUID = 9172773671865750685L;
-
-  public static final RegionDestroyFunction INSTANCE = new RegionDestroyFunction();
-
-  private static final String ID = RegionDestroyFunction.class.getName();
 
   @Override
   public boolean hasResult() {
@@ -49,7 +44,7 @@ public class RegionDestroyFunction implements Function, InternalEntity {
         Object arguments = context.getArguments();
         if (arguments != null) {
           regionPath = (String) arguments;
-          Cache cache = CacheFactory.getAnyInstance();
+          Cache cache = context.getCache();
           Region<?, ?> region = cache.getRegion(regionPath);
           region.destroyRegion();
           String regionName =
@@ -59,8 +54,10 @@ public class RegionDestroyFunction implements Function, InternalEntity {
         }
       }
       context.getResultSender().lastResult(new CliFunctionResult("", false, "FAILURE"));
+
     } catch (IllegalStateException e) {
       context.getResultSender().lastResult(new CliFunctionResult("", e, null));
+
     } catch (Exception ex) {
       context.getResultSender()
           .lastResult(new CliFunctionResult("",
@@ -72,11 +69,6 @@ public class RegionDestroyFunction implements Function, InternalEntity {
   }
 
   @Override
-  public String getId() {
-    return ID;
-  }
-
-  @Override
   public boolean optimizeForWrite() {
     return false;
   }
@@ -85,4 +77,5 @@ public class RegionDestroyFunction implements Function, InternalEntity {
   public boolean isHA() {
     return false;
   }
+
 }

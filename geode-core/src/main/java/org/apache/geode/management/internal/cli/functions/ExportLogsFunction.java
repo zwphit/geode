@@ -20,10 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
@@ -38,7 +35,6 @@ import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.distributed.internal.DistributionConfig;
 import org.apache.geode.internal.InternalEntity;
-import org.apache.geode.internal.cache.GemFireCacheImpl;
 import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.cache.InternalRegionArguments;
 import org.apache.geode.internal.logging.LogService;
@@ -47,21 +43,25 @@ import org.apache.geode.management.internal.cli.commands.ExportLogsCommand;
 import org.apache.geode.management.internal.cli.util.ExportLogsCacheWriter;
 import org.apache.geode.management.internal.cli.util.LogExporter;
 import org.apache.geode.management.internal.cli.util.LogFilter;
+import org.apache.geode.management.internal.cli.util.TimeParser;
 import org.apache.geode.management.internal.configuration.domain.Configuration;
 
 /**
- * this function extracts the logs using a LogExporter which creates a zip file, and then writes the
+ * Extracts the logs using a LogExporter which creates a zip file, and then writes the
  * zip file bytes into a replicated region, this in effect, "stream" the zip file bytes to the
  * locator
  *
+ * <p>
  * The function only extracts .log and .gfs files under server's working directory
  */
 public class ExportLogsFunction implements Function, InternalEntity {
+
+  private static final long serialVersionUID = 1L;
+
   private static final Logger logger = LogService.getLogger();
 
   public static final String EXPORT_LOGS_REGION = "__exportLogsRegion";
 
-  private static final long serialVersionUID = 1L;
   private static final int BUFFER_SIZE = 1024;
 
   @Override
@@ -155,6 +155,7 @@ public class ExportLogsFunction implements Function, InternalEntity {
   }
 
   public static class Args implements Serializable {
+
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private Level logLevel;
@@ -164,8 +165,8 @@ public class ExportLogsFunction implements Function, InternalEntity {
 
     public Args(String startTime, String endTime, String logLevel, boolean logLevelOnly,
         boolean logsOnly, boolean statsOnly) {
-      this.startTime = parseTime(startTime);
-      this.endTime = parseTime(endTime);
+      this.startTime = TimeParser.parseTime(startTime);
+      this.endTime = TimeParser.parseTime(endTime);
 
       if (StringUtils.isBlank(logLevel)) {
         this.logLevel = LogLevel.getLevel(ExportLogsCommand.DEFAULT_EXPORT_LOG_LEVEL);
@@ -203,21 +204,4 @@ public class ExportLogsFunction implements Function, InternalEntity {
     }
   }
 
-  public static LocalDateTime parseTime(String dateString) {
-    if (dateString == null) {
-      return null;
-    }
-
-    try {
-      SimpleDateFormat df = new SimpleDateFormat(ExportLogsCommand.FORMAT);
-      return df.parse(dateString).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-    } catch (ParseException e) {
-      try {
-        SimpleDateFormat df = new SimpleDateFormat(ExportLogsCommand.ONLY_DATE_FORMAT);
-        return df.parse(dateString).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-      } catch (ParseException e1) {
-        return null;
-      }
-    }
-  }
 }

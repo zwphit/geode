@@ -20,8 +20,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.ResultSender;
 import org.apache.geode.cache.wan.GatewayReceiver;
@@ -38,21 +37,17 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
 /**
  * The function to a create GatewayReceiver using given configuration parameters.
  */
-public class GatewayReceiverCreateFunction extends FunctionAdapter implements InternalEntity {
-
-  private static final Logger logger = LogService.getLogger();
+public class GatewayReceiverCreateFunction implements InternalEntity, Function {
 
   private static final long serialVersionUID = 8746830191680509335L;
 
-  private static final String ID = GatewayReceiverCreateFunction.class.getName();
-
-  public static GatewayReceiverCreateFunction INSTANCE = new GatewayReceiverCreateFunction();
+  private static final Logger logger = LogService.getLogger();
 
   @Override
   public void execute(FunctionContext context) {
     ResultSender<Object> resultSender = context.getResultSender();
 
-    Cache cache = CacheFactory.getAnyInstance();
+    Cache cache = context.getCache();
     String memberNameOrId =
         CliUtil.getMemberNameOrId(cache.getDistributedSystem().getDistributedMember());
 
@@ -80,7 +75,6 @@ public class GatewayReceiverCreateFunction extends FunctionAdapter implements In
               CliStrings.CREATE_GATEWAYRECEIVER__MSG__GATEWAYRECEIVER_CREATED_ON_0_ONPORT_1,
               new Object[] {memberNameOrId, createdGatewayReceiver.getPort()})));
 
-
     } catch (IllegalStateException e) {
       resultSender.lastResult(handleException(memberNameOrId, e.getMessage(), e));
     } catch (Exception e) {
@@ -90,7 +84,6 @@ public class GatewayReceiverCreateFunction extends FunctionAdapter implements In
       }
       resultSender.lastResult(handleException(memberNameOrId, exceptionMsg, e));
     }
-
   }
 
   private CliFunctionResult handleException(final String memberNameOrId, final String exceptionMsg,
@@ -107,10 +100,6 @@ public class GatewayReceiverCreateFunction extends FunctionAdapter implements In
 
   /**
    * GatewayReceiver creation happens here.
-   * 
-   * @param cache
-   * @param gatewayReceiverCreateArgs
-   * @return GatewayReceiver
    */
   private static GatewayReceiver createGatewayReceiver(Cache cache,
       GatewayReceiverFunctionArgs gatewayReceiverCreateArgs) {
@@ -160,7 +149,6 @@ public class GatewayReceiverCreateFunction extends FunctionAdapter implements In
     return gatewayReceiverFactory.create();
   }
 
-  @SuppressWarnings("unchecked")
   private static Class forName(String classToLoadName, String neededFor) {
     Class loadedClass = null;
     try {
@@ -197,11 +185,6 @@ public class GatewayReceiverCreateFunction extends FunctionAdapter implements In
           neededFor), e);
     }
     return instance;
-  }
-
-  @Override
-  public String getId() {
-    return ID;
   }
 
 }

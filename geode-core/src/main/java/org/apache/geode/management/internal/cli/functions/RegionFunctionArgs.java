@@ -36,6 +36,7 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
  * @since GemFire 7.0
  */
 public class RegionFunctionArgs implements Serializable {
+
   private static final long serialVersionUID = -5158224572470173267L;
 
   private final String regionPath;
@@ -93,6 +94,7 @@ public class RegionFunctionArgs implements Serializable {
       Long prRecoveryDelay, Integer prRedundantCopies, Long prStartupRecoveryDelay,
       Long prTotalMaxMemory, Integer prTotalNumBuckets, Integer evictionMax, String compressor,
       Boolean offHeap, Boolean mcastEnabled, final String partitionResolver) {
+
     this.regionPath = regionPath;
     this.regionShortcut = regionShortcut;
     this.useAttributesFrom = useAttributesFrom;
@@ -506,12 +508,12 @@ public class RegionFunctionArgs implements Serializable {
   /**
    * @return the regionAttributes
    */
-  @SuppressWarnings("unchecked")
   public <K, V> RegionAttributes<K, V> getRegionAttributes() {
     return (RegionAttributes<K, V>) this.regionAttributes;
   }
 
   public static class ExpirationAttrs implements Serializable {
+
     private static final long serialVersionUID = 1474255033398008062L;
 
     private ExpirationFor type;
@@ -596,6 +598,7 @@ public class RegionFunctionArgs implements Serializable {
   }
 
   public static class PartitionArgs implements Serializable {
+
     private static final long serialVersionUID = 5907052187323280919L;
 
     private final String prColocatedWith;
@@ -775,4 +778,5 @@ public class RegionFunctionArgs implements Serializable {
       return isSetPRTotalNumBuckets;
     }
   }
+
 }

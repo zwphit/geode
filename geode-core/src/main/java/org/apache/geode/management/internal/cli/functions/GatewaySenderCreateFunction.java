@@ -17,8 +17,7 @@ package org.apache.geode.management.internal.cli.functions;
 import org.apache.logging.log4j.Logger;
 
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.ResultSender;
 import org.apache.geode.cache.wan.GatewayEventFilter;
@@ -35,22 +34,17 @@ import org.apache.geode.management.internal.cli.CliUtil;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 import org.apache.geode.management.internal.configuration.domain.XmlEntity;
 
-public class GatewaySenderCreateFunction extends FunctionAdapter implements InternalEntity {
-
-  private static final Logger logger = LogService.getLogger();
+public class GatewaySenderCreateFunction implements InternalEntity, Function {
 
   private static final long serialVersionUID = 8746830191680509335L;
 
-  private static final String ID = GatewaySenderCreateFunction.class.getName();
-
-  public static GatewaySenderCreateFunction INSTANCE = new GatewaySenderCreateFunction();
-
+  private static final Logger logger = LogService.getLogger();
 
   @Override
   public void execute(FunctionContext context) {
     ResultSender<Object> resultSender = context.getResultSender();
 
-    Cache cache = CacheFactory.getAnyInstance();
+    Cache cache = context.getCache();
     String memberNameOrId =
         CliUtil.getMemberNameOrId(cache.getDistributedSystem().getDistributedMember());
 
@@ -89,10 +83,6 @@ public class GatewaySenderCreateFunction extends FunctionAdapter implements Inte
 
   /**
    * Creates the GatewaySender with given configuration.
-   * 
-   * @param cache
-   * @param gatewaySenderCreateArgs
-   * @return GatewaySender
    */
   private static GatewaySender createGatewaySender(Cache cache,
       GatewaySenderFunctionArgs gatewaySenderCreateArgs) {
@@ -189,7 +179,6 @@ public class GatewaySenderCreateFunction extends FunctionAdapter implements Inte
         gatewaySenderCreateArgs.getRemoteDistributedSystemId());
   }
 
-  @SuppressWarnings("unchecked")
   private static Class forName(String classToLoadName, String neededFor) {
     Class loadedClass = null;
     try {
@@ -226,11 +215,6 @@ public class GatewaySenderCreateFunction extends FunctionAdapter implements Inte
           neededFor), e);
     }
     return instance;
-  }
-
-  @Override
-  public String getId() {
-    return ID;
   }
 
 }

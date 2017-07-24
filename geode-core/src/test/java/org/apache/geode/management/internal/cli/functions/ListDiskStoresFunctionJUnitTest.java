@@ -34,11 +34,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheClosedException;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.ResultSender;
-import org.apache.geode.distributed.DistributedMember;
 import org.apache.geode.distributed.internal.membership.InternalDistributedMember;
 import org.apache.geode.internal.cache.DiskStoreImpl;
 import org.apache.geode.internal.cache.InternalCache;
@@ -85,8 +83,8 @@ public class ListDiskStoresFunctionJUnitTest {
     return new DiskStoreDetails(id, name, memberId, memberName);
   }
 
-  private ListDiskStoresFunction createListDiskStoresFunction(final Cache cache) {
-    return new TestListDiskStoresFunction(cache);
+  private ListDiskStoresFunction createListDiskStoresFunction() {
+    return new ListDiskStoresFunction();
   }
 
   @Test
@@ -144,10 +142,12 @@ public class ListDiskStoresFunctionJUnitTest {
         will(returnValue("ds-persistence"));
         oneOf(mockFunctionContext).getResultSender();
         will(returnValue(testResultSender));
+        allowing(mockFunctionContext).getCache();
+        will(returnValue(mockCache));
       }
     });
 
-    final ListDiskStoresFunction function = createListDiskStoresFunction(mockCache);
+    final ListDiskStoresFunction function = createListDiskStoresFunction();
 
     function.execute(mockFunctionContext);
 
@@ -171,13 +171,7 @@ public class ListDiskStoresFunctionJUnitTest {
     final FunctionContext mockFunctionContext =
         mockContext.mock(FunctionContext.class, "MockFunctionContext");
 
-    final ListDiskStoresFunction testListDiskStoresFunction =
-        new TestListDiskStoresFunction(mockContext.mock(Cache.class, "MockCache")) {
-          @Override
-          protected Cache getCache() {
-            throw new CacheClosedException("Expected");
-          }
-        };
+    final ListDiskStoresFunction testListDiskStoresFunction = new ListDiskStoresFunction();
 
     final TestResultSender testResultSender = new TestResultSender();
 
@@ -185,6 +179,9 @@ public class ListDiskStoresFunctionJUnitTest {
       {
         oneOf(mockFunctionContext).getResultSender();
         will(returnValue(testResultSender));
+
+        allowing(mockFunctionContext).getCache();
+        will(throwException(new CacheClosedException("Expected")));
       }
     });
 
@@ -219,10 +216,12 @@ public class ListDiskStoresFunctionJUnitTest {
         will(returnValue(Collections.emptyList()));
         oneOf(mockFunctionContext).getResultSender();
         will(returnValue(testResultSender));
+        allowing(mockFunctionContext).getCache();
+        will(returnValue(mockCache));
       }
     });
 
-    final ListDiskStoresFunction function = createListDiskStoresFunction(mockCache);
+    final ListDiskStoresFunction function = createListDiskStoresFunction();
 
     function.execute(mockFunctionContext);
 
@@ -240,7 +239,7 @@ public class ListDiskStoresFunctionJUnitTest {
   @Test
   @SuppressWarnings("unchecked")
   public void testExecuteOnMemberWithANonGemFireCache() throws Throwable {
-    final Cache mockCache = mockContext.mock(Cache.class, "Cache");
+    final InternalCache mockCache = mockContext.mock(InternalCache.class, "InternalCache");
 
     final FunctionContext mockFunctionContext =
         mockContext.mock(FunctionContext.class, "FunctionContext");
@@ -251,10 +250,14 @@ public class ListDiskStoresFunctionJUnitTest {
       {
         oneOf(mockFunctionContext).getResultSender();
         will(returnValue(testResultSender));
+        allowing(mockFunctionContext).getCache();
+        will(returnValue(mockCache));
+        allowing(mockCache).getMyId();
+        allowing(mockCache).listDiskStoresIncludingRegionOwned();
       }
     });
 
-    final ListDiskStoresFunction function = createListDiskStoresFunction(mockCache);
+    final ListDiskStoresFunction function = createListDiskStoresFunction();
 
     function.execute(mockFunctionContext);
 
@@ -289,10 +292,12 @@ public class ListDiskStoresFunctionJUnitTest {
         will(throwException(new RuntimeException("expected")));
         oneOf(mockFunctionContext).getResultSender();
         will(returnValue(testResultSender));
+        allowing(mockFunctionContext).getCache();
+        will(returnValue(mockCache));
       }
     });
 
-    final ListDiskStoresFunction function = createListDiskStoresFunction(mockCache);
+    final ListDiskStoresFunction function = createListDiskStoresFunction();
 
     function.execute(mockFunctionContext);
 
@@ -302,21 +307,6 @@ public class ListDiskStoresFunctionJUnitTest {
       assertTrue(throwable instanceof RuntimeException);
       assertEquals("expected", throwable.getMessage());
       throw throwable;
-    }
-  }
-
-  private static class TestListDiskStoresFunction extends ListDiskStoresFunction {
-
-    private final Cache cache;
-
-    public TestListDiskStoresFunction(final Cache cache) {
-      assert cache != null : "The Cache cannot be null!";
-      this.cache = cache;
-    }
-
-    @Override
-    protected Cache getCache() {
-      return cache;
     }
   }
 

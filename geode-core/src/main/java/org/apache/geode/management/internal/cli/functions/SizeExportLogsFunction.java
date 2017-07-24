@@ -17,9 +17,6 @@ package org.apache.geode.management.internal.cli.functions;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.geode.management.ManagementException;
-import org.apache.geode.management.internal.cli.util.BytesToString;
-import org.apache.geode.management.internal.cli.util.LogExporter;
 import org.apache.logging.log4j.Logger;
 
 import org.apache.geode.cache.execute.Function;
@@ -27,14 +24,18 @@ import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.distributed.DistributedMember;
 import org.apache.geode.distributed.internal.DistributionConfig;
 import org.apache.geode.internal.InternalEntity;
-import org.apache.geode.internal.cache.GemFireCacheImpl;
 import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.logging.LogService;
+import org.apache.geode.management.ManagementException;
+import org.apache.geode.management.internal.cli.util.BytesToString;
+import org.apache.geode.management.internal.cli.util.LogExporter;
 import org.apache.geode.management.internal.cli.util.LogFilter;
 
 public class SizeExportLogsFunction extends ExportLogsFunction implements Function, InternalEntity {
-  private static final Logger LOGGER = LogService.getLogger();
+
   private static final long serialVersionUID = 1L;
+
+  private static final Logger logger = LogService.getLogger();
 
   @Override
   public void execute(final FunctionContext context) {
@@ -58,8 +59,7 @@ public class SizeExportLogsFunction extends ExportLogsFunction implements Functi
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
-      LOGGER.error(e.getMessage());
+      logger.error(e);
       context.getResultSender().sendException(e);
     }
   }
@@ -70,8 +70,8 @@ public class SizeExportLogsFunction extends ExportLogsFunction implements Functi
 
   long estimateLogFileSize(final DistributedMember member, final File logFile,
       final File statArchive, final Args args) throws IOException {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("SizeExportLogsFunction started for member {}", member);
+    if (logger.isDebugEnabled()) {
+      logger.debug("SizeExportLogsFunction started for member {}", member);
     }
 
     File baseLogFile = null;
@@ -90,8 +90,9 @@ public class SizeExportLogsFunction extends ExportLogsFunction implements Functi
     long estimatedSize =
         new LogExporter(logFilter, baseLogFile, baseStatsFile).estimateFilteredSize();
 
-    LOGGER.info("Estimated log file size: " + estimatedSize);
+    logger.info("Estimated log file size: " + estimatedSize);
 
     return estimatedSize;
   }
+
 }

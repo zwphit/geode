@@ -155,8 +155,8 @@ public class ListIndexFunctionJUnitTest {
     return indexStatisticsDetails;
   }
 
-  private ListIndexFunction createListIndexFunction(final Cache cache) {
-    return new TestListIndexFunction(cache);
+  private ListIndexFunction createListIndexFunction() {
+    return new ListIndexFunction();
   }
 
   private Index createMockIndex(final IndexDetails indexDetails) {
@@ -297,10 +297,12 @@ public class ListIndexFunctionJUnitTest {
                 createMockIndex(indexDetailsThree), createMockIndex(indexDetailsFour))));
         oneOf(mockFunctionContext).getResultSender();
         will(returnValue(testResultSender));
+        allowing(mockFunctionContext).getCache();
+        will(returnValue(mockCache));
       }
     });
 
-    final ListIndexFunction function = createListIndexFunction(mockCache);
+    final ListIndexFunction function = createListIndexFunction();
 
     function.execute(mockFunctionContext);
 
@@ -357,10 +359,12 @@ public class ListIndexFunctionJUnitTest {
         will(returnValue(Collections.emptyList()));
         oneOf(mockFunctionContext).getResultSender();
         will(returnValue(testResultSender));
+        allowing(mockFunctionContext).getCache();
+        will(returnValue(mockCache));
       }
     });
 
-    final ListIndexFunction function = createListIndexFunction(mockCache);
+    final ListIndexFunction function = createListIndexFunction();
 
     function.execute(mockFunctionContext);
 
@@ -403,10 +407,12 @@ public class ListIndexFunctionJUnitTest {
         will(throwException(new RuntimeException("expected")));
         oneOf(mockFunctionContext).getResultSender();
         will(returnValue(testResultSender));
+        allowing(mockFunctionContext).getCache();
+        will(returnValue(mockCache));
       }
     });
 
-    final ListIndexFunction function = createListIndexFunction(mockCache);
+    final ListIndexFunction function = createListIndexFunction();
 
     function.execute(mockFunctionContext);
 
@@ -416,21 +422,6 @@ public class ListIndexFunctionJUnitTest {
       assertTrue(t instanceof RuntimeException);
       assertEquals("expected", t.getMessage());
       throw t;
-    }
-  }
-
-  private static class TestListIndexFunction extends ListIndexFunction {
-
-    private final Cache cache;
-
-    protected TestListIndexFunction(final Cache cache) {
-      assert cache != null : "The Cache cannot be null!";
-      this.cache = cache;
-    }
-
-    @Override
-    protected Cache getCache() {
-      return this.cache;
     }
   }
 

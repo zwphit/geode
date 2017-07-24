@@ -21,9 +21,9 @@ import org.apache.geode.internal.logging.log4j.LogLevel;
 import org.apache.geode.management.cli.Result;
 import org.apache.geode.management.internal.cli.AbstractCliAroundInterceptor;
 import org.apache.geode.management.internal.cli.GfshParseResult;
-import org.apache.geode.management.internal.cli.functions.ExportLogsFunction;
 import org.apache.geode.management.internal.cli.result.ResultBuilder;
-import org.apache.logging.log4j.Level;
+import org.apache.geode.management.internal.cli.util.TimeParser;
+
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -61,8 +61,8 @@ public class ExportLogsInterceptor extends AbstractCliAroundInterceptor {
     String end = arguments.get("end-time");
     if (start != null && end != null) {
       // need to make sure end is later than start
-      LocalDateTime startTime = ExportLogsFunction.parseTime(start);
-      LocalDateTime endTime = ExportLogsFunction.parseTime(end);
+      LocalDateTime startTime = TimeParser.parseTime(start);
+      LocalDateTime endTime = TimeParser.parseTime(end);
       if (startTime.isAfter(endTime)) {
         return ResultBuilder.createUserErrorResult("start-time has to be earlier than end-time.");
       }

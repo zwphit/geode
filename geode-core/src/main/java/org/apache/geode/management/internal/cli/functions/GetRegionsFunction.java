@@ -32,12 +32,6 @@ public class GetRegionsFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   @Override
-  public String getId() {
-    // TODO Auto-generated method stub
-    return GetRegionsFunction.class.toString();
-  }
-
-  @Override
   public void execute(FunctionContext functionContext) {
     try {
       Cache cache = functionContext.getCache();

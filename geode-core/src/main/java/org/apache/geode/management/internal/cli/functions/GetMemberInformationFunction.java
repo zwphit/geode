@@ -14,22 +14,6 @@
  */
 package org.apache.geode.management.internal.cli.functions;
 
-import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheClosedException;
-import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.execute.FunctionAdapter;
-import org.apache.geode.cache.execute.FunctionContext;
-import org.apache.geode.cache.server.CacheServer;
-import org.apache.geode.distributed.internal.DistributionConfig;
-import org.apache.geode.distributed.internal.InternalDistributedSystem;
-import org.apache.geode.internal.InternalEntity;
-import org.apache.geode.internal.cache.CacheClientStatus;
-import org.apache.geode.internal.cache.tier.InternalClientMembership;
-import org.apache.geode.internal.cache.tier.sockets.ClientProxyMembershipID;
-import org.apache.geode.management.internal.cli.CliUtil;
-import org.apache.geode.management.internal.cli.domain.CacheServerInfo;
-import org.apache.geode.management.internal.cli.domain.MemberInformation;
-
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
@@ -37,38 +21,42 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/***
- * 
- * since 7.0
- */
+import org.apache.geode.cache.CacheClosedException;
+import org.apache.geode.cache.execute.Function;
+import org.apache.geode.cache.execute.FunctionContext;
+import org.apache.geode.cache.server.CacheServer;
+import org.apache.geode.distributed.internal.DistributionConfig;
+import org.apache.geode.distributed.internal.InternalDistributedSystem;
+import org.apache.geode.internal.InternalEntity;
+import org.apache.geode.internal.cache.CacheClientStatus;
+import org.apache.geode.internal.cache.InternalCache;
+import org.apache.geode.internal.cache.tier.InternalClientMembership;
+import org.apache.geode.internal.cache.tier.sockets.ClientProxyMembershipID;
+import org.apache.geode.management.internal.cli.CliUtil;
+import org.apache.geode.management.internal.cli.domain.CacheServerInfo;
+import org.apache.geode.management.internal.cli.domain.MemberInformation;
 
-public class GetMemberInformationFunction extends FunctionAdapter implements InternalEntity {
-  /**
-   * 
-   */
+/**
+ * @since GemFire 7.0
+ */
+public class GetMemberInformationFunction implements InternalEntity, Function {
+
   private static final long serialVersionUID = 1L;
 
   @Override
-  public String getId() {
-    return GetMemberInformationFunction.class.getName();
-  }
-
-  @Override
-
   public boolean hasResult() {
     return true;
   }
 
   @Override
-
   public boolean isHA() {
     return true;
   }
 
-  @Override
   /**
    * Read only function
    */
+  @Override
   public boolean optimizeForWrite() {
     return false;
   }
@@ -76,13 +64,11 @@ public class GetMemberInformationFunction extends FunctionAdapter implements Int
   @Override
   public void execute(FunctionContext functionContext) {
     try {
-      Cache cache = CacheFactory.getAnyInstance();
+      InternalCache cache = (InternalCache) functionContext.getCache();
 
-      /*
-       * TODO: 1) Get the CPU usage%
-       */
+      // TODO: 1) Get the CPU usage%
 
-      InternalDistributedSystem system = (InternalDistributedSystem) cache.getDistributedSystem();
+      InternalDistributedSystem system = cache.getInternalDistributedSystem();
       DistributionConfig config = system.getConfig();
       String serverBindAddress = config.getServerBindAddress();
       MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
@@ -108,10 +94,7 @@ public class GetMemberInformationFunction extends FunctionAdapter implements Int
       // A member is a server only if it has a cacheserver
       if (csList != null) {
         memberInfo.setServer(true);
-        Iterator<CacheServer> iters = csList.iterator();
-        while (iters.hasNext()) {
-          CacheServer cs = iters.next();
-
+        for (CacheServer cs : csList) {
           String bindAddress = cs.getBindAddress();
           int port = cs.getPort();
           boolean isRunning = cs.isRunning();
@@ -133,6 +116,7 @@ public class GetMemberInformationFunction extends FunctionAdapter implements Int
         memberInfo.setServer(false);
       }
       functionContext.getResultSender().lastResult(memberInfo);
+
     } catch (CacheClosedException e) {
       functionContext.getResultSender().sendException(e);
     } catch (Exception e) {
@@ -143,4 +127,5 @@ public class GetMemberInformationFunction extends FunctionAdapter implements Int
   private long bytesToMeg(long bytes) {
     return bytes / (1024L * 1024L);
   }
+
 }
