@@ -31,20 +31,18 @@ import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.logging.LogService;
 
 public class DeployFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     // Declared here so that it's available when returning a Throwable
     String memberId = "";
 
     try {
-      final Object[] args = (Object[]) context.getArguments();
-      final String[] jarFilenames = (String[]) args[0];
-      final byte[][] jarBytes = (byte[][]) args[1];
+      Object[] args = (Object[]) context.getArguments();
+      String[] jarFilenames = (String[]) args[0];
+      byte[][] jarBytes = (byte[][]) args[1];
       InternalCache cache = (InternalCache) context.getCache();
 
       DistributedMember member = cache.getDistributedSystem().getDistributedMember();

@@ -34,19 +34,17 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
  * @since GemFire 8.0
  */
 public class DestroyDiskStoreFunction implements InternalEntity, Function {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     // Declared here so that it's available when returning a Throwable
     String memberId = "";
 
     try {
-      final Object[] args = (Object[]) context.getArguments();
-      final String diskStoreName = (String) args[0];
+      Object[] args = (Object[]) context.getArguments();
+      String diskStoreName = (String) args[0];
 
       InternalCache cache = (InternalCache) context.getCache();
 

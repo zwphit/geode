@@ -34,9 +34,7 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
  * @since GemFire 7.0
  */
 public class FetchRegionAttributesFunction implements Function {
-
   private static final long serialVersionUID = 4366812590788342070L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
@@ -45,15 +43,17 @@ public class FetchRegionAttributesFunction implements Function {
   }
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     try {
       String regionPath = (String) context.getArguments();
       if (regionPath == null) {
         throw new IllegalArgumentException(
             CliStrings.CREATE_REGION__MSG__SPECIFY_VALID_REGION_PATH);
       }
-      FetchRegionAttributesFunctionResult<?, ?> result = getRegionAttributes(context.getCache(), regionPath);
+      FetchRegionAttributesFunctionResult<?, ?> result =
+          getRegionAttributes(context.getCache(), regionPath);
       context.getResultSender().lastResult(result);
+
     } catch (IllegalArgumentException e) {
       if (logger.isDebugEnabled()) {
         logger.debug(e.getMessage(), e);
@@ -63,7 +63,7 @@ public class FetchRegionAttributesFunction implements Function {
   }
 
   public static <K, V> FetchRegionAttributesFunctionResult<K, V> getRegionAttributes(
-      Cache cache, String regionPath) {
+      final Cache cache, final String regionPath) {
     Region<K, V> foundRegion = cache.getRegion(regionPath);
 
     if (foundRegion == null) {
@@ -80,8 +80,8 @@ public class FetchRegionAttributesFunction implements Function {
     return result;
   }
 
+  // TODO: make FetchRegionAttributesFunctionResult immutable
   public static class FetchRegionAttributesFunctionResult<K, V> implements Serializable {
-
     private static final long serialVersionUID = -3970828263897978845L;
 
     private RegionAttributes<K, V> regionAttributes;
@@ -89,8 +89,7 @@ public class FetchRegionAttributesFunction implements Function {
     private String cacheLoaderClass;
     private String cacheWriterClass;
 
-    @SuppressWarnings("deprecation")
-    public FetchRegionAttributesFunctionResult(AttributesFactory<K, V> afactory) {
+    public FetchRegionAttributesFunctionResult(final AttributesFactory<K, V> afactory) {
       this.regionAttributes = afactory.create();
 
       CacheListener<K, V>[] cacheListeners = this.regionAttributes.getCacheListeners();

@@ -27,7 +27,6 @@ import org.apache.geode.management.internal.cli.domain.IndexInfo;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 
 public class CreateDefinedIndexesFunction implements InternalEntity, Function {
-
   private static final long serialVersionUID = 1L;
 
   @Override

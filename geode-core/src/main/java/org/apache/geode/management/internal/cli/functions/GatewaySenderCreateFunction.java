@@ -35,13 +35,11 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
 import org.apache.geode.management.internal.configuration.domain.XmlEntity;
 
 public class GatewaySenderCreateFunction implements InternalEntity, Function {
-
   private static final long serialVersionUID = 8746830191680509335L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     ResultSender<Object> resultSender = context.getResultSender();
 
     Cache cache = context.getCache();
@@ -58,8 +56,10 @@ public class GatewaySenderCreateFunction implements InternalEntity, Function {
       resultSender.lastResult(new CliFunctionResult(memberNameOrId, xmlEntity,
           CliStrings.format(CliStrings.CREATE_GATEWAYSENDER__MSG__GATEWAYSENDER_0_CREATED_ON_1,
               new Object[] {createdGatewaySender.getId(), memberNameOrId})));
+
     } catch (GatewaySenderException e) {
       resultSender.lastResult(handleException(memberNameOrId, e.getMessage(), e));
+
     } catch (Exception e) {
       String exceptionMsg = e.getMessage();
       if (exceptionMsg == null) {
@@ -84,8 +84,8 @@ public class GatewaySenderCreateFunction implements InternalEntity, Function {
   /**
    * Creates the GatewaySender with given configuration.
    */
-  private static GatewaySender createGatewaySender(Cache cache,
-      GatewaySenderFunctionArgs gatewaySenderCreateArgs) {
+  private static GatewaySender createGatewaySender(final Cache cache,
+      final GatewaySenderFunctionArgs gatewaySenderCreateArgs) {
     GatewaySenderFactory gateway = cache.createGatewaySenderFactory();
 
     Boolean isParallel = gatewaySenderCreateArgs.isParallel();
@@ -179,19 +179,22 @@ public class GatewaySenderCreateFunction implements InternalEntity, Function {
         gatewaySenderCreateArgs.getRemoteDistributedSystemId());
   }
 
-  private static Class forName(String classToLoadName, String neededFor) {
+  private static Class forName(final String classToLoadName, final String neededFor) {
     Class loadedClass = null;
+
     try {
       // Set Constraints
       ClassPathLoader classPathLoader = ClassPathLoader.getLatest();
       if (classToLoadName != null && !classToLoadName.isEmpty()) {
         loadedClass = classPathLoader.forName(classToLoadName);
       }
+
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(
           CliStrings.format(CliStrings.CREATE_REGION__MSG__COULD_NOT_FIND_CLASS_0_SPECIFIED_FOR_1,
               classToLoadName, neededFor),
           e);
+
     } catch (ClassCastException e) {
       throw new RuntimeException(CliStrings.format(
           CliStrings.CREATE_REGION__MSG__CLASS_SPECIFIED_FOR_0_SPECIFIED_FOR_1_IS_NOT_OF_EXPECTED_TYPE,
@@ -201,19 +204,23 @@ public class GatewaySenderCreateFunction implements InternalEntity, Function {
     return loadedClass;
   }
 
-  private static Object newInstance(Class klass, String neededFor) {
-    Object instance = null;
+  private static Object newInstance(final Class klass, final String neededFor) {
+    Object instance;
+
     try {
       instance = klass.newInstance();
+
     } catch (InstantiationException e) {
       throw new RuntimeException(CliStrings.format(
           CliStrings.CREATE_GATEWAYSENDER__MSG__COULD_NOT_INSTANTIATE_CLASS_0_SPECIFIED_FOR_1,
           klass, neededFor), e);
+
     } catch (IllegalAccessException e) {
       throw new RuntimeException(CliStrings.format(
           CliStrings.CREATE_GATEWAYSENDER__MSG__COULD_NOT_ACCESS_CLASS_0_SPECIFIED_FOR_1, klass,
           neededFor), e);
     }
+
     return instance;
   }
 

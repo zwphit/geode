@@ -562,8 +562,8 @@ public class WanCommands implements GfshCommand {
       }
 
       ResultCollector<?, ?> resultCollector =
-          CliUtil.executeFunction(new GatewayReceiverCreateFunction(),
-              gatewayReceiverFunctionArgs, membersToCreateGatewayReceiverOn);
+          CliUtil.executeFunction(new GatewayReceiverCreateFunction(), gatewayReceiverFunctionArgs,
+              membersToCreateGatewayReceiverOn);
       @SuppressWarnings("unchecked")
       List<CliFunctionResult> gatewayReceiverCreateResults =
           (List<CliFunctionResult>) resultCollector.getResult();

@@ -25,11 +25,10 @@ import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.management.internal.configuration.domain.SharedConfigurationStatus;
 
 public class FetchSharedConfigurationStatusFunction implements InternalEntity, Function {
-
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     InternalLocator locator = InternalLocator.getLocator();
     Cache cache = context.getCache();
     DistributedMember member = cache.getDistributedSystem().getDistributedMember();

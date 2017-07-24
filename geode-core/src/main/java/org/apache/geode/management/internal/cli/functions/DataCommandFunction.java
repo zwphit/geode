@@ -137,7 +137,8 @@ public class DataCommandFunction implements InternalEntity, Function {
     return remove(key, keyClass, regionName, removeAllKeys);
   }
 
-  private DataCommandResult get(final DataCommandRequest request, final SecurityService securityService) {
+  private DataCommandResult get(final DataCommandRequest request,
+      final SecurityService securityService) {
     String key = request.getKey();
     String keyClass = request.getKeyClass();
     String valueClass = request.getValueClass();
@@ -249,7 +250,8 @@ public class DataCommandFunction implements InternalEntity, Function {
   }
 
   private void select_SelectResults(final SelectResults selectResults, final Object principal,
-                                    final List<SelectResultRow> list, final AtomicInteger nestedObjectCount) throws GfJsonException {
+      final List<SelectResultRow> list, final AtomicInteger nestedObjectCount)
+      throws GfJsonException {
     for (Object object : selectResults) {
       // Post processing
       object = cache.getSecurityService().postProcess(principal, null, null, object, false);
@@ -307,7 +309,8 @@ public class DataCommandFunction implements InternalEntity, Function {
     }
   }
 
-  private GfJsonObject getJSONForStruct(final StructImpl impl, final AtomicInteger ai) throws GfJsonException {
+  private GfJsonObject getJSONForStruct(final StructImpl impl, final AtomicInteger ai)
+      throws GfJsonException {
     String fields[] = impl.getFieldNames();
     Object[] values = impl.getFieldValues();
     GfJsonObject jsonObject = new GfJsonObject();
@@ -330,7 +333,7 @@ public class DataCommandFunction implements InternalEntity, Function {
   }
 
   public DataCommandResult remove(final String key, final String keyClass, final String regionName,
-                                  final String removeAllKeys) {
+      final String removeAllKeys) {
     if (StringUtils.isEmpty(regionName)) {
       return DataCommandResult.createRemoveResult(key, null, null,
           CliStrings.REMOVE__MSG__REGIONNAME_EMPTY, false);
@@ -394,8 +397,9 @@ public class DataCommandFunction implements InternalEntity, Function {
     }
   }
 
-  public DataCommandResult get(final Object principal, final String key, final String keyClass, final String valueClass,
-                               final String regionName, final Boolean loadOnCacheMiss, final SecurityService securityService) {
+  public DataCommandResult get(final Object principal, final String key, final String keyClass,
+      final String valueClass, final String regionName, final Boolean loadOnCacheMiss,
+      final SecurityService securityService) {
 
     if (StringUtils.isEmpty(regionName)) {
       return DataCommandResult.createGetResult(key, null, null,
@@ -468,7 +472,7 @@ public class DataCommandFunction implements InternalEntity, Function {
   }
 
   DataCommandResult locateEntry(final String key, final String keyClass, final String valueClass,
-                                       final String regionPath, final boolean recursive) {
+      final String regionPath, final boolean recursive) {
 
     if (StringUtils.isEmpty(regionPath)) {
       return DataCommandResult.createLocateEntryResult(key, null, null,
@@ -583,8 +587,8 @@ public class DataCommandFunction implements InternalEntity, Function {
     }
   }
 
-  public DataCommandResult put(final String key, final String value, final boolean putIfAbsent, final String keyClass,
-                               final String valueClass, final String regionName) {
+  public DataCommandResult put(final String key, final String value, final boolean putIfAbsent,
+      final String keyClass, final String valueClass, final String regionName) {
 
     if (StringUtils.isEmpty(regionName)) {
       return DataCommandResult.createPutResult(key, null, null,
@@ -800,7 +804,8 @@ public class DataCommandFunction implements InternalEntity, Function {
     return list;
   }
 
-  private static String getLogMessage(final QueryObserver observer, final long startTime, final String query) {
+  private static String getLogMessage(final QueryObserver observer, final long startTime,
+      final String query) {
     String usedIndexesString = null;
     float time = 0.0f;
 

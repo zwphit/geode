@@ -30,18 +30,18 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
  * RegionSnapshotService to export the data
  */
 public class ExportDataFunction implements InternalEntity, Function {
-
   private static final long serialVersionUID = 1L;
 
-  public void execute(FunctionContext context) {
-    final String[] args = (String[]) context.getArguments();
-    final String regionName = args[0];
-    final String fileName = args[1];
+  public void execute(final FunctionContext context) {
+    String[] args = (String[]) context.getArguments();
+    String regionName = args[0];
+    String fileName = args[1];
 
     try {
       Cache cache = context.getCache();
       Region<?, ?> region = cache.getRegion(regionName);
       String hostName = cache.getDistributedSystem().getDistributedMember().getHost();
+
       if (region != null) {
         RegionSnapshotService<?, ?> snapshotService = region.getSnapshotService();
         final File exportFile = new File(fileName);
@@ -49,6 +49,7 @@ public class ExportDataFunction implements InternalEntity, Function {
         String successMessage = CliStrings.format(CliStrings.EXPORT_DATA__SUCCESS__MESSAGE,
             regionName, exportFile.getCanonicalPath(), hostName);
         context.getResultSender().lastResult(successMessage);
+
       } else {
         throw new IllegalArgumentException(
             CliStrings.format(CliStrings.REGION_NOT_FOUND, regionName));

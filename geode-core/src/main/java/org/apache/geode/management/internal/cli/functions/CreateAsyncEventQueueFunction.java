@@ -48,9 +48,7 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
  * @since GemFire 8.0
  */
 public class CreateAsyncEventQueueFunction implements InternalEntity, Function {
-
   private static final Logger logger = LogService.getLogger();
-
   private static final long serialVersionUID = 1L;
 
   @Override
@@ -142,7 +140,7 @@ public class CreateAsyncEventQueueFunction implements InternalEntity, Function {
     }
   }
 
-  private Class<?> forName(String className, String neededFor) {
+  private Class<?> forName(final String className, final String neededFor) {
     if (Strings.isNullOrEmpty(className)) {
       return null;
     }
@@ -160,7 +158,7 @@ public class CreateAsyncEventQueueFunction implements InternalEntity, Function {
     }
   }
 
-  private static Object newInstance(Class<?> klass, String neededFor) {
+  private static Object newInstance(final Class<?> klass, final String neededFor) {
     try {
       return klass.newInstance();
     } catch (InstantiationException e) {

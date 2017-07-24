@@ -38,13 +38,11 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
  * The function to a create GatewayReceiver using given configuration parameters.
  */
 public class GatewayReceiverCreateFunction implements InternalEntity, Function {
-
   private static final long serialVersionUID = 8746830191680509335L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     ResultSender<Object> resultSender = context.getResultSender();
 
     Cache cache = context.getCache();
@@ -58,16 +56,20 @@ public class GatewayReceiverCreateFunction implements InternalEntity, Function {
       GatewayReceiver createdGatewayReceiver =
           createGatewayReceiver(cache, gatewayReceiverCreateArgs);
 
-      Map<String, String> attributes = new HashMap<String, String>();
+      Map<String, String> attributes = new HashMap<>();
+
       if (gatewayReceiverCreateArgs.getStartPort() != null) {
         attributes.put("start-port", gatewayReceiverCreateArgs.getStartPort().toString());
       }
+
       if (gatewayReceiverCreateArgs.getEndPort() != null) {
         attributes.put("end-port", gatewayReceiverCreateArgs.getEndPort().toString());
       }
+
       if (gatewayReceiverCreateArgs.getBindAddress() != null) {
         attributes.put("bind-address", gatewayReceiverCreateArgs.getBindAddress());
       }
+
       XmlEntity xmlEntity = XmlEntity.builder().withType(CacheXml.GATEWAY_RECEIVER)
           .withAttributes(attributes).build();
       resultSender.lastResult(new CliFunctionResult(memberNameOrId, xmlEntity,
@@ -77,6 +79,7 @@ public class GatewayReceiverCreateFunction implements InternalEntity, Function {
 
     } catch (IllegalStateException e) {
       resultSender.lastResult(handleException(memberNameOrId, e.getMessage(), e));
+
     } catch (Exception e) {
       String exceptionMsg = e.getMessage();
       if (exceptionMsg == null) {
@@ -101,8 +104,8 @@ public class GatewayReceiverCreateFunction implements InternalEntity, Function {
   /**
    * GatewayReceiver creation happens here.
    */
-  private static GatewayReceiver createGatewayReceiver(Cache cache,
-      GatewayReceiverFunctionArgs gatewayReceiverCreateArgs) {
+  private static GatewayReceiver createGatewayReceiver(final Cache cache,
+      final GatewayReceiverFunctionArgs gatewayReceiverCreateArgs) {
 
     GatewayReceiverFactory gatewayReceiverFactory = cache.createGatewayReceiverFactory();
 
@@ -149,19 +152,22 @@ public class GatewayReceiverCreateFunction implements InternalEntity, Function {
     return gatewayReceiverFactory.create();
   }
 
-  private static Class forName(String classToLoadName, String neededFor) {
+  private static Class forName(final String classToLoadName, final String neededFor) {
     Class loadedClass = null;
+
     try {
       // Set Constraints
       ClassPathLoader classPathLoader = ClassPathLoader.getLatest();
       if (classToLoadName != null && !classToLoadName.isEmpty()) {
         loadedClass = classPathLoader.forName(classToLoadName);
       }
+
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(
           CliStrings.format(CliStrings.CREATE_REGION__MSG__COULD_NOT_FIND_CLASS_0_SPECIFIED_FOR_1,
               classToLoadName, neededFor),
           e);
+
     } catch (ClassCastException e) {
       throw new RuntimeException(CliStrings.format(
           CliStrings.CREATE_REGION__MSG__CLASS_SPECIFIED_FOR_0_SPECIFIED_FOR_1_IS_NOT_OF_EXPECTED_TYPE,
@@ -171,19 +177,23 @@ public class GatewayReceiverCreateFunction implements InternalEntity, Function {
     return loadedClass;
   }
 
-  private static Object newInstance(Class klass, String neededFor) {
-    Object instance = null;
+  private static Object newInstance(final Class klass, final String neededFor) {
+    Object instance;
+
     try {
       instance = klass.newInstance();
+
     } catch (InstantiationException e) {
       throw new RuntimeException(CliStrings.format(
           CliStrings.CREATE_GATEWAYSENDER__MSG__COULD_NOT_INSTANTIATE_CLASS_0_SPECIFIED_FOR_1,
           klass, neededFor), e);
+
     } catch (IllegalAccessException e) {
       throw new RuntimeException(CliStrings.format(
           CliStrings.CREATE_GATEWAYSENDER__MSG__COULD_NOT_ACCESS_CLASS_0_SPECIFIED_FOR_1, klass,
           neededFor), e);
     }
+
     return instance;
   }
 

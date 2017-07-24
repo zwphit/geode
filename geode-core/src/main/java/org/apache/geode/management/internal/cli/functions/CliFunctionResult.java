@@ -28,6 +28,7 @@ import org.apache.geode.internal.DataSerializableFixedID;
 import org.apache.geode.internal.Version;
 import org.apache.geode.management.internal.configuration.domain.XmlEntity;
 
+// TODO: make CliFunctionResult immutable
 public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSerializableFixedID {
 
   private String memberIdOrName;
@@ -158,7 +159,8 @@ public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSer
     this.byteData = DataSerializer.readByteArray(in);
   }
 
-  public void fromDataPre_GFE_8_0_0_0(final DataInput in) throws IOException, ClassNotFoundException {
+  public void fromDataPre_GFE_8_0_0_0(final DataInput in)
+      throws IOException, ClassNotFoundException {
     this.memberIdOrName = DataSerializer.readString(in);
     this.throwable = DataSerializer.readObject(in);
     this.serializables = (Serializable[]) DataSerializer.readObjectArray(in);
