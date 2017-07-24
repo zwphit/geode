@@ -23,11 +23,10 @@ import org.apache.logging.log4j.Logger;
 
 import org.apache.geode.SystemFailure;
 import org.apache.geode.cache.CacheClosedException;
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Declarable;
 import org.apache.geode.cache.asyncqueue.AsyncEventListener;
 import org.apache.geode.cache.asyncqueue.AsyncEventQueueFactory;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.wan.GatewayEventFilter;
 import org.apache.geode.cache.wan.GatewayEventSubstitutionFilter;
@@ -48,25 +47,21 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
  *
  * @since GemFire 8.0
  */
-public class CreateAsyncEventQueueFunction extends FunctionAdapter implements InternalEntity {
+public class CreateAsyncEventQueueFunction implements InternalEntity, Function {
+
   private static final Logger logger = LogService.getLogger();
 
   private static final long serialVersionUID = 1L;
 
-  private InternalCache getCache() {
-    return (InternalCache) CacheFactory.getAnyInstance();
-  }
-
-  @SuppressWarnings("deprecation")
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     // Declared here so that it's available when returning a Throwable
     String memberId = "";
 
     try {
       AsyncEventQueueFunctionArgs aeqArgs = (AsyncEventQueueFunctionArgs) context.getArguments();
 
-      InternalCache cache = getCache();
+      InternalCache cache = (InternalCache) context.getCache();
 
       DistributedMember member = cache.getDistributedSystem().getDistributedMember();
 
@@ -179,8 +174,4 @@ public class CreateAsyncEventQueueFunction extends FunctionAdapter implements In
     }
   }
 
-  @Override
-  public String getId() {
-    return CreateDiskStoreFunction.class.getName();
-  }
 }

@@ -21,14 +21,13 @@ import org.apache.logging.log4j.Logger;
 import org.apache.geode.SystemFailure;
 import org.apache.geode.cache.AttributesMutator;
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.CacheListener;
 import org.apache.geode.cache.CacheLoader;
 import org.apache.geode.cache.CacheWriter;
 import org.apache.geode.cache.ExpirationAction;
 import org.apache.geode.cache.ExpirationAttributes;
 import org.apache.geode.cache.Region;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.ResultSender;
 import org.apache.geode.internal.ClassPathLoader;
@@ -46,10 +45,11 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
  * 
  * @since GemFire 8.0
  */
-public class RegionAlterFunction extends FunctionAdapter implements InternalEntity {
-  private static final Logger logger = LogService.getLogger();
+public class RegionAlterFunction implements InternalEntity, Function {
 
   private static final long serialVersionUID = -4846425364943216425L;
+
+  private static final Logger logger = LogService.getLogger();
 
   @Override
   public boolean isHA() {
@@ -60,7 +60,7 @@ public class RegionAlterFunction extends FunctionAdapter implements InternalEnti
   public void execute(FunctionContext context) {
     ResultSender<Object> resultSender = context.getResultSender();
 
-    Cache cache = CacheFactory.getAnyInstance();
+    Cache cache = context.getCache();
     String memberNameOrId =
         CliUtil.getMemberNameOrId(cache.getDistributedSystem().getDistributedMember());
 
@@ -313,7 +313,6 @@ public class RegionAlterFunction extends FunctionAdapter implements InternalEnti
     return new ExpirationAttributes(timeout, action);
   }
 
-  @SuppressWarnings("unchecked")
   private static <K> Class<K> forName(String classToLoadName, String neededFor) {
     Class<K> loadedClass = null;
     try {
@@ -337,7 +336,7 @@ public class RegionAlterFunction extends FunctionAdapter implements InternalEnti
   }
 
   private static <K> K newInstance(Class<K> klass, String neededFor) {
-    K instance = null;
+    K instance;
     try {
       instance = klass.newInstance();
     } catch (InstantiationException e) {
@@ -354,8 +353,4 @@ public class RegionAlterFunction extends FunctionAdapter implements InternalEnti
     return instance;
   }
 
-  @Override
-  public String getId() {
-    return RegionAlterFunction.class.getName();
-  }
 }

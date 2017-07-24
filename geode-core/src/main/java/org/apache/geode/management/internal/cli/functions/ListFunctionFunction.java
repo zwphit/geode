@@ -25,7 +25,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.geode.SystemFailure;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheClosedException;
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.FunctionService;
@@ -34,11 +33,10 @@ import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.internal.logging.LogService;
 
 public class ListFunctionFunction implements Function, InternalEntity {
-  private static final Logger logger = LogService.getLogger();
-
-  public static final String ID = ListFunctionFunction.class.getName();
 
   private static final long serialVersionUID = 1L;
+
+  private static final Logger logger = LogService.getLogger();
 
   @Override
   public void execute(FunctionContext context) {
@@ -49,7 +47,7 @@ public class ListFunctionFunction implements Function, InternalEntity {
       final Object[] args = (Object[]) context.getArguments();
       final String stringPattern = (String) args[0];
 
-      Cache cache = CacheFactory.getAnyInstance();
+      Cache cache = context.getCache();
       DistributedMember member = cache.getDistributedSystem().getDistributedMember();
 
       memberId = member.getId();
@@ -92,11 +90,6 @@ public class ListFunctionFunction implements Function, InternalEntity {
   }
 
   @Override
-  public String getId() {
-    return ID;
-  }
-
-  @Override
   public boolean hasResult() {
     return true;
   }
@@ -110,4 +103,5 @@ public class ListFunctionFunction implements Function, InternalEntity {
   public boolean isHA() {
     return false;
   }
+
 }

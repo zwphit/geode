@@ -14,26 +14,16 @@
  */
 package org.apache.geode.management.internal.cli.functions;
 
-import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.FunctionService;
-import org.apache.geode.distributed.internal.InternalDistributedSystem;
 import org.apache.geode.internal.InternalEntity;
-import org.apache.geode.internal.admin.remote.ShutdownAllRequest;
 
 /**
- * 
  * Class for Unregister function
- * 
- * 
- * 
  */
-
-
 public class UnregisterFunction implements Function, InternalEntity {
-  public static final String ID = UnregisterFunction.class.getName();
+
   private static final long serialVersionUID = 1L;
 
   @Override
@@ -42,16 +32,11 @@ public class UnregisterFunction implements Function, InternalEntity {
     String functionId = (String) args[0];
     try {
       FunctionService.unregisterFunction(functionId);
+      context.getResultSender().lastResult("Succeeded in unregistering");
+
     } catch (Exception e) {
       context.getResultSender().lastResult("Failed in unregistering " + e.getMessage());
     }
-    context.getResultSender().lastResult("Succeeded in unregistering");
-  }
-
-  @Override
-  public String getId() {
-    return UnregisterFunction.ID;
-
   }
 
   @Override

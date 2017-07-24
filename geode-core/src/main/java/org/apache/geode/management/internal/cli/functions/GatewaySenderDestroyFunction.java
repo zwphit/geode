@@ -14,9 +14,10 @@
  */
 package org.apache.geode.management.internal.cli.functions;
 
+import org.apache.logging.log4j.Logger;
+
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.ResultSender;
 import org.apache.geode.cache.wan.GatewaySender;
@@ -25,20 +26,18 @@ import org.apache.geode.internal.cache.wan.GatewaySenderException;
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.management.internal.cli.CliUtil;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
-import org.apache.logging.log4j.Logger;
 
-public class GatewaySenderDestroyFunction extends FunctionAdapter implements InternalEntity {
+public class GatewaySenderDestroyFunction implements InternalEntity, Function {
+
   private static final long serialVersionUID = 1L;
 
   private static final Logger logger = LogService.getLogger();
-  private static final String ID = GatewaySenderDestroyFunction.class.getName();
-  public static GatewaySenderDestroyFunction INSTANCE = new GatewaySenderDestroyFunction();
 
   @Override
   public void execute(FunctionContext context) {
     ResultSender<Object> resultSender = context.getResultSender();
 
-    Cache cache = CacheFactory.getAnyInstance();
+    Cache cache = context.getCache();
     String memberNameOrId =
         CliUtil.getMemberNameOrId(cache.getDistributedSystem().getDistributedMember());
 
@@ -80,11 +79,6 @@ public class GatewaySenderDestroyFunction extends FunctionAdapter implements Int
     }
 
     return new CliFunctionResult(memberNameOrId);
-  }
-
-  @Override
-  public String getId() {
-    return ID;
   }
 
 }

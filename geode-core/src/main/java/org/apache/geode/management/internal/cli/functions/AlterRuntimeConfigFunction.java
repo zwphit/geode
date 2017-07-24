@@ -14,9 +14,14 @@
  */
 package org.apache.geode.management.internal.cli.functions;
 
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.logging.log4j.Logger;
+
 import org.apache.geode.cache.CacheClosedException;
-import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.distributed.internal.DistributionConfig;
 import org.apache.geode.internal.ConfigSource;
@@ -25,29 +30,20 @@ import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.management.internal.cli.CliUtil;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
-import org.apache.logging.log4j.Logger;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-public class AlterRuntimeConfigFunction extends FunctionAdapter implements InternalEntity {
+public class AlterRuntimeConfigFunction implements InternalEntity, Function {
 
   private static final long serialVersionUID = 1L;
 
   private static Logger logger = LogService.getLogger();
 
-  private InternalCache getCache() {
-    return (InternalCache) CacheFactory.getAnyInstance();
-  }
-
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     String memberId = "";
 
     try {
       Object arg = context.getArguments();
-      InternalCache cache = getCache();
+      InternalCache cache = (InternalCache) context.getCache();
       DistributionConfig config = cache.getInternalDistributedSystem().getConfig();
       memberId = cache.getDistributedSystem().getDistributedMember().getId();
 
@@ -82,15 +78,11 @@ public class AlterRuntimeConfigFunction extends FunctionAdapter implements Inter
       context.getResultSender().lastResult(result);
 
     } catch (Exception e) {
-      logger.error("Exception happened on : " + memberId, e);
+      logger.error("Exception happened on : {}", memberId, e);
       CliFunctionResult cliFuncResult =
           new CliFunctionResult(memberId, e, CliUtil.stackTraceAsString(e));
       context.getResultSender().lastResult(cliFuncResult);
     }
   }
 
-  @Override
-  public String getId() {
-    return AlterRuntimeConfigFunction.class.getName();
-  }
 }

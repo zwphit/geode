@@ -152,7 +152,7 @@ public class WanCommands implements GfshCommand {
       }
 
       ResultCollector<?, ?> resultCollector =
-          CliUtil.executeFunction(GatewaySenderCreateFunction.INSTANCE, gatewaySenderFunctionArgs,
+          CliUtil.executeFunction(new GatewaySenderCreateFunction(), gatewaySenderFunctionArgs,
               membersToCreateGatewaySenderOn);
       @SuppressWarnings("unchecked")
       List<CliFunctionResult> gatewaySenderCreateResults =
@@ -562,7 +562,7 @@ public class WanCommands implements GfshCommand {
       }
 
       ResultCollector<?, ?> resultCollector =
-          CliUtil.executeFunction(GatewayReceiverCreateFunction.INSTANCE,
+          CliUtil.executeFunction(new GatewayReceiverCreateFunction(),
               gatewayReceiverFunctionArgs, membersToCreateGatewayReceiverOn);
       @SuppressWarnings("unchecked")
       List<CliFunctionResult> gatewayReceiverCreateResults =
@@ -1011,7 +1011,7 @@ public class WanCommands implements GfshCommand {
       }
 
       ResultCollector<?, ?> resultCollector =
-          CliUtil.executeFunction(GatewaySenderDestroyFunction.INSTANCE,
+          CliUtil.executeFunction(new GatewaySenderDestroyFunction(),
               gatewaySenderDestroyFunctionArgs, membersToDestroyGatewaySenderOn);
       @SuppressWarnings("unchecked")
       List<CliFunctionResult> gatewaySenderDestroyResults =

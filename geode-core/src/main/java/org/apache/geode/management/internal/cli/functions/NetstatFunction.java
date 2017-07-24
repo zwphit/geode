@@ -14,7 +14,12 @@
  */
 package org.apache.geode.management.internal.cli.functions;
 
-import static org.apache.geode.internal.lang.SystemUtils.*;
+import static org.apache.geode.internal.lang.SystemUtils.getOsArchitecture;
+import static org.apache.geode.internal.lang.SystemUtils.getOsName;
+import static org.apache.geode.internal.lang.SystemUtils.getOsVersion;
+import static org.apache.geode.internal.lang.SystemUtils.isLinux;
+import static org.apache.geode.internal.lang.SystemUtils.isMacOSX;
+import static org.apache.geode.internal.lang.SystemUtils.isSolaris;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,7 +34,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.distributed.DistributedSystem;
-import org.apache.geode.distributed.internal.InternalDistributedSystem;
 import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.management.internal.cli.CliUtil;
@@ -42,14 +46,11 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
  * 
  * @since GemFire 7.0
  */
-@SuppressWarnings({"serial"})
 public class NetstatFunction implements Function, InternalEntity {
-  private static final Logger logger = LogService.getLogger();
+
   private static final long serialVersionUID = 1L;
 
-  public static final NetstatFunction INSTANCE = new NetstatFunction();
-
-  private static final String ID = NetstatFunction.class.getName();
+  private static final Logger logger = LogService.getLogger();
 
   private static final String NETSTAT_COMMAND = "netstat";
   private static final String LSOF_COMMAND = "lsof";
@@ -61,7 +62,7 @@ public class NetstatFunction implements Function, InternalEntity {
 
   @Override
   public void execute(final FunctionContext context) {
-    DistributedSystem ds = InternalDistributedSystem.getConnectedInstance();
+    DistributedSystem ds = context.getCache().getDistributedSystem();
     if (ds == null || !ds.isConnected()) {
       return;
     }
@@ -139,6 +140,7 @@ public class NetstatFunction implements Function, InternalEntity {
 
       // TODO: move to finally-block
       netstat.destroy();
+
     } catch (IOException e) {
       // TODO: change this to keep the full stack trace
       netstatInfo.append(CliStrings.format(CliStrings.NETSTAT__MSG__COULD_NOT_EXECUTE_0_REASON_1,
@@ -154,7 +156,6 @@ public class NetstatFunction implements Function, InternalEntity {
         .append(" output ###################").append(lineSeparator);
 
     if (isLinux() || isMacOSX() || isSolaris()) {
-
       ProcessBuilder procBuilder = new ProcessBuilder(LSOF_COMMAND);
       try {
         Process lsof = procBuilder.start();
@@ -167,6 +168,7 @@ public class NetstatFunction implements Function, InternalEntity {
         }
         // TODO: move this to finally-block
         lsof.destroy();
+
       } catch (IOException e) {
         // TODO: change this to keep the full stack trace
         String message = e.getMessage();
@@ -201,11 +203,6 @@ public class NetstatFunction implements Function, InternalEntity {
   }
 
   @Override
-  public String getId() {
-    return ID;
-  }
-
-  @Override
   public boolean optimizeForWrite() {
     return false;
   }
@@ -221,6 +218,7 @@ public class NetstatFunction implements Function, InternalEntity {
   }
 
   public static class NetstatFunctionArgument implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private final String lineSeparator;
@@ -241,6 +239,7 @@ public class NetstatFunction implements Function, InternalEntity {
   }
 
   public static class NetstatFunctionResult implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private final String host;
@@ -266,4 +265,5 @@ public class NetstatFunction implements Function, InternalEntity {
       return compressedBytes;
     }
   }
+
 }

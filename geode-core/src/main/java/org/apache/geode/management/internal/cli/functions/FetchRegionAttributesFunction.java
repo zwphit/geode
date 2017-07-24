@@ -20,29 +20,24 @@ import org.apache.logging.log4j.Logger;
 
 import org.apache.geode.cache.AttributesFactory;
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.CacheListener;
 import org.apache.geode.cache.CacheLoader;
 import org.apache.geode.cache.CacheWriter;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.RegionAttributes;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 
 /**
- * 
  * @since GemFire 7.0
  */
-public class FetchRegionAttributesFunction extends FunctionAdapter {
-  private static final Logger logger = LogService.getLogger();
+public class FetchRegionAttributesFunction implements Function {
 
   private static final long serialVersionUID = 4366812590788342070L;
 
-  private static final String ID = FetchRegionAttributesFunction.class.getName();
-
-  public static FetchRegionAttributesFunction INSTANCE = new FetchRegionAttributesFunction();
+  private static final Logger logger = LogService.getLogger();
 
   @Override
   public boolean isHA() {
@@ -57,7 +52,7 @@ public class FetchRegionAttributesFunction extends FunctionAdapter {
         throw new IllegalArgumentException(
             CliStrings.CREATE_REGION__MSG__SPECIFY_VALID_REGION_PATH);
       }
-      FetchRegionAttributesFunctionResult<?, ?> result = getRegionAttributes(regionPath);
+      FetchRegionAttributesFunctionResult<?, ?> result = getRegionAttributes(context.getCache(), regionPath);
       context.getResultSender().lastResult(result);
     } catch (IllegalArgumentException e) {
       if (logger.isDebugEnabled()) {
@@ -67,10 +62,8 @@ public class FetchRegionAttributesFunction extends FunctionAdapter {
     }
   }
 
-  @SuppressWarnings("deprecation")
   public static <K, V> FetchRegionAttributesFunctionResult<K, V> getRegionAttributes(
-      String regionPath) {
-    Cache cache = CacheFactory.getAnyInstance();
+      Cache cache, String regionPath) {
     Region<K, V> foundRegion = cache.getRegion(regionPath);
 
     if (foundRegion == null) {
@@ -87,12 +80,8 @@ public class FetchRegionAttributesFunction extends FunctionAdapter {
     return result;
   }
 
-  @Override
-  public String getId() {
-    return ID;
-  }
-
   public static class FetchRegionAttributesFunctionResult<K, V> implements Serializable {
+
     private static final long serialVersionUID = -3970828263897978845L;
 
     private RegionAttributes<K, V> regionAttributes;
@@ -143,4 +132,5 @@ public class FetchRegionAttributesFunction extends FunctionAdapter {
       return cacheWriterClass;
     }
   }
+
 }

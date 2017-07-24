@@ -14,56 +14,52 @@
  */
 package org.apache.geode.management.internal.cli.functions;
 
-import org.apache.geode.cache.execute.Function;
-import org.apache.geode.cache.execute.FunctionContext;
-import org.apache.geode.distributed.internal.InternalDistributedSystem;
-import org.apache.geode.internal.InternalEntity;
-import org.apache.geode.internal.logging.LogService;
-import org.apache.geode.internal.tcp.ConnectionTable;
-import org.apache.logging.log4j.Logger;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.logging.log4j.Logger;
+
+import org.apache.geode.cache.Cache;
+import org.apache.geode.cache.execute.Function;
+import org.apache.geode.cache.execute.FunctionContext;
+import org.apache.geode.distributed.DistributedSystem;
+import org.apache.geode.internal.InternalEntity;
+import org.apache.geode.internal.logging.LogService;
+import org.apache.geode.internal.tcp.ConnectionTable;
+
 /**
- * 
  * Class for Shutdown function
- * 
- * 
- * 
  */
 public class ShutDownFunction implements Function, InternalEntity {
-  private static final Logger logger = LogService.getLogger();
 
-  public static final String ID = ShutDownFunction.class.getName();
   private static final long serialVersionUID = 1L;
+
+  private static final Logger logger = LogService.getLogger();
 
   @Override
   public void execute(FunctionContext context) {
     try {
-      final InternalDistributedSystem system = InternalDistributedSystem.getConnectedInstance();
-      if (system == null) {
-        return;
-      }
-      String memberName = system.getDistributedMember().getId();
+      Cache cache = context.getCache();
+      String memberName = cache.getDistributedSystem().getDistributedMember().getId();
       logger.info("Received GFSH shutdown. Shutting down member " + memberName);
 
-      disconnectInNonDaemonThread(system);
+      disconnectInNonDaemonThread(cache.getDistributedSystem());
 
       context.getResultSender().lastResult("SUCCESS: succeeded in shutting down " + memberName);
+
     } catch (Exception ex) {
       logger.warn("Error during shutdown", ex);
       context.getResultSender().lastResult("FAILURE: failed in shutting down " + ex.getMessage());
     }
   }
 
-  /*
+  /**
    * The shutdown is performed in a separate, non-daemon thread so that the JVM does not shut down
    * prematurely before the full process has completed.
    */
-  private void disconnectInNonDaemonThread(final InternalDistributedSystem ids)
+  private void disconnectInNonDaemonThread(final DistributedSystem ids)
       throws InterruptedException, ExecutionException {
     ExecutorService exec = Executors.newSingleThreadExecutor();
     Future future = exec.submit(() -> {
@@ -77,12 +73,6 @@ public class ShutDownFunction implements Function, InternalEntity {
     } finally {
       exec.shutdown();
     }
-  }
-
-  @Override
-  public String getId() {
-    return ShutDownFunction.ID;
-
   }
 
   @Override

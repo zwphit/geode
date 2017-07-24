@@ -456,7 +456,7 @@ public class MiscellaneousCommands implements GfshCommand {
       if (!hostMemberMap.isEmpty()) {
         Set<DistributedMember> membersToExecuteOn = new HashSet<>(hostMemberMap.values());
         ResultCollector<?, ?> netstatResult =
-            CliUtil.executeFunction(NetstatFunction.INSTANCE, nfa, membersToExecuteOn);
+            CliUtil.executeFunction(new NetstatFunction(), nfa, membersToExecuteOn);
         List<?> resultList = (List<?>) netstatResult.getResult();
         for (Object aResultList : resultList) {
           NetstatFunctionResult netstatFunctionResult = (NetstatFunctionResult) aResultList;

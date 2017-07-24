@@ -18,9 +18,8 @@ import java.util.List;
 
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheClosedException;
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Region;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.query.Index;
 import org.apache.geode.cache.query.QueryService;
@@ -30,9 +29,7 @@ import org.apache.geode.management.internal.cli.domain.IndexInfo;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 import org.apache.geode.management.internal.configuration.domain.XmlEntity;
 
-
-
-public class DestroyIndexFunction extends FunctionAdapter implements InternalEntity {
+public class DestroyIndexFunction implements InternalEntity, Function {
 
   private static final long serialVersionUID = 1L;
 
@@ -42,7 +39,7 @@ public class DestroyIndexFunction extends FunctionAdapter implements InternalEnt
     String memberId = null;
 
     try {
-      Cache cache = CacheFactory.getAnyInstance();
+      Cache cache = context.getCache();
       memberId = cache.getDistributedSystem().getDistributedMember().getId();
       QueryService queryService = cache.getQueryService();
       String indexName = indexInfo.getIndexName();
@@ -94,10 +91,7 @@ public class DestroyIndexFunction extends FunctionAdapter implements InternalEnt
     }
   }
 
-  /***
-   * 
-   * @param name
-   * @param queryService
+  /**
    * @return true if the index was found and removed/false if the index was not found.
    */
   private boolean removeIndexByName(String name, QueryService queryService) {
@@ -113,11 +107,6 @@ public class DestroyIndexFunction extends FunctionAdapter implements InternalEnt
       }
     }
     return removed;
-  }
-
-  @Override
-  public String getId() {
-    return DestroyIndexFunction.class.getName();
   }
 
 }

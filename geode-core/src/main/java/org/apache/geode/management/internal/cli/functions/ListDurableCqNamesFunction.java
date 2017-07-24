@@ -16,12 +16,10 @@
 package org.apache.geode.management.internal.cli.functions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.query.internal.cq.CqService;
 import org.apache.geode.distributed.DistributedMember;
@@ -35,30 +33,22 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
 /**
  * The ListDurableCqs class is a GemFire function used to collect all the durable client names on
  * the server
- * </p>
- * 
+ *
  * @see org.apache.geode.cache.Cache
  * @see org.apache.geode.cache.execute.Function
  * @see org.apache.geode.cache.execute.FunctionAdapter
  * @see org.apache.geode.cache.execute.FunctionContext
  * @see org.apache.geode.internal.InternalEntity
  * @see org.apache.geode.management.internal.cli.domain.IndexDetails
+ *
  * @since GemFire 7.0.1
  */
-@SuppressWarnings("unused")
-public class ListDurableCqNamesFunction extends FunctionAdapter implements InternalEntity {
+public class ListDurableCqNamesFunction implements InternalEntity, Function {
+
   private static final long serialVersionUID = 1L;
 
-  protected Cache getCache() {
-    return CacheFactory.getAnyInstance();
-  }
-
-  public String getId() {
-    return ListDurableCqNamesFunction.class.getName();
-  }
-
   public void execute(final FunctionContext context) {
-    final Cache cache = getCache();
+    final Cache cache = context.getCache();
     final DistributedMember member = cache.getDistributedSystem().getDistributedMember();
     String memberNameOrId = CliUtil.getMemberNameOrId(member);
     DurableCqNamesResult result = new DurableCqNamesResult(memberNameOrId);
@@ -89,10 +79,12 @@ public class ListDurableCqNamesFunction extends FunctionAdapter implements Inter
       } else {
         result.setErrorMessage(CliStrings.NO_CLIENT_FOUND);
       }
+
     } catch (Exception e) {
       result.setExceptionMessage(e.getMessage());
     } finally {
       context.getResultSender().lastResult(result);
     }
   }
+
 }

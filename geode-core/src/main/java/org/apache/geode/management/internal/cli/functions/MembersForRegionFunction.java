@@ -38,13 +38,11 @@ public class MembersForRegionFunction implements Function, InternalEntity {
 
   private static final long serialVersionUID = 8746830191680509335L;
 
-  private static final String ID = MembersForRegionFunction.class.getName();
-
   @Override
   public void execute(FunctionContext context) {
     Map<String, String> resultMap = new HashMap<String, String>();
     try {
-      Cache cache = CacheFactory.getAnyInstance();
+      Cache cache = context.getCache();
       String memberNameOrId = cache.getDistributedSystem().getDistributedMember().getId();
       Object args = (Object) context.getArguments();
       String regionName = ((String) args);
@@ -68,11 +66,6 @@ public class MembersForRegionFunction implements Function, InternalEntity {
       resultMap.put("", "");
       context.getResultSender().lastResult(resultMap);
     }
-  }
-
-  @Override
-  public String getId() {
-    return MembersForRegionFunction.ID;
   }
 
   @Override

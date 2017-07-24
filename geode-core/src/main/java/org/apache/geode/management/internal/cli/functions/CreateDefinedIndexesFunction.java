@@ -14,33 +14,28 @@
  */
 package org.apache.geode.management.internal.cli.functions;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
-import org.apache.geode.cache.query.Index;
 import org.apache.geode.cache.query.MultiIndexCreationException;
 import org.apache.geode.cache.query.QueryService;
 import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.management.internal.cli.domain.IndexInfo;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 
-public class CreateDefinedIndexesFunction extends FunctionAdapter implements InternalEntity {
+public class CreateDefinedIndexesFunction implements InternalEntity, Function {
 
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     String memberId = null;
-    List<Index> indexes = null;
-    Cache cache = null;
+
     try {
-      cache = CacheFactory.getAnyInstance();
+      Cache cache = context.getCache();
       memberId = cache.getDistributedSystem().getDistributedMember().getId();
       QueryService queryService = cache.getQueryService();
       Set<IndexInfo> indexDefinitions = (Set<IndexInfo>) context.getArguments();
@@ -56,31 +51,23 @@ public class CreateDefinedIndexesFunction extends FunctionAdapter implements Int
           queryService.defineIndex(indexName, indexedExpression, regionPath);
         }
       }
-      indexes = queryService.createDefinedIndexes();
+      queryService.createDefinedIndexes();
       context.getResultSender().lastResult(new CliFunctionResult(memberId));
+
     } catch (MultiIndexCreationException e) {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       sb.append("Index creation failed for indexes: ").append("\n");
       for (Map.Entry<String, Exception> failedIndex : e.getExceptionsMap().entrySet()) {
         sb.append(failedIndex.getKey()).append(" : ").append(failedIndex.getValue().getMessage())
             .append("\n");
       }
       context.getResultSender().lastResult(new CliFunctionResult(memberId, e, sb.toString()));
+
     } catch (Exception e) {
       String exceptionMessage = CliStrings.format(CliStrings.EXCEPTION_CLASS_AND_MESSAGE,
           e.getClass().getName(), e.getMessage());
       context.getResultSender().lastResult(new CliFunctionResult(memberId, e, exceptionMessage));
     }
-  }
-
-  public void createCommandObject(IndexInfo info) {
-    Cache cache = CacheFactory.getAnyInstance();
-    QueryService queryService = cache.getQueryService();
-  }
-
-  @Override
-  public String getId() {
-    return CreateDefinedIndexesFunction.class.getName();
   }
 
 }

@@ -23,7 +23,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.geode.SystemFailure;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheClosedException;
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.distributed.DistributedMember;
@@ -35,11 +34,10 @@ import org.apache.geode.internal.cache.xmlcache.CacheXmlGenerator;
 import org.apache.geode.internal.logging.LogService;
 
 public class ExportConfigFunction implements Function, InternalEntity {
-  private static final Logger logger = LogService.getLogger();
-
-  public static final String ID = ExportConfigFunction.class.getName();
 
   private static final long serialVersionUID = 1L;
+
+  private static final Logger logger = LogService.getLogger();
 
   @Override
   public void execute(FunctionContext context) {
@@ -47,7 +45,7 @@ public class ExportConfigFunction implements Function, InternalEntity {
     String memberId = "";
 
     try {
-      Cache cache = CacheFactory.getAnyInstance();
+      Cache cache = context.getCache();
       DistributedMember member = cache.getDistributedSystem().getDistributedMember();
 
       memberId = member.getId();
@@ -116,11 +114,6 @@ public class ExportConfigFunction implements Function, InternalEntity {
   }
 
   @Override
-  public String getId() {
-    return ID;
-  }
-
-  @Override
   public boolean hasResult() {
     return true;
   }
@@ -134,4 +127,5 @@ public class ExportConfigFunction implements Function, InternalEntity {
   public boolean isHA() {
     return false;
   }
+
 }

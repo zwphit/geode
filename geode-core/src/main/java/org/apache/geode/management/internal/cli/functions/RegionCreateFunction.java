@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Logger;
 
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.CacheListener;
 import org.apache.geode.cache.CacheLoader;
 import org.apache.geode.cache.CacheWriter;
@@ -33,7 +32,7 @@ import org.apache.geode.cache.RegionAttributes;
 import org.apache.geode.cache.RegionExistsException;
 import org.apache.geode.cache.RegionFactory;
 import org.apache.geode.cache.RegionShortcut;
-import org.apache.geode.cache.execute.FunctionAdapter;
+import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.ResultSender;
 import org.apache.geode.compression.Compressor;
@@ -50,18 +49,13 @@ import org.apache.geode.management.internal.cli.util.RegionPath;
 import org.apache.geode.management.internal.configuration.domain.XmlEntity;
 
 /**
- *
  * @since GemFire 7.0
  */
-public class RegionCreateFunction extends FunctionAdapter implements InternalEntity {
-
-  private static final Logger logger = LogService.getLogger();
+public class RegionCreateFunction implements InternalEntity, Function {
 
   private static final long serialVersionUID = 8746830191680509335L;
 
-  private static final String ID = RegionCreateFunction.class.getName();
-
-  public static RegionCreateFunction INSTANCE = new RegionCreateFunction();
+  private static final Logger logger = LogService.getLogger();
 
   @Override
   public boolean isHA() {
@@ -72,7 +66,7 @@ public class RegionCreateFunction extends FunctionAdapter implements InternalEnt
   public void execute(FunctionContext context) {
     ResultSender<Object> resultSender = context.getResultSender();
 
-    Cache cache = CacheFactory.getAnyInstance();
+    Cache cache = context.getCache();
     String memberNameOrId =
         CliUtil.getMemberNameOrId(cache.getDistributedSystem().getDistributedMember());
 
@@ -95,6 +89,7 @@ public class RegionCreateFunction extends FunctionAdapter implements InternalEnt
       resultSender.lastResult(new CliFunctionResult(memberNameOrId, xmlEntity,
           CliStrings.format(CliStrings.CREATE_REGION__MSG__REGION_0_CREATED_ON_1,
               new Object[] {createdRegion.getFullPath(), memberNameOrId})));
+
     } catch (IllegalStateException e) {
       String exceptionMsg = e.getMessage();
       String localizedString =
@@ -136,8 +131,6 @@ public class RegionCreateFunction extends FunctionAdapter implements InternalEnt
   }
 
   public static <K, V> Region<?, ?> createRegion(Cache cache, RegionFunctionArgs regionCreateArgs) {
-    Region<K, V> createdRegion = null;
-
     final String regionPath = regionCreateArgs.getRegionPath();
     final RegionShortcut regionShortcut = regionCreateArgs.getRegionShortcut();
     final String useAttributesFrom = regionCreateArgs.getUseAttributesFrom();
@@ -352,6 +345,7 @@ public class RegionCreateFunction extends FunctionAdapter implements InternalEnt
 
     String regionName = regionPathData.getName();
 
+    Region<K, V> createdRegion = null;
     if (parentRegion != null) {
       createdRegion = factory.createSubregion(parentRegion, regionName);
     } else {
@@ -361,7 +355,6 @@ public class RegionCreateFunction extends FunctionAdapter implements InternalEnt
     return createdRegion;
   }
 
-  @SuppressWarnings("unchecked")
   private static <K, V> PartitionAttributes<K, V> extractPartitionAttributes(Cache cache,
       RegionAttributes<K, V> regionAttributes, RegionFunctionArgs regionCreateArgs) {
     RegionFunctionArgs.PartitionArgs partitionArgs = regionCreateArgs.getPartitionArgs();
@@ -418,7 +411,6 @@ public class RegionCreateFunction extends FunctionAdapter implements InternalEnt
     return prAttrFactory.create();
   }
 
-
   private static Class<PartitionResolver> forName(String className, String neededFor) {
     if (StringUtils.isBlank(className)) {
       throw new IllegalArgumentException(
@@ -452,8 +444,4 @@ public class RegionCreateFunction extends FunctionAdapter implements InternalEnt
     }
   }
 
-  @Override
-  public String getId() {
-    return ID;
-  }
 }
