@@ -38,9 +38,7 @@ import org.apache.geode.internal.logging.log4j.LogWriterLogger;
  * since 8.0
  */
 public class ChangeLogLevelFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override

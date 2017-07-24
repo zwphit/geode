@@ -33,7 +33,6 @@ import org.apache.geode.internal.cache.tier.sockets.ServerConnection;
  * @since GemFire 8.0
  */
 public class ContinuousQueryFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
 
   @Override
@@ -120,14 +119,14 @@ public class ContinuousQueryFunction implements Function, InternalEntity {
   }
 
   public class ClientInfo implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     public final String isDurable;
     public final String primaryServer;
     public final String secondaryServer;
 
-    public ClientInfo(final String isClientDurable, final String primaryServerId, final String secondaryServerId) {
+    public ClientInfo(final String isClientDurable, final String primaryServerId,
+        final String secondaryServerId) {
       isDurable = isClientDurable;
       primaryServer = primaryServerId;
       secondaryServer = secondaryServerId;

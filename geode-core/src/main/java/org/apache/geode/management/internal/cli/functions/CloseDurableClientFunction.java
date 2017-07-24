@@ -28,7 +28,6 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
  * Function to close a durable client
  */
 public class CloseDurableClientFunction implements InternalEntity, Function {
-
   private static final long serialVersionUID = 1L;
 
   @Override

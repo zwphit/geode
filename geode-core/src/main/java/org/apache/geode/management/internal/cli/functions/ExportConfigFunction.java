@@ -34,13 +34,11 @@ import org.apache.geode.internal.cache.xmlcache.CacheXmlGenerator;
 import org.apache.geode.internal.logging.LogService;
 
 public class ExportConfigFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     // Declared here so that it's available when returning a Throwable
     String memberId = "";
 
@@ -64,26 +62,30 @@ public class ExportConfigFunction implements Function, InternalEntity {
       DistributionConfigImpl config =
           (DistributionConfigImpl) ((InternalDistributedSystem) cache.getDistributedSystem())
               .getConfig();
-      StringBuffer propStringBuf = new StringBuffer();
+      StringBuilder propStringBuf = new StringBuilder();
       String lineSeparator = System.getProperty("line.separator");
+
       for (Map.Entry entry : config.getConfigPropsFromSource(ConfigSource.runtime()).entrySet()) {
         if (entry.getValue() != null && !entry.getValue().equals("")) {
           propStringBuf.append(entry.getKey()).append("=").append(entry.getValue())
               .append(lineSeparator);
         }
       }
+
       for (Map.Entry entry : config.getConfigPropsFromSource(ConfigSource.api()).entrySet()) {
         if (entry.getValue() != null && !entry.getValue().equals("")) {
           propStringBuf.append(entry.getKey()).append("=").append(entry.getValue())
               .append(lineSeparator);
         }
       }
+
       for (Map.Entry entry : config.getConfigPropsDefinedUsingFiles().entrySet()) {
         if (entry.getValue() != null && !entry.getValue().equals("")) {
           propStringBuf.append(entry.getKey()).append("=").append(entry.getValue())
               .append(lineSeparator);
         }
       }
+
       // fix for bug 46653
       for (Map.Entry entry : config.getConfigPropsFromSource(ConfigSource.launcher()).entrySet()) {
         if (entry.getValue() != null && !entry.getValue().equals("")) {

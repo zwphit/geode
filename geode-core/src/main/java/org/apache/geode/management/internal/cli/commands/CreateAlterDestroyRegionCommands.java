@@ -866,8 +866,8 @@ public class CreateAlterDestroyRegionCommands implements GfshCommand {
     return false;
   }
 
-  private <K, V> FetchRegionAttributesFunctionResult<K, V> getRegionAttributes(
-      InternalCache cache, String regionPath) {
+  private <K, V> FetchRegionAttributesFunctionResult<K, V> getRegionAttributes(InternalCache cache,
+      String regionPath) {
     if (!isClusterWideSameConfig(cache, regionPath)) {
       throw new IllegalStateException(CliStrings.format(
           CliStrings.CREATE_REGION__MSG__USE_ATTRIBUTES_FORM_REGIONS_EXISTS_BUT_DIFFERENT_SCOPE_OR_DATAPOLICY_USE_DESCRIBE_REGION_FOR_0,

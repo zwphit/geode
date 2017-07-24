@@ -52,15 +52,7 @@ import org.apache.geode.management.internal.cli.util.DiskStoreNotFoundException;
  * @since GemFire 7.0
  */
 public class DescribeDiskStoreFunction implements InternalEntity, Function {
-
   private static final Logger logger = LogService.getLogger();
-
-  protected static void assertState(final boolean condition, final String message,
-      final Object... args) {
-    if (!condition) {
-      throw new IllegalStateException(String.format(message, args));
-    }
-  }
 
   public void execute(final FunctionContext context) {
     InternalCache cache = (InternalCache) context.getCache();
@@ -86,8 +78,7 @@ public class DescribeDiskStoreFunction implements InternalEntity, Function {
         diskStoreDetails.setTimeInterval(diskStore.getTimeInterval());
         diskStoreDetails.setWriteBufferSize(diskStore.getWriteBufferSize());
         diskStoreDetails.setDiskUsageWarningPercentage(diskStore.getDiskUsageWarningPercentage());
-        diskStoreDetails
-            .setDiskUsageCriticalPercentage(diskStore.getDiskUsageCriticalPercentage());
+        diskStoreDetails.setDiskUsageCriticalPercentage(diskStore.getDiskUsageCriticalPercentage());
 
         setDiskDirDetails(diskStore, diskStoreDetails);
         setRegionDetails(cache, diskStore, diskStoreDetails);
@@ -97,15 +88,25 @@ public class DescribeDiskStoreFunction implements InternalEntity, Function {
         setAsyncEventQueueDetails(cache, diskStore, diskStoreDetails);
 
         context.getResultSender().lastResult(diskStoreDetails);
+
       } else {
         context.getResultSender()
             .sendException(new DiskStoreNotFoundException(
                 String.format("A disk store with name (%1$s) was not found on member (%2$s).",
                     diskStoreName, memberName)));
       }
+
     } catch (Exception e) {
       logger.error("Error occurred while executing 'describe disk-store': {}!", e.getMessage(), e);
       context.getResultSender().sendException(e);
+    }
+  }
+
+  // TODO: delete assertState
+  protected static void assertState(final boolean condition, final String message,
+      final Object... args) {
+    if (!condition) {
+      throw new IllegalStateException(String.format(message, args));
     }
   }
 
@@ -139,12 +140,12 @@ public class DescribeDiskStoreFunction implements InternalEntity, Function {
     return region.getAttributes().getDataPolicy().withPersistence();
   }
 
-  protected boolean isUsingDiskStore(final Region region, final DiskStore diskStore) {
+  boolean isUsingDiskStore(final Region region, final DiskStore diskStore) {
     return ((isPersistent(region) || isOverflowToDisk(region))
         && ObjectUtils.equals(getDiskStoreName(region), diskStore.getName()));
   }
 
-  protected void setRegionDetails(final InternalCache cache, final DiskStore diskStore,
+  void setRegionDetails(final InternalCache cache, final DiskStore diskStore,
       final DiskStoreDetails diskStoreDetails) {
     for (Region<?, ?> region : cache.rootRegions()) {
       setRegionDetails(region, diskStore, diskStoreDetails);
@@ -173,11 +174,11 @@ public class DescribeDiskStoreFunction implements InternalEntity, Function {
             DiskStoreDetails.DEFAULT_DISK_STORE_NAME));
   }
 
-  protected boolean isUsingDiskStore(final CacheServer cacheServer, final DiskStore diskStore) {
+  boolean isUsingDiskStore(final CacheServer cacheServer, final DiskStore diskStore) {
     return ObjectUtils.equals(getDiskStoreName(cacheServer), diskStore.getName());
   }
 
-  protected void setCacheServerDetails(final InternalCache cache, final DiskStore diskStore,
+  void setCacheServerDetails(final InternalCache cache, final DiskStore diskStore,
       final DiskStoreDetails diskStoreDetails) {
     for (CacheServer cacheServer : cache.getCacheServers()) {
       if (isUsingDiskStore(cacheServer, diskStore)) {
@@ -199,11 +200,11 @@ public class DescribeDiskStoreFunction implements InternalEntity, Function {
     return gateway.isPersistenceEnabled();
   }
 
-  protected boolean isUsingDiskStore(final GatewaySender gateway, final DiskStore diskStore) {
+  boolean isUsingDiskStore(final GatewaySender gateway, final DiskStore diskStore) {
     return ObjectUtils.equals(getDiskStoreName(gateway), diskStore.getName());
   }
 
-  protected void setGatewayDetails(final InternalCache cache, final DiskStore diskStore,
+  private void setGatewayDetails(final InternalCache cache, final DiskStore diskStore,
       final DiskStoreDetails diskStoreDetails) {
     for (GatewaySender gatewaySender : cache.getGatewaySenders()) {
       if (isUsingDiskStore(gatewaySender, diskStore)) {
@@ -215,7 +216,7 @@ public class DescribeDiskStoreFunction implements InternalEntity, Function {
     }
   }
 
-  protected void setPdxSerializationDetails(final InternalCache cache, final DiskStore diskStore,
+  void setPdxSerializationDetails(final InternalCache cache, final DiskStore diskStore,
       final DiskStoreDetails diskStoreDetails) {
     if (cache.getPdxPersistent()) {
       String diskStoreName = StringUtils.defaultIfBlank(cache.getPdxDiskStore(),
@@ -230,12 +231,12 @@ public class DescribeDiskStoreFunction implements InternalEntity, Function {
         DiskStoreDetails.DEFAULT_DISK_STORE_NAME);
   }
 
-  protected boolean isUsingDiskStore(final AsyncEventQueue queue, final DiskStore diskStore) {
+  boolean isUsingDiskStore(final AsyncEventQueue queue, final DiskStore diskStore) {
     return (queue.isPersistent()
         && ObjectUtils.equals(getDiskStoreName(queue), diskStore.getName()));
   }
 
-  protected void setAsyncEventQueueDetails(final InternalCache cache, final DiskStore diskStore,
+  void setAsyncEventQueueDetails(final InternalCache cache, final DiskStore diskStore,
       final DiskStoreDetails diskStoreDetails) {
     for (AsyncEventQueue queue : cache.getAsyncEventQueues()) {
       if (isUsingDiskStore(queue, diskStore)) {

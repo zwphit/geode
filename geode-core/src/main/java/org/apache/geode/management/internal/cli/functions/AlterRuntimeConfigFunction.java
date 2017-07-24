@@ -32,9 +32,7 @@ import org.apache.geode.management.internal.cli.CliUtil;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 
 public class AlterRuntimeConfigFunction implements InternalEntity, Function {
-
   private static final long serialVersionUID = 1L;
-
   private static Logger logger = LogService.getLogger();
 
   @Override

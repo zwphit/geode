@@ -29,11 +29,10 @@ import org.apache.geode.management.internal.cli.util.BytesToString;
  * Class for Garbage collection function
  */
 public class GarbageCollectionFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     BytesToString bytesToString = new BytesToString();
 
     Map<String, String> resultMap = null;
@@ -54,6 +53,7 @@ public class GarbageCollectionFunction implements Function, InternalEntity {
       resultMap.put("HeapSizeBeforeGC", bytesToString.of(totalMemoryBeforeGC - freeMemoryBeforeGC));
       resultMap.put("HeapSizeAfterGC", bytesToString.of(totalMemoryAfterGC - freeMemoryAfterGC));
       resultMap.put("TimeSpentInGC", String.valueOf(timeAfterGC - timeBeforeGC));
+
     } catch (Exception ex) {
       String message = "Exception in GC:" + ex.getMessage() + CliUtil.stackTraceAsString(ex);
 

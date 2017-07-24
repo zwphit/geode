@@ -21,7 +21,6 @@ import java.util.Properties;
  * This class stores the arguments provided for create async event queue command.
  */
 public class AsyncEventQueueFunctionArgs implements Serializable {
-
   private static final long serialVersionUID = -6524494645663740872L;
 
   private final String asyncEventQueueId;

@@ -32,7 +32,6 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
  * Function to create index in a member, based on different arguments passed to it
  */
 public class CreateIndexFunction implements InternalEntity, Function {
-
   private static final long serialVersionUID = 1L;
 
   @Override
@@ -94,8 +93,8 @@ public class CreateIndexFunction implements InternalEntity, Function {
     }
   }
 
-  private void setResultInSender(final FunctionContext context, final IndexInfo indexInfo, final String memberId,
-                                 final Cache cache, final String regionPath) {
+  private void setResultInSender(final FunctionContext context, final IndexInfo indexInfo,
+      final String memberId, final Cache cache, final String regionPath) {
     if (regionPath == null) {
       String message = CliStrings.format(CliStrings.CREATE_INDEX__INVALID__REGIONPATH,
           indexInfo.getRegionPath());

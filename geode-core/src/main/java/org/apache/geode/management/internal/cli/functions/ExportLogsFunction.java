@@ -47,17 +47,14 @@ import org.apache.geode.management.internal.cli.util.TimeParser;
 import org.apache.geode.management.internal.configuration.domain.Configuration;
 
 /**
- * Extracts the logs using a LogExporter which creates a zip file, and then writes the
- * zip file bytes into a replicated region, this in effect, "stream" the zip file bytes to the
- * locator
+ * Extracts the logs using a LogExporter which creates a zip file, and then writes the zip file
+ * bytes into a replicated region, this in effect, "stream" the zip file bytes to the locator
  *
  * <p>
  * The function only extracts .log and .gfs files under server's working directory
  */
 public class ExportLogsFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   public static final String EXPORT_LOGS_REGION = "__exportLogsRegion";
@@ -114,15 +111,13 @@ public class ExportLogsFunction implements Function, InternalEntity {
       context.getResultSender().lastResult(null);
 
     } catch (Exception e) {
-      e.printStackTrace();
       logger.error(e);
       context.getResultSender().sendException(e);
     }
   }
 
-  public static Region createOrGetExistingExportLogsRegion(boolean isInitiatingMember,
-      InternalCache cache) throws IOException, ClassNotFoundException {
-
+  public static Region createOrGetExistingExportLogsRegion(final boolean isInitiatingMember,
+      final InternalCache cache) throws IOException, ClassNotFoundException {
     Region exportLogsRegion = cache.getRegion(EXPORT_LOGS_REGION);
     if (exportLogsRegion == null) {
       AttributesFactory<String, Configuration> regionAttrsFactory = new AttributesFactory<>();
@@ -141,7 +136,7 @@ public class ExportLogsFunction implements Function, InternalEntity {
     return exportLogsRegion;
   }
 
-  public static void destroyExportLogsRegion(InternalCache cache) {
+  public static void destroyExportLogsRegion(final InternalCache cache) {
     Region exportLogsRegion = cache.getRegion(EXPORT_LOGS_REGION);
     if (exportLogsRegion == null) {
       return;
@@ -156,15 +151,15 @@ public class ExportLogsFunction implements Function, InternalEntity {
 
   public static class Args implements Serializable {
 
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private Level logLevel;
-    private boolean thisLogLevelOnly;
-    private boolean includeLogs;
-    private boolean includeStats;
+    private final LocalDateTime startTime;
+    private final LocalDateTime endTime;
+    private final Level logLevel;
+    private final boolean thisLogLevelOnly;
+    private final boolean includeLogs;
+    private final boolean includeStats;
 
-    public Args(String startTime, String endTime, String logLevel, boolean logLevelOnly,
-        boolean logsOnly, boolean statsOnly) {
+    public Args(final String startTime, final String endTime, final String logLevel,
+        final boolean logLevelOnly, final boolean logsOnly, final boolean statsOnly) {
       this.startTime = TimeParser.parseTime(startTime);
       this.endTime = TimeParser.parseTime(endTime);
 

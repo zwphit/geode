@@ -28,13 +28,11 @@ import org.apache.geode.management.internal.cli.CliUtil;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 
 public class GatewaySenderDestroyFunction implements InternalEntity, Function {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     ResultSender<Object> resultSender = context.getResultSender();
 
     Cache cache = context.getCache();
@@ -60,6 +58,7 @@ public class GatewaySenderDestroyFunction implements InternalEntity, Function {
 
     } catch (GatewaySenderException gse) {
       resultSender.lastResult(handleException(memberNameOrId, gse.getMessage(), gse));
+
     } catch (Exception e) {
       String exceptionMsg = e.getMessage();
       if (exceptionMsg == null) {

@@ -30,11 +30,10 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
 import org.apache.geode.management.internal.configuration.domain.XmlEntity;
 
 public class DestroyIndexFunction implements InternalEntity, Function {
-
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     IndexInfo indexInfo = (IndexInfo) context.getArguments();
     String memberId = null;
 
@@ -84,8 +83,10 @@ public class DestroyIndexFunction implements InternalEntity, Function {
           }
         }
       }
+
     } catch (CacheClosedException e) {
       context.getResultSender().lastResult(new CliFunctionResult(memberId, e, e.getMessage()));
+
     } catch (Exception e) {
       context.getResultSender().lastResult(new CliFunctionResult(memberId, e, e.getMessage()));
     }
@@ -94,7 +95,7 @@ public class DestroyIndexFunction implements InternalEntity, Function {
   /**
    * @return true if the index was found and removed/false if the index was not found.
    */
-  private boolean removeIndexByName(String name, QueryService queryService) {
+  private boolean removeIndexByName(final String name, final QueryService queryService) {
     List<Index> indexes = (List<Index>) queryService.getIndexes();
     boolean removed = false;
 

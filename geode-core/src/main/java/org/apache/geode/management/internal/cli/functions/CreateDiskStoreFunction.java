@@ -35,9 +35,7 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
  * @since GemFire 8.0
  */
 public class CreateDiskStoreFunction implements InternalEntity, Function {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
