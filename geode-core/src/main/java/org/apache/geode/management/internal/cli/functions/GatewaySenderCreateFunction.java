@@ -34,7 +34,7 @@ import org.apache.geode.management.internal.cli.CliUtil;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 import org.apache.geode.management.internal.configuration.domain.XmlEntity;
 
-public class GatewaySenderCreateFunction implements InternalEntity, Function {
+public class GatewaySenderCreateFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 8746830191680509335L;
   private static final Logger logger = LogService.getLogger();
 
@@ -55,7 +55,7 @@ public class GatewaySenderCreateFunction implements InternalEntity, Function {
           new XmlEntity(CacheXml.GATEWAY_SENDER, "id", gatewaySenderCreateArgs.getId());
       resultSender.lastResult(new CliFunctionResult(memberNameOrId, xmlEntity,
           CliStrings.format(CliStrings.CREATE_GATEWAYSENDER__MSG__GATEWAYSENDER_0_CREATED_ON_1,
-              new Object[] {createdGatewaySender.getId(), memberNameOrId})));
+              createdGatewaySender.getId(), memberNameOrId)));
 
     } catch (GatewaySenderException e) {
       resultSender.lastResult(handleException(memberNameOrId, e.getMessage(), e));

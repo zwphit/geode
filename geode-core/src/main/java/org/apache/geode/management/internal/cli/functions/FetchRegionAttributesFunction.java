@@ -27,13 +27,14 @@ import org.apache.geode.cache.Region;
 import org.apache.geode.cache.RegionAttributes;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
+import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 
 /**
  * @since GemFire 7.0
  */
-public class FetchRegionAttributesFunction implements Function {
+public class FetchRegionAttributesFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 4366812590788342070L;
   private static final Logger logger = LogService.getLogger();
 
@@ -80,35 +81,45 @@ public class FetchRegionAttributesFunction implements Function {
     return result;
   }
 
-  // TODO: make FetchRegionAttributesFunctionResult immutable
+  /**
+   * Result of executing FetchRegionAttributesFunction.
+   */
   public static class FetchRegionAttributesFunctionResult<K, V> implements Serializable {
     private static final long serialVersionUID = -3970828263897978845L;
 
-    private RegionAttributes<K, V> regionAttributes;
-    private String[] cacheListenerClasses;
-    private String cacheLoaderClass;
-    private String cacheWriterClass;
+    private final RegionAttributes<K, V> regionAttributes;
+    private final String[] cacheListenerClasses;
+    private final String cacheLoaderClass;
+    private final String cacheWriterClass;
 
     public FetchRegionAttributesFunctionResult(final AttributesFactory<K, V> afactory) {
-      this.regionAttributes = afactory.create();
+      RegionAttributes<K, V> regionAttributes = afactory.create();
 
-      CacheListener<K, V>[] cacheListeners = this.regionAttributes.getCacheListeners();
+      CacheListener<K, V>[] cacheListeners = regionAttributes.getCacheListeners();
       if (cacheListeners != null && cacheListeners.length != 0) {
         cacheListenerClasses = new String[cacheListeners.length];
         for (int i = 0; i < cacheListeners.length; i++) {
           cacheListenerClasses[i] = cacheListeners[i].getClass().getName();
         }
         afactory.initCacheListeners(null);
+      } else {
+        cacheListenerClasses = null;
       }
-      CacheLoader<K, V> cacheLoader = this.regionAttributes.getCacheLoader();
+
+      CacheLoader<K, V> cacheLoader = regionAttributes.getCacheLoader();
       if (cacheLoader != null) {
         cacheLoaderClass = cacheLoader.getClass().getName();
         afactory.setCacheLoader(null);
+      } else {
+        cacheLoaderClass = null;
       }
-      CacheWriter<K, V> cacheWriter = this.regionAttributes.getCacheWriter();
+
+      CacheWriter<K, V> cacheWriter = regionAttributes.getCacheWriter();
       if (cacheWriter != null) {
         cacheWriterClass = cacheWriter.getClass().getName();
         afactory.setCacheWriter(null);
+      } else {
+        cacheWriterClass = null;
       }
 
       // recreate attributes

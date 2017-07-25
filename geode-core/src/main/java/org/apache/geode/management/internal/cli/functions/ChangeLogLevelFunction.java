@@ -35,7 +35,7 @@ import org.apache.geode.internal.logging.log4j.LogWriterLogger;
 /**
  * Class for change log level function
  * 
- * since 8.0
+ * @since GemFire 8.0
  */
 public class ChangeLogLevelFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
@@ -49,7 +49,7 @@ public class ChangeLogLevelFunction implements Function, InternalEntity {
     try {
       LogWriterLogger logwriterLogger = (LogWriterLogger) cache.getLogger();
       Object[] args = (Object[]) context.getArguments();
-      final String logLevel = (String) args[0];
+      String logLevel = (String) args[0];
       Level log4jLevel = LogLevel.getLevel(logLevel);
       logwriterLogger.setLevel(log4jLevel);
       System.setProperty(DistributionConfig.GEMFIRE_PREFIX + LOG_LEVEL, logLevel);

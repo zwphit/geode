@@ -966,8 +966,8 @@ public class DataCommands implements GfshCommand {
             false);
       }
     } else {
-      dataResult = getfn.get(null, key, keyClass, valueClass, regionPath, loadOnCacheMiss,
-          cache.getSecurityService());
+      dataResult =
+          getfn.get(null, key, keyClass, regionPath, loadOnCacheMiss, cache.getSecurityService());
     }
     dataResult.setKeyClass(keyClass);
     if (valueClass != null) {

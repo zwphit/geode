@@ -259,6 +259,7 @@ public class CreateAlterDestroyRegionCommands implements GfshCommand {
         String cacheWriterClass =
             cacheWriter != null ? cacheWriter : regionAttributesResult.getCacheWriterClass();
 
+        // use constructor with RegionAttributes (NOTE: evictionMax and compressor are null)
         regionFunctionArgs = new RegionFunctionArgs(regionPath, useAttributesFrom, skipIfExists,
             keyConstraint, valueConstraint, statisticsEnabled, entryIdle, entryTTL, regionIdle,
             regionTTL, diskStore, diskSynchronous, enableAsyncConflation,
@@ -266,7 +267,7 @@ public class CreateAlterDestroyRegionCommands implements GfshCommand {
             asyncEventQueueIds, gatewaySenderIds, concurrencyChecksEnabled, cloningEnabled,
             concurrencyLevel, prColocatedWith, prLocalMaxMemory, prRecoveryDelay, prRedundantCopies,
             prStartupRecoveryDelay, prTotalMaxMemory, prTotalNumBuckets, offHeap, mcastEnabled,
-            regionAttributes, partitionResolver);
+            partitionResolver, regionAttributes);
 
         if (regionAttributes.getPartitionAttributes() == null
             && regionFunctionArgs.hasPartitionAttributes()) {
@@ -277,6 +278,7 @@ public class CreateAlterDestroyRegionCommands implements GfshCommand {
                   useAttributesFrom));
         }
       } else {
+        // use constructor with RegionShortcut (NOTE: evictionMax is null)
         regionFunctionArgs = new RegionFunctionArgs(regionPath, regionShortcut, useAttributesFrom,
             skipIfExists, keyConstraint, valueConstraint, statisticsEnabled, entryIdle, entryTTL,
             regionIdle, regionTTL, diskStore, diskSynchronous, enableAsyncConflation,

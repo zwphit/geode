@@ -43,13 +43,12 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
  *
  * @since GemFire 7.0.1
  */
-public class ListDurableCqNamesFunction implements InternalEntity, Function {
-
+public class ListDurableCqNamesFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   public void execute(final FunctionContext context) {
-    final Cache cache = context.getCache();
-    final DistributedMember member = cache.getDistributedSystem().getDistributedMember();
+    Cache cache = context.getCache();
+    DistributedMember member = cache.getDistributedSystem().getDistributedMember();
     String memberNameOrId = CliUtil.getMemberNameOrId(member);
     DurableCqNamesResult result = new DurableCqNamesResult(memberNameOrId);
 
@@ -82,6 +81,7 @@ public class ListDurableCqNamesFunction implements InternalEntity, Function {
 
     } catch (Exception e) {
       result.setExceptionMessage(e.getMessage());
+
     } finally {
       context.getResultSender().lastResult(result);
     }

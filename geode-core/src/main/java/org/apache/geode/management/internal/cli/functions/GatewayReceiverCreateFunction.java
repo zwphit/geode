@@ -37,7 +37,7 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
 /**
  * The function to a create GatewayReceiver using given configuration parameters.
  */
-public class GatewayReceiverCreateFunction implements InternalEntity, Function {
+public class GatewayReceiverCreateFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 8746830191680509335L;
   private static final Logger logger = LogService.getLogger();
 
@@ -75,7 +75,7 @@ public class GatewayReceiverCreateFunction implements InternalEntity, Function {
       resultSender.lastResult(new CliFunctionResult(memberNameOrId, xmlEntity,
           CliStrings.format(
               CliStrings.CREATE_GATEWAYRECEIVER__MSG__GATEWAYRECEIVER_CREATED_ON_0_ONPORT_1,
-              new Object[] {memberNameOrId, createdGatewayReceiver.getPort()})));
+              memberNameOrId, createdGatewayReceiver.getPort())));
 
     } catch (IllegalStateException e) {
       resultSender.lastResult(handleException(memberNameOrId, e.getMessage(), e));

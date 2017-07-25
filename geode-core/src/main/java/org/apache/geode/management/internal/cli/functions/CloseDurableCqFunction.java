@@ -27,7 +27,7 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
 /**
  * Function to close a durable cq
  */
-public class CloseDurableCqFunction implements InternalEntity, Function {
+public class CloseDurableCqFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   @Override

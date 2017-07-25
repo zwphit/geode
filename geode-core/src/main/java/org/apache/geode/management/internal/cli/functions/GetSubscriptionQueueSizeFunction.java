@@ -31,14 +31,13 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
 /**
  * Function to get subscription-queue-size
  */
-public class GetSubscriptionQueueSizeFunction implements InternalEntity, Function {
-
+public class GetSubscriptionQueueSizeFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void execute(FunctionContext context) {
-    final Cache cache = context.getCache();
-    final String memberNameOrId =
+  public void execute(final FunctionContext context) {
+    Cache cache = context.getCache();
+    String memberNameOrId =
         CliUtil.getMemberNameOrId(cache.getDistributedSystem().getDistributedMember());
     String args[] = (String[]) context.getArguments();
     String durableClientId = null, cqName = null;
@@ -92,6 +91,7 @@ public class GetSubscriptionQueueSizeFunction implements InternalEntity, Functio
 
     } catch (Exception e) {
       result.setExceptionMessage(e.getMessage());
+
     } finally {
       context.getResultSender().lastResult(result);
     }

@@ -17,7 +17,6 @@ package org.apache.geode.management.internal.cli.functions;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -39,30 +38,11 @@ import org.apache.geode.management.internal.cli.domain.MemberInformation;
 /**
  * @since GemFire 7.0
  */
-public class GetMemberInformationFunction implements InternalEntity, Function {
-
+public class GetMemberInformationFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   @Override
-  public boolean hasResult() {
-    return true;
-  }
-
-  @Override
-  public boolean isHA() {
-    return true;
-  }
-
-  /**
-   * Read only function
-   */
-  @Override
-  public boolean optimizeForWrite() {
-    return false;
-  }
-
-  @Override
-  public void execute(FunctionContext functionContext) {
+  public void execute(final FunctionContext functionContext) {
     try {
       InternalCache cache = (InternalCache) functionContext.getCache();
 
@@ -102,29 +82,48 @@ public class GetMemberInformationFunction implements InternalEntity, Function {
           CacheServerInfo cacheServerInfo = new CacheServerInfo(bindAddress, port, isRunning);
           memberInfo.addCacheServerInfo(cacheServerInfo);
         }
+
         Map<ClientProxyMembershipID, CacheClientStatus> allConnectedClients =
             InternalClientMembership.getStatusForAllClientsIgnoreSubscriptionStatus();
-        Iterator<ClientProxyMembershipID> it = allConnectedClients.keySet().iterator();
-        int numConnections = 0;
 
-        while (it.hasNext()) {
-          CacheClientStatus status = allConnectedClients.get(it.next());
+        int numConnections = 0;
+        for (ClientProxyMembershipID clientProxyMembershipID : allConnectedClients.keySet()) {
+          CacheClientStatus status = allConnectedClients.get(clientProxyMembershipID);
           numConnections = numConnections + status.getNumberOfConnections();
         }
+
         memberInfo.setClientCount(numConnections);
+
       } else {
         memberInfo.setServer(false);
       }
+
       functionContext.getResultSender().lastResult(memberInfo);
 
     } catch (CacheClosedException e) {
       functionContext.getResultSender().sendException(e);
+
     } catch (Exception e) {
       functionContext.getResultSender().sendException(e);
     }
   }
 
-  private long bytesToMeg(long bytes) {
+  @Override
+  public boolean hasResult() {
+    return true;
+  }
+
+  @Override
+  public boolean isHA() {
+    return true;
+  }
+
+  @Override
+  public boolean optimizeForWrite() {
+    return false;
+  }
+
+  private long bytesToMeg(final long bytes) {
     return bytes / (1024L * 1024L);
   }
 

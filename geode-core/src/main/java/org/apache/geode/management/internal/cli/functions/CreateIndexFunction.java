@@ -31,11 +31,11 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
 /**
  * Function to create index in a member, based on different arguments passed to it
  */
-public class CreateIndexFunction implements InternalEntity, Function {
+public class CreateIndexFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     IndexInfo indexInfo = (IndexInfo) context.getArguments();
     String memberId = null;
 
@@ -46,8 +46,10 @@ public class CreateIndexFunction implements InternalEntity, Function {
       String indexName = indexInfo.getIndexName();
       String indexedExpression = indexInfo.getIndexedExpression();
       String fromClause = indexInfo.getRegionPath();
+
       // Check to see if the region path contains an alias e.g "/region1 r1"
       // Then the first string will be the regionPath
+
       String[] regionPathTokens = fromClause.trim().split(" ");
       String regionPath = regionPathTokens[0];
 

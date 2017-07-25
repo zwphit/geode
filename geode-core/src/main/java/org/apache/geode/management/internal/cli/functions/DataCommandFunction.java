@@ -65,36 +65,13 @@ import org.apache.geode.pdx.PdxInstance;
 /**
  * @since GemFire 7.0
  */
-public class DataCommandFunction implements InternalEntity, Function {
+public class DataCommandFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
   private static final Logger logger = LogService.getLogger();
 
   private static final int NESTED_JSON_LENGTH = 20;
 
-  private boolean optimizeForWrite = false;
-  private InternalCache cache;
-
-  @Override
-  public boolean hasResult() {
-    return true;
-  }
-
-  @Override
-  public boolean isHA() {
-    return false;
-  }
-
-  /**
-   * Read only function
-   */
-  @Override
-  public boolean optimizeForWrite() {
-    return optimizeForWrite;
-  }
-
-  public void setOptimizeForWrite(boolean optimizeForWrite) {
-    this.optimizeForWrite = optimizeForWrite;
-  }
+  private transient InternalCache cache;
 
   @Override
   public void execute(final FunctionContext functionContext) {
@@ -129,6 +106,21 @@ public class DataCommandFunction implements InternalEntity, Function {
     }
   }
 
+  @Override
+  public boolean hasResult() {
+    return true;
+  }
+
+  @Override
+  public boolean optimizeForWrite() {
+    return false;
+  }
+
+  @Override
+  public boolean isHA() {
+    return false;
+  }
+
   private DataCommandResult remove(final DataCommandRequest request) {
     String key = request.getKey();
     String keyClass = request.getKeyClass();
@@ -144,8 +136,7 @@ public class DataCommandFunction implements InternalEntity, Function {
     String valueClass = request.getValueClass();
     String regionName = request.getRegionName();
     Boolean loadOnCacheMiss = request.isLoadOnCacheMiss();
-    return get(request.getPrincipal(), key, keyClass, valueClass, regionName, loadOnCacheMiss,
-        securityService);
+    return get(request.getPrincipal(), key, keyClass, regionName, loadOnCacheMiss, securityService);
   }
 
   private DataCommandResult locateEntry(final DataCommandRequest request) {
@@ -154,7 +145,7 @@ public class DataCommandFunction implements InternalEntity, Function {
     String valueClass = request.getValueClass();
     String regionName = request.getRegionName();
     boolean recursive = request.isRecursive();
-    return locateEntry(key, keyClass, valueClass, regionName, recursive);
+    return locateEntry(key, keyClass, regionName, recursive);
   }
 
   private DataCommandResult put(final DataCommandRequest request) {
@@ -198,15 +189,18 @@ public class DataCommandFunction implements InternalEntity, Function {
 
     try {
       Object results = query.execute();
+
       if (tracedQuery.isTraced()) {
-        queryVerboseMsg = getLogMessage(queryObserver, startTime, queryString);
+        queryVerboseMsg = getLogMessage(queryObserver, startTime);
         queryObserver.reset2();
       }
+
       if (results instanceof SelectResults) {
         select_SelectResults((SelectResults) results, principal, list, nestedObjectCount);
       } else {
         select_NonSelectResults(results, list);
       }
+
       return DataCommandResult.createSelectResult(queryString, list, queryVerboseMsg, null, null,
           true);
 
@@ -236,6 +230,7 @@ public class DataCommandFunction implements InternalEntity, Function {
     } catch (GfJsonException e) {
       logger.info("Exception occurred:", e);
       jsonBean = new GfJsonObject();
+
       try {
         jsonBean.put("msg", e.getMessage());
       } catch (GfJsonException e1) {
@@ -258,7 +253,7 @@ public class DataCommandFunction implements InternalEntity, Function {
 
       if (object instanceof Struct) {
         StructImpl impl = (StructImpl) object;
-        GfJsonObject jsonStruct = getJSONForStruct(impl, nestedObjectCount);
+        GfJsonObject jsonStruct = getJSONForStruct(impl);
         if (logger.isDebugEnabled()) {
           logger.debug("SelectResults : Adding select json string : {}", jsonStruct);
         }
@@ -284,6 +279,7 @@ public class DataCommandFunction implements InternalEntity, Function {
         } catch (GfJsonException e) {
           logger.error(e.getMessage(), e);
           jsonBean = new GfJsonObject();
+
           try {
             jsonBean.put("msg", e.getMessage());
           } catch (GfJsonException e1) {
@@ -309,8 +305,7 @@ public class DataCommandFunction implements InternalEntity, Function {
     }
   }
 
-  private GfJsonObject getJSONForStruct(final StructImpl impl, final AtomicInteger ai)
-      throws GfJsonException {
+  private GfJsonObject getJSONForStruct(final StructImpl impl) throws GfJsonException {
     String fields[] = impl.getFieldNames();
     Object[] values = impl.getFieldValues();
     GfJsonObject jsonObject = new GfJsonObject();
@@ -398,7 +393,7 @@ public class DataCommandFunction implements InternalEntity, Function {
   }
 
   public DataCommandResult get(final Object principal, final String key, final String keyClass,
-      final String valueClass, final String regionName, final Boolean loadOnCacheMiss,
+      final String regionName, final Boolean loadOnCacheMiss,
       final SecurityService securityService) {
 
     if (StringUtils.isEmpty(regionName)) {
@@ -471,8 +466,8 @@ public class DataCommandFunction implements InternalEntity, Function {
     }
   }
 
-  DataCommandResult locateEntry(final String key, final String keyClass, final String valueClass,
-      final String regionPath, final boolean recursive) {
+  DataCommandResult locateEntry(final String key, final String keyClass, final String regionPath,
+      final boolean recursive) {
 
     if (StringUtils.isEmpty(regionPath)) {
       return DataCommandResult.createLocateEntryResult(key, null, null,
@@ -519,10 +514,12 @@ public class DataCommandFunction implements InternalEntity, Function {
     Object keyObject;
     try {
       keyObject = getClassObject(key, keyClass);
+
     } catch (ClassNotFoundException e) {
       logger.error(e.getMessage(), e);
       return DataCommandResult.createLocateEntryResult(key, null, null,
           "ClassNotFoundException " + keyClass, false);
+
     } catch (IllegalArgumentException e) {
       logger.error(e.getMessage(), e);
       return DataCommandResult.createLocateEntryResult(key, null, null,
@@ -613,6 +610,7 @@ public class DataCommandFunction implements InternalEntity, Function {
     } else {
       Object keyObject;
       Object valueObject;
+
       try {
         keyObject = getClassObject(key, keyClass);
       } catch (ClassNotFoundException e) {
@@ -685,7 +683,7 @@ public class DataCommandFunction implements InternalEntity, Function {
     return getObjectFromJson(string, klass);
   }
 
-  private static Object[] getJSONForNonPrimitiveObject(Object obj) {
+  private static Object[] getJSONForNonPrimitiveObject(final Object obj) {
     Object[] array = new Object[2];
     if (obj == null) {
       array[0] = null;
@@ -754,6 +752,7 @@ public class DataCommandFunction implements InternalEntity, Function {
           }
         }
         return json.toString();
+
       } catch (GfJsonException e) {
         return null;
       }
@@ -804,8 +803,7 @@ public class DataCommandFunction implements InternalEntity, Function {
     return list;
   }
 
-  private static String getLogMessage(final QueryObserver observer, final long startTime,
-      final String query) {
+  private static String getLogMessage(final QueryObserver observer, final long startTime) {
     String usedIndexesString = null;
     float time = 0.0f;
 

@@ -31,19 +31,17 @@ import org.apache.geode.internal.JarDeployer;
 import org.apache.geode.internal.logging.LogService;
 
 public class ListDeployedFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     // Declared here so that it's available when returning a Throwable
     String memberId = "";
 
     try {
       Cache cache = context.getCache();
-      final JarDeployer jarDeployer = ClassPathLoader.getLatest().getJarDeployer();
+      JarDeployer jarDeployer = ClassPathLoader.getLatest().getJarDeployer();
 
       DistributedMember member = cache.getDistributedSystem().getDistributedMember();
 
@@ -53,8 +51,9 @@ public class ListDeployedFunction implements Function, InternalEntity {
         memberId = member.getName();
       }
 
-      final List<DeployedJar> jarClassLoaders = jarDeployer.findDeployedJars();
-      final String[] jars = new String[jarClassLoaders.size() * 2];
+      List<DeployedJar> jarClassLoaders = jarDeployer.findDeployedJars();
+      String[] jars = new String[jarClassLoaders.size() * 2];
+
       int index = 0;
       for (DeployedJar jarClassLoader : jarClassLoaders) {
         jars[index++] = jarClassLoader.getJarName();

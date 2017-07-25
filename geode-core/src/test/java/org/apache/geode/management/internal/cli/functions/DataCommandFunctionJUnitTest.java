@@ -102,7 +102,7 @@ public class DataCommandFunctionJUnitTest {
     DataCommandFunction dataCmdFn = new DataCommandFunction();
 
     DataCommandResult result = dataCmdFn.locateEntry("{'cheese': 'key_1'}",
-        StringCheese.class.getName(), String.class.getName(), PARTITIONED_REGION, false);
+        StringCheese.class.getName(), PARTITIONED_REGION, false);
 
     assertNotNull(result);
     result.aggregate(null);
@@ -114,8 +114,8 @@ public class DataCommandFunctionJUnitTest {
   public void testLocateKeyIsString() throws Exception {
     DataCommandFunction dataCmdFn = new DataCommandFunction();
 
-    DataCommandResult result = dataCmdFn.locateEntry("key_2", String.class.getName(),
-        String.class.getName(), PARTITIONED_REGION, false);
+    DataCommandResult result =
+        dataCmdFn.locateEntry("key_2", String.class.getName(), PARTITIONED_REGION, false);
 
     assertNotNull(result);
     result.aggregate(null);

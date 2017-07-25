@@ -29,7 +29,7 @@ import org.apache.geode.management.internal.cli.domain.IndexInfo;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 import org.apache.geode.management.internal.configuration.domain.XmlEntity;
 
-public class DestroyIndexFunction implements InternalEntity, Function {
+public class DestroyIndexFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   @Override

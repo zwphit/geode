@@ -33,16 +33,15 @@ import org.apache.geode.internal.tcp.ConnectionTable;
  * Class for Shutdown function
  */
 public class ShutDownFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     try {
       Cache cache = context.getCache();
       String memberName = cache.getDistributedSystem().getDistributedMember().getId();
+
       logger.info("Received GFSH shutdown. Shutting down member " + memberName);
 
       disconnectInNonDaemonThread(cache.getDistributedSystem());
@@ -59,13 +58,13 @@ public class ShutDownFunction implements Function, InternalEntity {
    * The shutdown is performed in a separate, non-daemon thread so that the JVM does not shut down
    * prematurely before the full process has completed.
    */
-  private void disconnectInNonDaemonThread(final DistributedSystem ids)
+  private void disconnectInNonDaemonThread(final DistributedSystem system)
       throws InterruptedException, ExecutionException {
     ExecutorService exec = Executors.newSingleThreadExecutor();
     Future future = exec.submit(() -> {
       ConnectionTable.threadWantsSharedResources();
-      if (ids.isConnected()) {
-        ids.disconnect();
+      if (system.isConnected()) {
+        system.disconnect();
       }
     });
     try {

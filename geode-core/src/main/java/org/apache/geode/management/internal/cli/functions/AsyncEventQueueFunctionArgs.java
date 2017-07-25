@@ -40,11 +40,13 @@ public class AsyncEventQueueFunctionArgs implements Serializable {
   private final Properties listenerProperties;
   private final boolean forwardExpirationDestroy;
 
-  public AsyncEventQueueFunctionArgs(String asyncEventQueueId, boolean isParallel,
-      boolean enableBatchConflation, int batchSize, int batchTimeInterval, boolean persistent,
-      String diskStoreName, boolean diskSynchronous, int maxQueueMemory, int dispatcherThreads,
-      String orderPolicy, String[] gatewayEventFilters, String gatewaySubstitutionFilter,
-      String listenerClassName, Properties listenerProperties, boolean forwardExpirationDestroy) {
+  public AsyncEventQueueFunctionArgs(final String asyncEventQueueId, final boolean isParallel,
+      final boolean enableBatchConflation, final int batchSize, final int batchTimeInterval,
+      final boolean persistent, final String diskStoreName, final boolean diskSynchronous,
+      final int maxQueueMemory, final int dispatcherThreads, final String orderPolicy,
+      final String[] gatewayEventFilters, final String gatewaySubstitutionFilter,
+      final String listenerClassName, final Properties listenerProperties,
+      final boolean forwardExpirationDestroy) {
     this.asyncEventQueueId = asyncEventQueueId;
     this.isParallel = isParallel;
     this.enableBatchConflation = enableBatchConflation;

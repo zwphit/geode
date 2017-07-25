@@ -30,22 +30,22 @@ import org.apache.geode.internal.cache.persistence.PersistentMemberID;
 import org.apache.geode.internal.cache.persistence.PersistentMemberManager;
 import org.apache.geode.internal.cache.persistence.PersistentMemberPattern;
 
-public class ShowMissingDiskStoresFunction implements InternalEntity, Function {
+public class ShowMissingDiskStoresFunction implements Function, InternalEntity {
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     if (context == null) {
       throw new RuntimeException();
     }
 
-    final Set<PersistentMemberPattern> memberMissingIDs = new HashSet<>();
+    Set<PersistentMemberPattern> memberMissingIDs = new HashSet<>();
     Set<ColocatedRegionDetails> missingColocatedRegions = new HashSet<>();
 
     try {
-      final InternalCache cache = (InternalCache) context.getCache();
+      InternalCache cache = (InternalCache) context.getCache();
 
       if (cache != null && !cache.isClosed()) {
-        final DistributedMember member = cache.getMyId();
+        DistributedMember member = cache.getMyId();
 
         // Missing DiskStores
         PersistentMemberManager mm = cache.getPersistentMemberManager();
@@ -55,6 +55,7 @@ public class ShowMissingDiskStoresFunction implements InternalEntity, Function {
             memberMissingIDs.add(new PersistentMemberPattern(id));
           }
         }
+
         // Missing colocated regions
         Set<PartitionedRegion> prs = cache.getPartitionedRegions();
         for (PartitionedRegion pr : prs) {

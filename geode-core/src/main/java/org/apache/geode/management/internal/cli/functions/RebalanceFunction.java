@@ -14,7 +14,6 @@
  */
 package org.apache.geode.management.internal.cli.functions;
 
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 
@@ -32,13 +31,11 @@ import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.internal.logging.LogService;
 
 public class RebalanceFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     Cache cache = context.getCache();
     ResourceManager manager = cache.getResourceManager();
     Object[] args = (Object[]) context.getArguments();
@@ -60,26 +57,29 @@ public class RebalanceFunction implements Function, InternalEntity {
     try {
       results = op.getResults();
       logger.info("Starting RebalanceFunction got results = {}", results);
-      StringBuilder str1 = new StringBuilder();
-      str1.append(results.getTotalBucketCreateBytes() + "," + results.getTotalBucketCreateTime()
-          + "," + results.getTotalBucketCreatesCompleted() + ","
-          + results.getTotalBucketTransferBytes() + "," + results.getTotalBucketTransferTime() + ","
-          + results.getTotalBucketTransfersCompleted() + "," + results.getTotalPrimaryTransferTime()
-          + "," + results.getTotalPrimaryTransfersCompleted() + "," + results.getTotalTime() + ",");
+      StringBuilder sb = new StringBuilder();
+      sb.append(results.getTotalBucketCreateBytes()).append(",")
+          .append(results.getTotalBucketCreateTime()).append(",")
+          .append(results.getTotalBucketCreatesCompleted()).append(",")
+          .append(results.getTotalBucketTransferBytes()).append(",")
+          .append(results.getTotalBucketTransferTime()).append(",")
+          .append(results.getTotalBucketTransfersCompleted()).append(",")
+          .append(results.getTotalPrimaryTransferTime()).append(",")
+          .append(results.getTotalPrimaryTransfersCompleted()).append(",")
+          .append(results.getTotalTime()).append(",");
 
       Set<PartitionRebalanceInfo> regns1 = results.getPartitionRebalanceDetails();
-      Iterator it = regns1.iterator();
-      while (it.hasNext()) {
-        PartitionRebalanceInfo rgn = (PartitionRebalanceInfo) it.next();
-        str1.append(rgn.getRegionPath() + ",");
+      for (PartitionRebalanceInfo rgn : regns1) {
+        sb.append(rgn.getRegionPath()).append(",");
       }
 
-      logger.info("Starting RebalanceFunction str1={}", str1);
-      context.getResultSender().lastResult(str1.toString());
+      logger.info("Starting RebalanceFunction with {}", sb);
+      context.getResultSender().lastResult(sb.toString());
 
     } catch (CancellationException e) {
-      logger.info("Starting RebalanceFunction CancellationException: ", e.getMessage(), e);
+      logger.info("Starting RebalanceFunction CancellationException: {}", e.getMessage(), e);
       context.getResultSender().lastResult("CancellationException1 " + e.getMessage());
+
     } catch (InterruptedException e) {
       logger.info("Starting RebalanceFunction InterruptedException: {}", e.getMessage(), e);
       context.getResultSender().lastResult("InterruptedException2 " + e.getMessage());

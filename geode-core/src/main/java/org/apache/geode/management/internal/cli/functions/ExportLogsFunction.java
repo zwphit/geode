@@ -116,6 +116,11 @@ public class ExportLogsFunction implements Function, InternalEntity {
     }
   }
 
+  @Override
+  public boolean isHA() {
+    return false;
+  }
+
   public static Region createOrGetExistingExportLogsRegion(final boolean isInitiatingMember,
       final InternalCache cache) throws IOException, ClassNotFoundException {
     Region exportLogsRegion = cache.getRegion(EXPORT_LOGS_REGION);
@@ -144,11 +149,9 @@ public class ExportLogsFunction implements Function, InternalEntity {
     exportLogsRegion.destroyRegion();
   }
 
-  @Override
-  public boolean isHA() {
-    return false;
-  }
-
+  /**
+   * Arguments for ExportLogsFunction.
+   */
   public static class Args implements Serializable {
 
     private final LocalDateTime startTime;

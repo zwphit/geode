@@ -26,7 +26,7 @@ import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.management.internal.cli.domain.IndexInfo;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 
-public class CreateDefinedIndexesFunction implements InternalEntity, Function {
+public class CreateDefinedIndexesFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   @Override
@@ -37,6 +37,7 @@ public class CreateDefinedIndexesFunction implements InternalEntity, Function {
       Cache cache = context.getCache();
       memberId = cache.getDistributedSystem().getDistributedMember().getId();
       QueryService queryService = cache.getQueryService();
+
       Set<IndexInfo> indexDefinitions = (Set<IndexInfo>) context.getArguments();
       for (IndexInfo indexDefinition : indexDefinitions) {
         String indexName = indexDefinition.getIndexName();
@@ -50,7 +51,9 @@ public class CreateDefinedIndexesFunction implements InternalEntity, Function {
           queryService.defineIndex(indexName, indexedExpression, regionPath);
         }
       }
+
       queryService.createDefinedIndexes();
+
       context.getResultSender().lastResult(new CliFunctionResult(memberId));
 
     } catch (MultiIndexCreationException e) {
