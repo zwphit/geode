@@ -30,23 +30,24 @@ import org.apache.geode.management.internal.cli.i18n.CliStrings;
  * Function which carries out the import of a region to a file on a member. Uses the
  * RegionSnapshotService to import the data
  */
-public class ImportDataFunction implements InternalEntity, Function {
-
+public class ImportDataFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
-  public void execute(FunctionContext context) {
-    final Object[] args = (Object[]) context.getArguments();
-    final String regionName = (String) args[0];
-    final String importFileName = (String) args[1];
+  public void execute(final FunctionContext context) {
+    Object[] args = (Object[]) context.getArguments();
+    String regionName = (String) args[0];
+    String importFileName = (String) args[1];
+
     boolean invokeCallbacks = false;
     if (args.length > 2) {
       invokeCallbacks = (boolean) args[2];
     }
 
     try {
-      final Cache cache = context.getCache();
-      final Region<?, ?> region = cache.getRegion(regionName);
-      final String hostName = cache.getDistributedSystem().getDistributedMember().getHost();
+      Cache cache = context.getCache();
+      Region<?, ?> region = cache.getRegion(regionName);
+      String hostName = cache.getDistributedSystem().getDistributedMember().getHost();
+
       if (region != null) {
         RegionSnapshotService<?, ?> snapshotService = region.getSnapshotService();
         SnapshotOptions options = snapshotService.createOptions();
@@ -56,6 +57,7 @@ public class ImportDataFunction implements InternalEntity, Function {
         String successMessage = CliStrings.format(CliStrings.IMPORT_DATA__SUCCESS__MESSAGE,
             importFile.getCanonicalPath(), hostName, regionName);
         context.getResultSender().lastResult(successMessage);
+
       } else {
         throw new IllegalArgumentException(
             CliStrings.format(CliStrings.REGION_NOT_FOUND, regionName));

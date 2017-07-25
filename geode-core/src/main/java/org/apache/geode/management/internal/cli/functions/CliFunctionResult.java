@@ -174,10 +174,6 @@ public class CliFunctionResult implements Comparable<CliFunctionResult>, DataSer
     return this.xmlEntity;
   }
 
-  public byte[] getByteData() {
-    return this.byteData;
-  }
-
   @Override
   public int compareTo(final CliFunctionResult o) {
     if (this.memberIdOrName == null && o.memberIdOrName == null) {

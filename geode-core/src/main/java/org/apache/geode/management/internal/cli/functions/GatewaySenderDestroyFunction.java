@@ -27,7 +27,7 @@ import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.management.internal.cli.CliUtil;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 
-public class GatewaySenderDestroyFunction implements InternalEntity, Function {
+public class GatewaySenderDestroyFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
   private static final Logger logger = LogService.getLogger();
 
@@ -50,11 +50,11 @@ public class GatewaySenderDestroyFunction implements InternalEntity, Function {
         gatewaySender.destroy();
       } else {
         throw new GatewaySenderException(
-            "GateWaySender with Id  " + gatewaySenderDestroyFunctionArgs.getId() + " not found");
+            "GatewaySender with id " + gatewaySenderDestroyFunctionArgs.getId() + " not found");
       }
       resultSender.lastResult(new CliFunctionResult(memberNameOrId, true,
           CliStrings.format(CliStrings.DESTROY_GATEWAYSENDER__MSG__GATEWAYSENDER_0_DESTROYED_ON_1,
-              new Object[] {gatewaySenderDestroyFunctionArgs.getId(), memberNameOrId})));
+              gatewaySenderDestroyFunctionArgs.getId(), memberNameOrId)));
 
     } catch (GatewaySenderException gse) {
       resultSender.lastResult(handleException(memberNameOrId, gse.getMessage(), gse));

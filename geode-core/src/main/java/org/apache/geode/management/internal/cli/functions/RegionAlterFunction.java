@@ -45,19 +45,12 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
  * 
  * @since GemFire 8.0
  */
-public class RegionAlterFunction implements InternalEntity, Function {
-
+public class RegionAlterFunction implements Function, InternalEntity {
   private static final long serialVersionUID = -4846425364943216425L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
-  public boolean isHA() {
-    return false;
-  }
-
-  @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     ResultSender<Object> resultSender = context.getResultSender();
 
     Cache cache = context.getCache();
@@ -70,16 +63,12 @@ public class RegionAlterFunction implements InternalEntity, Function {
       XmlEntity xmlEntity = new XmlEntity(CacheXml.REGION, "name", alteredRegion.getName());
       resultSender.lastResult(new CliFunctionResult(memberNameOrId, xmlEntity,
           CliStrings.format(CliStrings.ALTER_REGION__MSG__REGION_0_ALTERED_ON_1,
-              new Object[] {alteredRegion.getFullPath(), memberNameOrId})));
+              alteredRegion.getFullPath(), memberNameOrId)));
 
-    } catch (IllegalStateException e) {
+    } catch (IllegalArgumentException | IllegalStateException e) {
       logger.error(e.getMessage(), e);
-
       resultSender.lastResult(new CliFunctionResult(memberNameOrId, false, e.getMessage()));
-    } catch (IllegalArgumentException e) {
-      logger.error(e.getMessage(), e);
 
-      resultSender.lastResult(new CliFunctionResult(memberNameOrId, false, e.getMessage()));
     } catch (VirtualMachineError e) {
       SystemFailure.initiateFailure(e);
       throw e;
@@ -96,8 +85,14 @@ public class RegionAlterFunction implements InternalEntity, Function {
     }
   }
 
-  private <K, V> Region<?, ?> alterRegion(Cache cache, RegionFunctionArgs regionAlterArgs) {
-    final String regionPathString = regionAlterArgs.getRegionPath();
+  @Override
+  public boolean isHA() {
+    return false;
+  }
+
+  private <K, V> Region<?, ?> alterRegion(final Cache cache,
+      final RegionFunctionArgs regionAlterArgs) {
+    String regionPathString = regionAlterArgs.getRegionPath();
 
     RegionPath regionPath = new RegionPath(regionPathString);
     AbstractRegion region = (AbstractRegion) cache.getRegion(regionPathString);
@@ -123,7 +118,7 @@ public class RegionAlterFunction implements InternalEntity, Function {
     }
 
     // Alter expiration attributes
-    final RegionFunctionArgs.ExpirationAttrs newEntryExpirationIdleTime =
+    RegionFunctionArgs.ExpirationAttrs newEntryExpirationIdleTime =
         regionAlterArgs.getEntryExpirationIdleTime();
     if (newEntryExpirationIdleTime != null) {
       mutator.setEntryIdleTimeout(
@@ -133,7 +128,7 @@ public class RegionAlterFunction implements InternalEntity, Function {
       }
     }
 
-    final RegionFunctionArgs.ExpirationAttrs newEntryExpirationTTL =
+    RegionFunctionArgs.ExpirationAttrs newEntryExpirationTTL =
         regionAlterArgs.getEntryExpirationTTL();
     if (newEntryExpirationTTL != null) {
       mutator.setEntryTimeToLive(
@@ -143,7 +138,7 @@ public class RegionAlterFunction implements InternalEntity, Function {
       }
     }
 
-    final RegionFunctionArgs.ExpirationAttrs newRegionExpirationIdleTime =
+    RegionFunctionArgs.ExpirationAttrs newRegionExpirationIdleTime =
         regionAlterArgs.getRegionExpirationIdleTime();
     if (newRegionExpirationIdleTime != null) {
       mutator.setRegionIdleTimeout(
@@ -153,7 +148,7 @@ public class RegionAlterFunction implements InternalEntity, Function {
       }
     }
 
-    final RegionFunctionArgs.ExpirationAttrs newRegionExpirationTTL =
+    RegionFunctionArgs.ExpirationAttrs newRegionExpirationTTL =
         regionAlterArgs.getRegionExpirationTTL();
     if (newRegionExpirationTTL != null) {
       mutator.setRegionTimeToLive(
@@ -164,7 +159,7 @@ public class RegionAlterFunction implements InternalEntity, Function {
     }
 
     // Alter Gateway Sender Ids
-    final Set<String> newGatewaySenderIds = regionAlterArgs.getGatewaySenderIds();
+    Set<String> newGatewaySenderIds = regionAlterArgs.getGatewaySenderIds();
     if (newGatewaySenderIds != null) {
 
       // Remove old gateway sender ids that aren't in the new list
@@ -190,7 +185,7 @@ public class RegionAlterFunction implements InternalEntity, Function {
     }
 
     // Alter Async Queue Ids
-    final Set<String> newAsyncEventQueueIds = regionAlterArgs.getAsyncEventQueueIds();
+    Set<String> newAsyncEventQueueIds = regionAlterArgs.getAsyncEventQueueIds();
     if (newAsyncEventQueueIds != null) {
 
       // Remove old async event queue ids that aren't in the new list
@@ -216,7 +211,7 @@ public class RegionAlterFunction implements InternalEntity, Function {
     }
 
     // Alter Cache Listeners
-    final Set<String> newCacheListenerNames = regionAlterArgs.getCacheListeners();
+    Set<String> newCacheListenerNames = regionAlterArgs.getCacheListeners();
     if (newCacheListenerNames != null) {
 
       // Remove old cache listeners that aren't in the new list
@@ -232,6 +227,7 @@ public class RegionAlterFunction implements InternalEntity, Function {
         if (newCacheListenerName.isEmpty()) {
           continue;
         }
+
         boolean nameFound = false;
         for (CacheListener oldCacheListener : oldCacheListeners) {
           if (oldCacheListener.getClass().getName().equals(newCacheListenerName)) {
@@ -253,7 +249,7 @@ public class RegionAlterFunction implements InternalEntity, Function {
       }
     }
 
-    final String cacheLoader = regionAlterArgs.getCacheLoader();
+    String cacheLoader = regionAlterArgs.getCacheLoader();
     if (cacheLoader != null) {
       if (cacheLoader.isEmpty()) {
         mutator.setCacheLoader(null);
@@ -268,7 +264,7 @@ public class RegionAlterFunction implements InternalEntity, Function {
       }
     }
 
-    final String cacheWriter = regionAlterArgs.getCacheWriter();
+    String cacheWriter = regionAlterArgs.getCacheWriter();
     if (cacheWriter != null) {
       if (cacheWriter.isEmpty()) {
         mutator.setCacheWriter(null);
@@ -293,12 +289,12 @@ public class RegionAlterFunction implements InternalEntity, Function {
    * @param newExpirationAttrs Attributes supplied by the command
    * @param oldExpirationAttributes Attributes currently applied to the Region.
    * 
-   * @return A new pair of expiration attributes taken from the command if it was given or the
-   *         current value from the Region if it was not.
+   * @return New expiration attributes taken from the command if it was given or the current value
+   *         from the Region if it was not.
    */
   private ExpirationAttributes parseExpirationAttributes(
-      RegionFunctionArgs.ExpirationAttrs newExpirationAttrs,
-      ExpirationAttributes oldExpirationAttributes) {
+      final RegionFunctionArgs.ExpirationAttrs newExpirationAttrs,
+      final ExpirationAttributes oldExpirationAttributes) {
 
     ExpirationAction action = oldExpirationAttributes.getAction();
     int timeout = oldExpirationAttributes.getTimeout();
@@ -306,6 +302,7 @@ public class RegionAlterFunction implements InternalEntity, Function {
     if (newExpirationAttrs.getTime() != null) {
       timeout = newExpirationAttrs.getTime();
     }
+
     if (newExpirationAttrs.getAction() != null) {
       action = newExpirationAttrs.getAction();
     }
@@ -313,19 +310,22 @@ public class RegionAlterFunction implements InternalEntity, Function {
     return new ExpirationAttributes(timeout, action);
   }
 
-  private static <K> Class<K> forName(String classToLoadName, String neededFor) {
+  private static <K> Class<K> forName(final String classToLoadName, final String neededFor) {
     Class<K> loadedClass = null;
+
     try {
       // Set Constraints
       ClassPathLoader classPathLoader = ClassPathLoader.getLatest();
       if (classToLoadName != null && !classToLoadName.isEmpty()) {
         loadedClass = (Class<K>) classPathLoader.forName(classToLoadName);
       }
+
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(
           CliStrings.format(CliStrings.ALTER_REGION__MSG__COULD_NOT_FIND_CLASS_0_SPECIFIED_FOR_1,
               classToLoadName, neededFor),
           e);
+
     } catch (ClassCastException e) {
       throw new RuntimeException(CliStrings.format(
           CliStrings.ALTER_REGION__MSG__CLASS_SPECIFIED_FOR_0_SPECIFIED_FOR_1_IS_NOT_OF_EXPECTED_TYPE,
@@ -335,14 +335,17 @@ public class RegionAlterFunction implements InternalEntity, Function {
     return loadedClass;
   }
 
-  private static <K> K newInstance(Class<K> klass, String neededFor) {
+  private static <K> K newInstance(final Class<K> klass, final String neededFor) {
     K instance;
+
     try {
       instance = klass.newInstance();
+
     } catch (InstantiationException e) {
       throw new RuntimeException(CliStrings.format(
           CliStrings.ALTER_REGION__MSG__COULD_NOT_INSTANTIATE_CLASS_0_SPECIFIED_FOR_1, klass,
           neededFor), e);
+
     } catch (IllegalAccessException e) {
       throw new RuntimeException(
           CliStrings.format(CliStrings.ALTER_REGION__MSG__COULD_NOT_ACCESS_CLASS_0_SPECIFIED_FOR_1,

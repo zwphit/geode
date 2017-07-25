@@ -33,19 +33,17 @@ import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.internal.logging.LogService;
 
 public class ListFunctionFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     // Declared here so that it's available when returning a Throwable
     String memberId = "";
 
     try {
-      final Object[] args = (Object[]) context.getArguments();
-      final String stringPattern = (String) args[0];
+      Object[] args = (Object[]) context.getArguments();
+      String stringPattern = (String) args[0];
 
       Cache cache = context.getCache();
       DistributedMember member = cache.getDistributedSystem().getDistributedMember();
@@ -56,10 +54,12 @@ public class ListFunctionFunction implements Function, InternalEntity {
         memberId = member.getName();
       }
 
-      final Map<String, Function> functions = FunctionService.getRegisteredFunctions();
+      Map<String, Function> functions = FunctionService.getRegisteredFunctions();
       CliFunctionResult result;
+
       if (stringPattern == null || stringPattern.isEmpty()) {
         result = new CliFunctionResult(memberId, functions.keySet().toArray(new String[0]));
+
       } else {
         Pattern pattern = Pattern.compile(stringPattern);
         List<String> resultList = new LinkedList<String>();
@@ -71,6 +71,7 @@ public class ListFunctionFunction implements Function, InternalEntity {
         }
         result = new CliFunctionResult(memberId, resultList.toArray(new String[0]));
       }
+
       context.getResultSender().lastResult(result);
 
     } catch (CacheClosedException cce) {

@@ -24,7 +24,7 @@ import org.apache.geode.distributed.internal.InternalLocator;
 import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.management.internal.configuration.domain.SharedConfigurationStatus;
 
-public class FetchSharedConfigurationStatusFunction implements InternalEntity, Function {
+public class FetchSharedConfigurationStatusFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   @Override

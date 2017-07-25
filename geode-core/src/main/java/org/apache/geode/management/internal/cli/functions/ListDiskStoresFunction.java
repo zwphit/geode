@@ -40,17 +40,18 @@ import org.apache.geode.management.internal.cli.domain.DiskStoreDetails;
  *
  * @since GemFire 7.0
  */
-public class ListDiskStoresFunction implements InternalEntity, Function {
+public class ListDiskStoresFunction implements Function, InternalEntity {
 
+  @Override
   public void execute(final FunctionContext context) {
-    final Set<DiskStoreDetails> memberDiskStores = new HashSet<>();
+    Set<DiskStoreDetails> memberDiskStores = new HashSet<>();
 
     try {
-      final InternalCache cache = (InternalCache) context.getCache();
+      InternalCache cache = (InternalCache) context.getCache();
 
-      final DistributedMember member = cache.getMyId();
+      DistributedMember member = cache.getMyId();
 
-      for (final DiskStore memberDiskStore : cache.listDiskStoresIncludingRegionOwned()) {
+      for (DiskStore memberDiskStore : cache.listDiskStoresIncludingRegionOwned()) {
         memberDiskStores.add(new DiskStoreDetails(memberDiskStore.getDiskStoreUUID(),
             memberDiskStore.getName(), member.getId(), member.getName()));
       }

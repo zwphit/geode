@@ -27,17 +27,12 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
  * @since GemFire 7.0
  */
 public class RegionDestroyFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 9172773671865750685L;
 
   @Override
-  public boolean hasResult() {
-    return true;
-  }
-
-  @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     String regionPath = null;
+
     try {
       String functionId = context.getFunctionId();
       if (getId().equals(functionId)) {
@@ -53,6 +48,7 @@ public class RegionDestroyFunction implements Function, InternalEntity {
           context.getResultSender().lastResult(new CliFunctionResult("", xmlEntity, regionPath));
         }
       }
+
       context.getResultSender().lastResult(new CliFunctionResult("", false, "FAILURE"));
 
     } catch (IllegalStateException e) {
@@ -63,9 +59,14 @@ public class RegionDestroyFunction implements Function, InternalEntity {
           .lastResult(new CliFunctionResult("",
               new RuntimeException(CliStrings.format(
                   CliStrings.DESTROY_REGION__MSG__ERROR_WHILE_DESTROYING_REGION_0_REASON_1,
-                  new Object[] {regionPath, ex.getMessage()})),
+                  regionPath, ex.getMessage())),
               null));
     }
+  }
+
+  @Override
+  public boolean hasResult() {
+    return true;
   }
 
   @Override

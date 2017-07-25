@@ -39,20 +39,21 @@ import org.apache.geode.management.internal.cli.domain.IndexDetails;
  *
  * @since GemFire 7.0
  */
-public class ListIndexFunction implements InternalEntity, Function {
+public class ListIndexFunction implements Function, InternalEntity {
 
   public void execute(final FunctionContext context) {
     try {
-      final Set<IndexDetails> indexDetailsSet = new HashSet<>();
+      Set<IndexDetails> indexDetailsSet = new HashSet<>();
 
-      final Cache cache = context.getCache();
-      final DistributedMember member = cache.getDistributedSystem().getDistributedMember();
+      Cache cache = context.getCache();
+      DistributedMember member = cache.getDistributedSystem().getDistributedMember();
 
       for (final Index index : cache.getQueryService().getIndexes()) {
         indexDetailsSet.add(new IndexDetails(member, index));
       }
 
       context.getResultSender().lastResult(indexDetailsSet);
+
     } catch (Exception e) {
       context.getResultSender().sendException(e);
     }

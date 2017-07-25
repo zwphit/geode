@@ -22,13 +22,13 @@ import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.management.internal.cli.domain.RegionDescriptionPerMember;
 
-public class GetRegionDescriptionFunction implements InternalEntity, Function {
-
+public class GetRegionDescriptionFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     String regionPath = (String) context.getArguments();
+
     try {
       Cache cache = context.getCache();
       Region<?, ?> region = cache.getRegion(regionPath);
@@ -44,6 +44,7 @@ public class GetRegionDescriptionFunction implements InternalEntity, Function {
 
     } catch (CacheClosedException e) {
       context.getResultSender().sendException(e);
+
     } catch (Exception e) {
       context.getResultSender().sendException(e);
     }

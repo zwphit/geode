@@ -23,13 +23,13 @@ import org.apache.geode.internal.InternalEntity;
  * Class for Unregister function
  */
 public class UnregisterFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     Object[] args = (Object[]) context.getArguments();
     String functionId = (String) args[0];
+
     try {
       FunctionService.unregisterFunction(functionId);
       context.getResultSender().lastResult("Succeeded in unregistering");

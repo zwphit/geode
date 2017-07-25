@@ -31,7 +31,7 @@ import org.apache.geode.internal.logging.LogService;
 import org.apache.geode.management.internal.cli.CliUtil;
 import org.apache.geode.management.internal.cli.i18n.CliStrings;
 
-public class AlterRuntimeConfigFunction implements InternalEntity, Function {
+public class AlterRuntimeConfigFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
   private static Logger logger = LogService.getLogger();
 

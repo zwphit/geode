@@ -17,12 +17,11 @@ package org.apache.geode.management.internal.cli.functions;
 import java.io.Serializable;
 
 public class GatewaySenderDestroyFunctionArgs implements Serializable {
-
   private static final long serialVersionUID = 3848480256348119530L;
 
   private final String id;
 
-  public GatewaySenderDestroyFunctionArgs(String id) {
+  public GatewaySenderDestroyFunctionArgs(final String id) {
     this.id = id;
   }
 

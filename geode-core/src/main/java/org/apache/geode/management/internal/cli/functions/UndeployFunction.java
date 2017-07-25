@@ -33,22 +33,20 @@ import org.apache.geode.internal.JarDeployer;
 import org.apache.geode.internal.logging.LogService;
 
 public class UndeployFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     // Declared here so that it's available when returning a Throwable
     String memberId = "";
 
     try {
-      final Object[] args = (Object[]) context.getArguments();
-      final String[] jarFilenameList = (String[]) args[0]; // Comma separated
+      Object[] args = (Object[]) context.getArguments();
+      String[] jarFilenameList = (String[]) args[0]; // Comma separated
       Cache cache = context.getCache();
 
-      final JarDeployer jarDeployer = ClassPathLoader.getLatest().getJarDeployer();
+      JarDeployer jarDeployer = ClassPathLoader.getLatest().getJarDeployer();
 
       DistributedMember member = cache.getDistributedSystem().getDistributedMember();
 
@@ -60,8 +58,9 @@ public class UndeployFunction implements Function, InternalEntity {
 
       String[] undeployedJars = new String[0];
       if (ArrayUtils.isEmpty(jarFilenameList)) {
-        final List<DeployedJar> jarClassLoaders = jarDeployer.findDeployedJars();
+        List<DeployedJar> jarClassLoaders = jarDeployer.findDeployedJars();
         undeployedJars = new String[jarClassLoaders.size() * 2];
+
         int index = 0;
         for (DeployedJar jarClassLoader : jarClassLoaders) {
           undeployedJars[index++] = jarClassLoader.getJarName();
@@ -73,8 +72,9 @@ public class UndeployFunction implements Function, InternalEntity {
             undeployedJars[index++] = iaex.getMessage();
           }
         }
+
       } else {
-        List<String> undeployedList = new ArrayList<String>();
+        List<String> undeployedList = new ArrayList<>();
         for (String jarFilename : jarFilenameList) {
           try {
             undeployedList.add(jarFilename);

@@ -21,7 +21,6 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
@@ -29,22 +28,20 @@ import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.internal.logging.LogService;
 
 /**
- * 
  * @since GemFire 8.0
  */
-
 public class MembersForRegionFunction implements Function, InternalEntity {
   private static final Logger logger = LogService.getLogger();
-
   private static final long serialVersionUID = 8746830191680509335L;
 
   @Override
-  public void execute(FunctionContext context) {
-    Map<String, String> resultMap = new HashMap<String, String>();
+  public void execute(final FunctionContext context) {
+    Map<String, String> resultMap = new HashMap<>();
+
     try {
       Cache cache = context.getCache();
       String memberNameOrId = cache.getDistributedSystem().getDistributedMember().getId();
-      Object args = (Object) context.getArguments();
+      Object args = context.getArguments();
       String regionName = ((String) args);
       Region<Object, Object> region = cache.getRegion(regionName);
 
@@ -59,18 +56,14 @@ public class MembersForRegionFunction implements Function, InternalEntity {
           resultMap.put("", "");
         }
       }
+
       context.getResultSender().lastResult(resultMap);
+
     } catch (Exception ex) {
-      Cache cache = CacheFactory.getAnyInstance();
       logger.info("MembersForRegionFunction exception {}", ex.getMessage(), ex);
       resultMap.put("", "");
       context.getResultSender().lastResult(resultMap);
     }
-  }
-
-  @Override
-  public boolean isHA() {
-    return false;
   }
 
   @Override
@@ -80,6 +73,11 @@ public class MembersForRegionFunction implements Function, InternalEntity {
 
   @Override
   public boolean optimizeForWrite() {
+    return false;
+  }
+
+  @Override
+  public boolean isHA() {
     return false;
   }
 

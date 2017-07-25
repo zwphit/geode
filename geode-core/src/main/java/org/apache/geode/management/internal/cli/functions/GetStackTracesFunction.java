@@ -21,12 +21,11 @@ import org.apache.geode.internal.InternalEntity;
 import org.apache.geode.internal.OSProcess;
 import org.apache.geode.management.internal.cli.domain.StackTracesPerMember;
 
-public class GetStackTracesFunction implements InternalEntity, Function {
-
+public class GetStackTracesFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     try {
       Cache cache = context.getCache();
       String memberNameOrId = cache.getDistributedSystem().getDistributedMember().getName();

@@ -36,24 +36,28 @@ public class ContinuousQueryFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     try {
       String clientID = (String) context.getArguments();
       Cache cache = context.getCache();
+
       if (cache.getCacheServers().size() > 0) {
         CacheServerImpl server = (CacheServerImpl) cache.getCacheServers().iterator().next();
+
         if (server != null) {
           AcceptorImpl acceptorImpl = server.getAcceptor();
+
           if (acceptorImpl != null) {
             CacheClientNotifier cacheClientNotifier = acceptorImpl.getCacheClientNotifier();
+
             if (cacheClientNotifier != null) {
               Collection<CacheClientProxy> cacheClientProxySet =
                   cacheClientNotifier.getClientProxies();
               ClientInfo clientInfo = null;
               boolean foundClientinCCP = false;
+
               Iterator<CacheClientProxy> it = cacheClientProxySet.iterator();
               while (it.hasNext()) {
-
                 CacheClientProxy ccp = it.next();
                 if (ccp != null) {
                   String clientIdFromProxy = ccp.getProxyID().getDSMembership();
@@ -118,6 +122,9 @@ public class ContinuousQueryFunction implements Function, InternalEntity {
     return false;
   }
 
+  /**
+   * Info details about cache client.
+   */
   public class ClientInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 

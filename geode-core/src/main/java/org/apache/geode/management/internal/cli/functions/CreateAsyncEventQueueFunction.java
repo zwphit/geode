@@ -47,7 +47,7 @@ import org.apache.geode.management.internal.configuration.domain.XmlEntity;
  *
  * @since GemFire 8.0
  */
-public class CreateAsyncEventQueueFunction implements InternalEntity, Function {
+public class CreateAsyncEventQueueFunction implements Function, InternalEntity {
   private static final Logger logger = LogService.getLogger();
   private static final long serialVersionUID = 1L;
 
@@ -147,10 +147,12 @@ public class CreateAsyncEventQueueFunction implements InternalEntity, Function {
 
     try {
       return ClassPathLoader.getLatest().forName(className);
+
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(CliStrings.format(
           CliStrings.CREATE_ASYNC_EVENT_QUEUE__MSG__COULD_NOT_FIND_CLASS_0_SPECIFIED_FOR_1,
           className, neededFor), e);
+
     } catch (ClassCastException e) {
       throw new RuntimeException(CliStrings.format(
           CliStrings.CREATE_ASYNC_EVENT_QUEUE__MSG__CLASS_0_SPECIFIED_FOR_1_IS_NOT_OF_EXPECTED_TYPE,
@@ -161,10 +163,12 @@ public class CreateAsyncEventQueueFunction implements InternalEntity, Function {
   private static Object newInstance(final Class<?> klass, final String neededFor) {
     try {
       return klass.newInstance();
+
     } catch (InstantiationException e) {
       throw new RuntimeException(CliStrings.format(
           CliStrings.CREATE_ASYNC_EVENT_QUEUE__MSG__COULD_NOT_INSTANTIATE_CLASS_0_SPECIFIED_FOR_1,
           klass, neededFor), e);
+
     } catch (IllegalAccessException e) {
       throw new RuntimeException(CliStrings.format(
           CliStrings.CREATE_ASYNC_EVENT_QUEUE__MSG__COULD_NOT_ACCESS_CLASS_0_SPECIFIED_FOR_1, klass,

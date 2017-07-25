@@ -15,12 +15,10 @@
 package org.apache.geode.management.internal.cli.functions;
 
 import java.io.File;
-import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Logger;
 
-import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.DiskStore;
 import org.apache.geode.cache.EvictionAction;
 import org.apache.geode.cache.Region;
@@ -49,9 +47,10 @@ import org.apache.geode.management.internal.cli.util.DiskStoreNotFoundException;
  * @see org.apache.geode.cache.execute.FunctionContext
  * @see org.apache.geode.internal.InternalEntity
  * @see org.apache.geode.management.internal.cli.domain.DiskStoreDetails
+ *
  * @since GemFire 7.0
  */
-public class DescribeDiskStoreFunction implements InternalEntity, Function {
+public class DescribeDiskStoreFunction implements Function, InternalEntity {
   private static final Logger logger = LogService.getLogger();
 
   public void execute(final FunctionContext context) {
@@ -99,14 +98,6 @@ public class DescribeDiskStoreFunction implements InternalEntity, Function {
     } catch (Exception e) {
       logger.error("Error occurred while executing 'describe disk-store': {}!", e.getMessage(), e);
       context.getResultSender().sendException(e);
-    }
-  }
-
-  // TODO: delete assertState
-  protected static void assertState(final boolean condition, final String message,
-      final Object... args) {
-    if (!condition) {
-      throw new IllegalStateException(String.format(message, args));
     }
   }
 
@@ -242,6 +233,14 @@ public class DescribeDiskStoreFunction implements InternalEntity, Function {
       if (isUsingDiskStore(queue, diskStore)) {
         diskStoreDetails.add(new DiskStoreDetails.AsyncEventQueueDetails(queue.getId()));
       }
+    }
+  }
+
+  // TODO: delete assertState
+  protected static void assertState(final boolean condition, final String message,
+      final Object... args) {
+    if (!condition) {
+      throw new IllegalStateException(String.format(message, args));
     }
   }
 

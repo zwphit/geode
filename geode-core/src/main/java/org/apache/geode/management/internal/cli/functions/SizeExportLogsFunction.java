@@ -32,9 +32,7 @@ import org.apache.geode.management.internal.cli.util.LogExporter;
 import org.apache.geode.management.internal.cli.util.LogFilter;
 
 public class SizeExportLogsFunction extends ExportLogsFunction implements Function, InternalEntity {
-
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override
@@ -64,7 +62,7 @@ public class SizeExportLogsFunction extends ExportLogsFunction implements Functi
     }
   }
 
-  long getDiskAvailable(DistributionConfig config) {
+  long getDiskAvailable(final DistributionConfig config) {
     return config.getLogFile().getUsableSpace();
   }
 

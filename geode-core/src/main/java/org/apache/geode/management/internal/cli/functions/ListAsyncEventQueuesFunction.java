@@ -38,10 +38,8 @@ import org.apache.geode.management.internal.cli.domain.AsyncEventQueueDetails;
  *
  * @since GemFire 8.0
  */
-public class ListAsyncEventQueuesFunction implements InternalEntity, Function {
-
+public class ListAsyncEventQueuesFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LogService.getLogger();
 
   @Override

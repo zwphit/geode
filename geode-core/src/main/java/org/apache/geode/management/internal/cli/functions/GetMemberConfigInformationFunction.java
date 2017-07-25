@@ -17,7 +17,6 @@ package org.apache.geode.management.internal.cli.functions;
 import static org.apache.geode.distributed.ConfigurationProperties.SOCKET_BUFFER_SIZE;
 
 import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,12 +38,11 @@ import org.apache.geode.internal.cache.GemFireCacheImpl;
 import org.apache.geode.internal.cache.ha.HARegionQueue;
 import org.apache.geode.management.internal.cli.domain.MemberConfigurationInfo;
 
-public class GetMemberConfigInformationFunction implements InternalEntity, Function {
-
+public class GetMemberConfigInformationFunction implements Function, InternalEntity {
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void execute(FunctionContext context) {
+  public void execute(final FunctionContext context) {
     Object argsObject = context.getArguments();
     boolean hideDefaults = (Boolean) argsObject;
 
@@ -136,7 +134,6 @@ public class GetMemberConfigInformationFunction implements InternalEntity, Funct
    * @return a map containing the cache attributes - default values
    */
   private Map<String, String> getCacheAttributesDefaultValues() {
-    String d = CacheConfig.DEFAULT_PDX_DISK_STORE;
     Map<String, String> cacheAttributesDefault = new HashMap<>();
     cacheAttributesDefault.put("pdx-disk-store", "");
     cacheAttributesDefault.put("pdx-read-serialized",
@@ -190,8 +187,8 @@ public class GetMemberConfigInformationFunction implements InternalEntity, Funct
   /**
    * Removes the default values from the attributesMap based on defaultAttributesMap
    */
-  private void removeDefaults(Map<String, String> attributesMap,
-      Map<String, String> defaultAttributesMap) {
+  private void removeDefaults(final Map<String, String> attributesMap,
+      final Map<String, String> defaultAttributesMap) {
     // Make a copy to avoid the CME's
     Set<String> attributesSet = new HashSet<>(attributesMap.keySet());
 
@@ -212,8 +209,7 @@ public class GetMemberConfigInformationFunction implements InternalEntity, Funct
   }
 
   private List<String> getJvmInputArguments() {
-    RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
-    return runtimeBean.getInputArguments();
+    return ManagementFactory.getRuntimeMXBean().getInputArguments();
   }
 
 }
