@@ -1,0 +1,214 @@
+---
+title:  <%=vars.product_name_long%> <%=vars.product_version%> in 15 Minutes or Bust
+---
+
+*variable test: yml "title:", above*
+
+*variable test: in text*
+
+Need a quick introduction to <%=vars.product_name_long%>? Take this brief tour to try out basic features and functionality.
+
+*variable test: in heading*
+
+## <a id="topic_FE3F28ED18E145F787431EC87B676A76__section_ECE5170BAD9B454E875F13BEB5762DDD" class="no-quick-link"></a>Step 1: Install <%=vars.product_name_long%>
+
+*variable test: in link (text and url)*
+
+See [How to Install <%=vars.product_name%>](<%=vars.product_name%>/installation/install_standalone.html#concept_0129F6A1D0EB42C4A3D24861AF2C5425) for instructions.
+
+## <a id="topic_FE3F28ED18E145F787431EC87B676A76__section_582F8CBBD99D42F1A55C07591E2E9E9E" class="no-quick-link"></a>Step 2: Use gfsh to start a locator
+
+In a terminal window, use the `gfsh` command line interface to start up a locator. <%=vars.product_name_long%> *gfsh* (pronounced "jee-fish") provides a single, intuitive command-line interface from which you can launch, manage, and monitor <%=vars.product_name_long%> processes, data, and applications. See [gfsh](../tools_modules/gfsh/chapter_overview.html).
+
+The *locator* is a <%=vars.product_name%> process that tells new, connecting members where running members are located and provides load balancing for server use. A locator, by default, starts up a JMX Manager, which is used for monitoring and managing a <%=vars.product_name%> cluster. The cluster configuration service uses locators to persist and distribute cluster configurations to cluster members. See [Running <%=vars.product_name%> Locator Processes](../configuring/running/running_the_locator.html) and [Overview of the Cluster Configuration Service](../configuring/cluster_config/gfsh_persist.html).
+
+1.  Create a scratch working directory (for example, `my_<%=vars.product_name%>`) and change directories into it. `gfsh` saves locator and server working directories and log files in this location.
+
+2.  Start gfsh by typing `gfsh` at the command line (or `gfsh.bat` if you are using Windows).
+
+*variable test: markdown pre-formatted code*
+
+
+    ``` pre
+        _________________________     __
+       / _____/ ______/ ______/ /____/ /
+      / /  __/ /___  /_____  / _____  /
+     / /__/ / ____/  _____/ / /    / /
+    /______/_/      /______/_/    /_/    <%=vars.product_version%>
+
+    Monitor and Manage <%=vars.product_name%>
+    gfsh>
+    ```
+
+3.  At the `gfsh` prompt, type the `start locator` command and specify a name for the locator:
+
+    ``` pre
+    gfsh>start locator --name=locator1
+    Starting a <%=vars.product_name%> Locator in /home/username/my_<%=vars.product_name%>/locator1...
+    .................................
+    Locator in /home/username/my_<%=vars.product_name%>/locator1 on ubuntu.local[10334] as locator1 is currently online.
+    Process ID: 3529
+    Uptime: 18 seconds
+    <%=vars.product_name%> Version: <%=vars.product_version%>
+    Java Version: 1.8.0_101
+    Log File: /home/username/my_<%=vars.product_name%>/locator1/locator1.log
+    JVM Arguments: -Dgemfire.enable-cluster-configuration=true -Dgemfire.load-cluster-configuration-from-dir=false
+    -Dgemfire.launcher.registerSignalHandlers=true -Djava.awt.headless=true
+    -Dsun.rmi.dgc.server.gcInterval=9223372036854775806
+    Class-Path: /home/username/Apache_<%=vars.product_name%>_Linux/lib/geode-core-<%=vars.product_version%>.jar:
+    /home/username/Apache_<%=vars.product_name%>_Linux/lib/geode-dependencies.jar
+
+    Successfully connected to: JMX Manager [host=10.118.33.169, port=1099]
+
+    Cluster configuration service is up and running.
+    ```
+
+If you run `start locator` from gfsh without specifying the member name, gfsh will automatically pick a random member name. This is useful for automation.
+
+## <a id="topic_FE3F28ED18E145F787431EC87B676A76__section_02C79BFFB5334E78A5856AE1EB1F1F84" class="no-quick-link"></a>Step 3: Start Pulse
+
+Start up the browser-based Pulse monitoring tool. Pulse is a Web Application that provides a graphical dashboard for monitoring vital, real-time health and performance of <%=vars.product_name%> clusters, members, and regions. See [<%=vars.product_name%> Pulse](../tools_modules/pulse/pulse-overview.html).
+
+``` pre
+gfsh>start pulse
+```
+
+This command launches Pulse and automatically connects you to the JMX Manager running in the Locator. At the Pulse login screen, type in the default username `admin` and password `admin`.
+
+The Pulse application now displays the locator you just started (locator1):
+
+<img src="../images/pulse_locator.png" id="topic_FE3F28ED18E145F787431EC87B676A76__image_ign_ff5_t4" class="image" />
+
+## <a id="topic_FE3F28ED18E145F787431EC87B676A76__section_C617BC1C70EB41B8BCA3691D6E3C891A" class="no-quick-link"></a>Step 4: Start a server
+
+A <%=vars.product_name%> server is a process that runs as a long-lived, configurable member of a cluster (also called a *distributed system*). The <%=vars.product_name%> server is used primarily for hosting long-lived data regions and for running standard <%=vars.product_name%> processes such as the server in a client/server configuration. See [Running <%=vars.product_name%> Server Processes](../configuring/running/running_the_cacheserver.html).
+
+Start the cache server:
+
+``` pre
+gfsh>start server --name=server1 --server-port=40411
+
+```
+
+
+# Test of Table Formats
+
+Some tables are formatted in HTML, some in Markdown. Let's try both.
+
+## HTML Table
+
+## &lt;pool&gt;
+
+Use for client caches. Defines a client's server pool used to communicate with servers running in a different distributed system.
+
+**API:** `org.apache.geode.cache.client.PoolFactory`
+
+<a id="cc-pool__d93e1237"></a>
+
+*variable test: html table and html preformatted &lt;code&gt;*
+
+<table>
+<caption><span class="tablecap">Table 2. <%=vars.product_name%> PoolFactory Attributes</span></caption>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Attribute</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>free-connection-timeout</td>
+<td>Amount of time a <%=vars.product_name%> thread will wait to get a pool connection before timing out with an exception. This timeout keeps threads from waiting indefinitely when the pool’s <code class="ph codeph"><%=vars.product_name_long%> max-connections</code> has been reached and all connections in the pool are in use by other threads.</td>
+<td>10000</td>
+</tr>
+<tr class="even">
+<td>idle-timeout</td>
+<td>Maximum time, in milliseconds, a pool connection can stay open without being used when there are more than <code class="ph codeph">min-connections</code> in the pool. Pings over the connection do not count as connection use. If set to -1, there is no idle timeout.</td>
+<td>5000</td>
+</tr>
+<tr class="odd">
+<td>load-conditioning-interval</td>
+<td>Amount of time, in milliseconds, a pool connection can remain open before being eligible for silent replacement to a less-loaded server.</td>
+<td>300000
+<p>(5 minutes)</p></td>
+</tr>
+<tr class="even">
+<td>max-connections</td>
+<td>Maximum number of pool connections the pool can create. If the maximum connections are in use, an operation requiring a client-to-server connection blocks until a connection becomes available or the <code class="ph codeph">free-connection-timeout</code> is reached. If set to -1, there is no maximum. The setting must indicate a cap greater than <code class="ph codeph">min-connections</code>.
+<div class="note note">
+**Note:**
+<p>If you need to use this to cap your pool connections, you should disable the pool attribute <code class="ph codeph">pr-single-hop-enabled</code>. Leaving single hop enabled can increase thrashing and lower performance.</p>
+</div></td>
+<td>-1</td>
+</tr>
+<tr class="odd">
+<td>min-connections</td>
+<td>Minimum number of pool connections to keep available at all times. Used to establish the initial connection pool. If set to 0 (zero), no connection is created until an operation requires it. This number is the starting point, with more connections added later as needed, up to the <code class="ph codeph"><%=vars.product_name_long%>max-connection</code> setting. The setting must be an integer greater than or equal to 0.</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>multiuser-authentication</td>
+<td>Used for <%=vars.product_name%> installations with security where you want to accommodate multiple users within a single client. If set to true, the pool provides authorization for multiple user instances in the same client application, and each user accesses the cache through its own <code class="ph codeph">RegionService</code> instance. If false, the client either uses no authorization or just provides credentials for the single client process.</td>
+<td>false</td>
+</tr>
+<tr class="odd">
+<td>name</td>
+<td>Name of this <%=vars.product_name%> pool. Used in the client region pool-name to assign this pool to a region in the client cache.
+<div class="note note">
+**Note:**
+<p>This is a required <%=vars.product_name%> property with no default setting.</p>
+</div></td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+
+: <span class="tablecap">Table 2. Attributes</span>
+
+**Example:**
+
+``` pre
+<pool 
+   name="<%=vars.product_name%> publisher" 
+   subscription-enabled="true">
+     <locator 
+       host="myLocatorAddress1" 
+       port="12345"/>
+     <locator 
+       host="myLocatorAddress2" 
+       port="45678"/>
+</pool>
+```
+
+## Markdown Table
+
+Addresses and ports of the locators to connect to. You can define multiple locators for the pool.
+
+**Note:**
+Provide a locator list or `server` list, but not both.
+
+**API:** `org.apache.geode.distributed.LocatorLauncher`
+
+*variable test: markdown table*
+
+| Attribute | Description                | <%=vars.product_name%> Default |
+|-----------|----------------------------|---------|
+| host      | Hostname of the <%=vars.product_name%> locator    |         |
+| port      | Port number of the locator |         |
+
+: <span class="tablecap">Table 3. Attributes</span>
+
+**Example:**
+
+``` pre
+<pool ...>
+<locator 
+       host="myLocatorHost" (<%=vars.product_name%> version <%=vars.product_version%>)
+       port="12345"/>
+```
