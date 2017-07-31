@@ -15,6 +15,7 @@
 package org.apache.geode.protocol.protobuf.utilities;
 
 import com.google.protobuf.ByteString;
+
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.RegionAttributes;
 import org.apache.geode.protocol.protobuf.BasicTypes;
@@ -29,24 +30,22 @@ import org.apache.geode.serialization.registry.exception.CodecNotRegisteredForTy
 /**
  * This class contains helper functions for assistance in creating protobuf objects. This class is
  * mainly focused on helper functions which can be used in building BasicTypes for use in other
- * messages or those used to create the top level Message objects.
- * <p>
- * Helper functions specific to creating ClientProtocol.Responses can be found at
- * {@link ProtobufResponseUtilities} Helper functions specific to creating ClientProtocol.Requests
- * can be found at {@link ProtobufRequestUtilities}
+ * messages or those used to create the top level Message objects. <p> Helper functions specific to
+ * creating ClientProtocol.Responses can be found at {@link ProtobufResponseUtilities} Helper
+ * functions specific to creating ClientProtocol.Requests can be found at {@link
+ * ProtobufRequestUtilities}
  */
 public abstract class ProtobufUtilities {
   /**
    * Creates a object containing the type and value encoding of a piece of data
-   *
    * @param serializationService - object which knows how to encode objects for the protobuf
-   *        protocol {@link ProtobufSerializationService}
+   * protocol {@link ProtobufSerializationService}
    * @param unencodedValue - the value object which is to be encoded
    * @return a protobuf EncodedValue object
    * @throws UnsupportedEncodingTypeException - The object passed doesn't have a corresponding
-   *         SerializationType
+   * SerializationType
    * @throws CodecNotRegisteredForTypeException - There isn't a protobuf codec for the
-   *         SerializationType of the passed object
+   * SerializationType of the passed object
    */
   public static BasicTypes.EncodedValue createEncodedValue(
       SerializationService serializationService, Object unencodedValue)
@@ -60,31 +59,29 @@ public abstract class ProtobufUtilities {
 
   /**
    * Creates a protobuf key,value pair from an encoded key and value
-   *
    * @param key - an EncodedValue containing the key of the entry
    * @param value - an EncodedValue containing the value of the entry
    * @return a protobuf Entry object containing the passed key and value
    */
   public static BasicTypes.Entry createEntry(BasicTypes.EncodedValue key,
-      BasicTypes.EncodedValue value) {
+                                             BasicTypes.EncodedValue value) {
     return BasicTypes.Entry.newBuilder().setKey(key).setValue(value).build();
   }
 
   /**
    * Creates a protobuf key,value pair from unencoded data
-   *
    * @param serializationService - object which knows how to encode objects for the protobuf
-   *        protocol {@link ProtobufSerializationService}
+   * protocol {@link ProtobufSerializationService}
    * @param unencodedKey - the unencoded key for the entry
    * @param unencodedValue - the unencoded value for the entry
    * @return a protobuf Entry containing the encoded key and value
    * @throws UnsupportedEncodingTypeException - The key or value passed doesn't have a corresponding
-   *         SerializationType
+   * SerializationType
    * @throws CodecNotRegisteredForTypeException - There isn't a protobuf codec for the
-   *         SerializationType of the passed key or value
+   * SerializationType of the passed key or value
    */
   public static BasicTypes.Entry createEntry(SerializationService serializationService,
-      Object unencodedKey, Object unencodedValue)
+                                             Object unencodedKey, Object unencodedValue)
       throws UnsupportedEncodingTypeException, CodecNotRegisteredForTypeException {
     return createEntry(createEncodedValue(serializationService, unencodedKey),
         createEncodedValue(serializationService, unencodedValue));
@@ -92,7 +89,6 @@ public abstract class ProtobufUtilities {
 
   /**
    * This creates a protobuf message containing a ClientProtocol.Response
-   *
    * @param messageHeader - The header for the message
    * @param response - The response for the message
    * @return a protobuf Message containing the above parameters
@@ -105,7 +101,6 @@ public abstract class ProtobufUtilities {
 
   /**
    * This creates a protobuf message containing a ClientProtocol.Request
-   *
    * @param messageHeader - The header for the message
    * @param request - The request for the message
    * @return a protobuf Message containing the above parameters
@@ -118,7 +113,6 @@ public abstract class ProtobufUtilities {
 
   /**
    * This creates a protobuf message containing a ClientProtocol.Request
-   *
    * @param getAllRequest - The request for the message
    * @return a protobuf Message containing the above parameters
    */
@@ -129,7 +123,6 @@ public abstract class ProtobufUtilities {
 
   /**
    * This builds the MessageHeader for a response which matches an incoming request
-   *
    * @param request - The request message that we're responding to.
    * @return the MessageHeader the response to the passed request
    */
@@ -140,7 +133,6 @@ public abstract class ProtobufUtilities {
 
   /**
    * This creates a MessageHeader
-   *
    * @param correlationId - An identifier used to correlate requests and responses
    * @return a MessageHeader containing the above parameters
    */
@@ -150,18 +142,17 @@ public abstract class ProtobufUtilities {
 
   /**
    * This will return the object encoded in a protobuf EncodedValue
-   *
    * @param serializationService - object which knows how to encode objects for the protobuf
-   *        protocol {@link ProtobufSerializationService}
+   * protocol {@link ProtobufSerializationService}
    * @param encodedValue - The value to be decoded
    * @return the object encoded in the passed encodedValue
    * @throws UnsupportedEncodingTypeException - There isn't a SerializationType matching the
-   *         encodedValues type
+   * encodedValues type
    * @throws CodecNotRegisteredForTypeException - There isn't a protobuf codec for the
-   *         SerializationType matching the encodedValues type
+   * SerializationType matching the encodedValues type
    */
   public static Object decodeValue(SerializationService serializationService,
-      BasicTypes.EncodedValue encodedValue)
+                                   BasicTypes.EncodedValue encodedValue)
       throws UnsupportedEncodingTypeException, CodecNotRegisteredForTypeException {
     BasicTypes.EncodingType encoding = encodedValue.getEncodingType();
     byte[] bytes = encodedValue.getValue().toByteArray();
@@ -169,7 +160,6 @@ public abstract class ProtobufUtilities {
   }
 
   /**
-   * @param region
    * @return a Protobuf BasicTypes.Region message that represents the {@link Region}
    */
   public static BasicTypes.Region createRegionMessageFromRegion(Region region) {
@@ -196,5 +186,9 @@ public abstract class ProtobufUtilities {
       RegionAPI.GetRegionNamesRequest getRegionNamesRequest) {
     return ClientProtocol.Request.newBuilder().setGetRegionNamesRequest(getRegionNamesRequest)
         .build();
+  }
+
+  public static ClientProtocol.Request.Builder createProtobufRequestBuilder() {
+    return ClientProtocol.Request.newBuilder();
   }
 }
